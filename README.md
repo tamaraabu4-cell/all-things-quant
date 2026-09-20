@@ -1,4 +1,4 @@
-# Road to Quant — 2026
+# All Things Quant — 2026
 
 > Self-teaching quantitative finance from zero — mathematics, statistics, coding, and trading strategy — documented in public.
 
