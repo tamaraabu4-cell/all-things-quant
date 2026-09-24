@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.1 Buyers vs sellers</title>
+<style>
+:root{--text:#1f1f1d;--muted:#6b6a65;--card:#f3f2ed;--border:rgba(0,0,0,.14);--hover:rgba(0,0,0,.05);--buy:#1D9E75;--sell:#D85A30}
+@media (prefers-color-scheme:dark){:root{--text:#ecebe6;--muted:#a3a29c;--card:#2a2a28;--border:rgba(255,255,255,.16);--hover:rgba(255,255,255,.07)}}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:transparent;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;font-size:15px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border-radius:8px;padding:14px 16px}
+.label{font-size:13px;color:var(--muted)}
+.num{font-size:24px;font-weight:500}
+.bar{display:flex;height:22px;border-radius:8px;overflow:hidden;border:.5px solid var(--border);margin:6px 0 16px}
+.bar div{transition:width .3s}
+svg{width:100%;height:200px;display:block}
+p{margin:14px 0}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;color:var(--text);background:transparent;border:.5px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{background:var(--hover)}
+button:focus-visible{outline:2px solid var(--buy);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="grid">
+<div class="card"><div class="label">Price</div><div class="num" id="px">£100.00</div></div>
+<div class="card"><div class="label">Eager buyers</div><div class="num" id="nb" style="color:var(--buy)">10</div></div>
+<div class="card"><div class="label">Eager sellers</div><div class="num" id="ns" style="color:var(--sell)">10</div></div>
+</div>
+<div class="label">Tug of war</div>
+<div class="bar"><div id="bb" style="background:var(--buy);width:50%"></div><div id="sb" style="background:var(--sell);width:50%"></div></div>
+<svg viewBox="0 0 640 200" style="color:var(--muted)" role="img" aria-label="Price history">
+<line x1="0" y1="100" x2="640" y2="100" stroke="currentColor" stroke-width=".5" stroke-dasharray="4 4"/>
+<polyline id="ln" fill="none" stroke="var(--text)" stroke-width="2" points=""/>
+</svg>
+<p id="cap">Buyers and sellers are balanced, so the price just wobbles around.</p>
+<div class="btns">
+<button id="gb">Good news: buyers rush in</button>
+<button id="gs">Bad news: sellers rush in</button>
+<button id="pp">Pause</button>
+<button id="rs">Reset</button>
+</div>
+<script>
+let b=10,s=10,p=100,h=[],run=true;
+const $=i=>document.getElementById(i);
+function reset(){b=10;s=10;p=100;h=[];for(let i=0;i<120;i++)h.push(100);draw();}
+function draw(){
+$('px').textContent='£'+p.toFixed(2);$('nb').textContent=Math.round(b);$('ns').textContent=Math.round(s);
+const t=b+s;$('bb').style.width=(b/t*100)+'%';$('sb').style.width=(s/t*100)+'%';
+const mn=Math.min(...h,95),mx=Math.max(...h,105);
+$('ln').setAttribute('points',h.map((v,i)=>(i*640/119).toFixed(1)+','+(190-(v-mn)/(mx-mn)*180).toFixed(1)).join(' '));
+const d=b-s;
+$('cap').textContent=d>2?'More eager buyers than sellers. Buyers have to offer higher prices to find someone willing to sell, so the price climbs.':d<-2?'More eager sellers than buyers. Sellers have to accept lower prices to find someone willing to buy, so the price falls.':'Buyers and sellers are roughly balanced, so the price just wobbles around.';
+}
+function tick(){if(!run)return;
+p=Math.max(1,p+(b-s)*0.04+(Math.random()-0.5)*0.3);
+b+=(10-b)*0.06;s+=(10-s)*0.06;
+h.push(p);if(h.length>120)h.shift();draw();}
+$('gb').onclick=()=>{b+=12};
+$('gs').onclick=()=>{s+=12};
+$('pp').onclick=()=>{run=!run;$('pp').textContent=run?'Pause':'Play'};
+$('rs').onclick=reset;
+reset();setInterval(tick,250);
+</script>
+</body>
+</html>
