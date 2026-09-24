@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.2 Bid–ask spread</title>
+<style>
+:root{color-scheme:light dark}
+html,body{margin:0;background:transparent}
+.hl{--ink:#1f1e1d;--muted:#5f5e5a;--line:rgba(0,0,0,.28);--tile:rgba(0,0,0,.05);--faint:#888780;--bid:#1D9E75;--ask:#D85A30;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:1rem 0;max-width:680px}
+@media (prefers-color-scheme:dark){.hl{--ink:#ecebe6;--muted:#b4b2a9;--line:rgba(255,255,255,.3);--tile:rgba(255,255,255,.07);--faint:#888780}}
+.hl .row{display:flex;flex-wrap:wrap;gap:8px}
+.hl button{font:inherit;font-size:14px;color:var(--ink);background:transparent;border:.5px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.hl button:hover{background:var(--tile)}
+.hl button:focus-visible,.hl input:focus-visible{outline:2px solid #378ADD;outline-offset:2px}
+.hl button[aria-pressed=true]{border-color:var(--ink);background:var(--tile)}
+.hl .note{font-size:14px;color:var(--muted);margin:10px 0 0;min-height:1.4em}
+.hl svg{width:100%;height:auto;display:block;margin:8px 0}
+.hl svg text{font-size:13px;fill:var(--ink)}
+.hl svg text.a{fill:var(--ask)}.hl svg text.b{fill:var(--bid)}
+.hl .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.hl .m{background:var(--tile);border-radius:8px;padding:12px 14px}
+.hl .m span{display:block;font-size:13px;color:var(--muted)}
+.hl .m b{font-size:22px;font-weight:500}
+.hl .sl{display:flex;align-items:center;gap:12px;margin:1.25rem 0 .5rem;font-size:14px;color:var(--muted)}
+.hl .sl input{flex:1;accent-color:var(--ask)}
+.hl .sl output{color:var(--ink);font-weight:500;min-width:60px}
+.hl .bar{height:10px;border-radius:5px;background:var(--tile);overflow:hidden}
+.hl .bar i{display:block;height:100%;background:var(--ask);width:0}
+.hl .out{font-size:15px;margin:8px 0 0;line-height:1.6}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.hl .bar i{transition:width .25s ease}}
+</style>
+</head>
+<body>
+<div class="hl">
+<h2 class="sr-only">Interactive EUR/USD price ladder showing how bid, ask and spread change with market conditions, and how much of a stop-loss the spread uses up.</h2>
+<div class="row" role="group" aria-label="Market condition">
+<button data-k="busy" aria-pressed="true">Busy: London and New York</button>
+<button data-k="quiet" aria-pressed="false">Quiet: late Asia</button>
+<button data-k="news" aria-pressed="false">Big news release</button>
+<button data-k="roll" aria-pressed="false">Rollover, about 10pm UK</button>
+</div>
+<p class="note" id="note"></p>
+<svg viewBox="0 0 640 200" role="img" aria-labelledby="st"><title id="st">Ask line above, mid line in the middle, bid line below</title>
+<rect id="gap" x="130" width="360" fill="#D85A30" opacity=".12"/>
+<line id="la" x1="130" x2="490" stroke="#D85A30" stroke-width="2"/>
+<line x1="130" x2="490" y1="100" y2="100" stroke="#888780" stroke-dasharray="4 4"/>
+<line id="lb" x1="130" x2="490" stroke="#1D9E75" stroke-width="2"/>
+<text id="la2" x="120" text-anchor="end" class="a">You buy here</text>
+<text x="120" y="104" text-anchor="end">Middle</text>
+<text id="lb2" x="120" text-anchor="end" class="b">You sell here</text>
+<text id="ta" x="500" class="a"></text>
+<text x="500" y="104">Mid 1.08500</text>
+<text id="tb" x="500" class="b"></text>
+</svg>
+<div class="grid">
+<div class="m"><span>Bid (you sell)</span><b id="vb"></b></div>
+<div class="m"><span>Ask (you buy)</span><b id="va"></b></div>
+<div class="m"><span>Spread</span><b id="vs"></b></div>
+</div>
+<div class="sl"><label for="stop">Your stop-loss distance</label><input type="range" id="stop" min="3" max="40" step="1" value="10"><output id="so" for="stop"></output></div>
+<div class="bar" aria-hidden="true"><i id="bi"></i></div>
+<p class="out" id="out" aria-live="polite"></p>
+<p class="note">Spread sizes are illustrative. Check your own broker or prop firm platform for real figures.</p>
+</div>
+<script>
+const S={busy:[0.6,"Lots of buyers and sellers, so market makers compete and the gap is tiny."],quiet:[1.2,"Fewer traders are awake, so the gap is a little wider."],news:[6,"Just before big data, market makers step back and the gap jumps."],roll:[3,"At the daily changeover, liquidity thins out and spreads widen for a few minutes."]};
+let k="busy";const mid=1.085,P=0.0001,C=100,K=13,$=i=>document.getElementById(i);
+function draw(){const s=S[k][0],a=mid+s/2*P,b=mid-s/2*P,ay=C-s/2*K,by=C+s/2*K;
+[["la",ay],["lb",by]].forEach(([i,y])=>{$(i).setAttribute("y1",y);$(i).setAttribute("y2",y)});
+$("gap").setAttribute("y",ay);$("gap").setAttribute("height",by-ay);
+const aly=Math.min(ay,C-20)+4,bly=Math.max(by,C+20)+4;
+["ta","la2"].forEach(i=>$(i).setAttribute("y",aly));["tb","lb2"].forEach(i=>$(i).setAttribute("y",bly));
+$("ta").textContent="Ask "+a.toFixed(5);$("tb").textContent="Bid "+b.toFixed(5);
+$("vb").textContent=b.toFixed(5);$("va").textContent=a.toFixed(5);$("vs").textContent=s.toFixed(1)+" pips";
+$("note").textContent=S[k][1];
+const st=+$("stop").value;$("so").textContent=st+" pips";const pct=s/st*100;
+$("bi").style.width=Math.min(100,pct)+"%";
+$("out").textContent="The spread uses up "+pct.toFixed(1)+"% of your risk the moment you enter. On 1 standard lot, that's $"+(s*10).toFixed(0)+" gone before the price has moved at all.";}
+document.querySelectorAll(".hl .row button").forEach(bt=>bt.onclick=()=>{k=bt.dataset.k;document.querySelectorAll(".hl .row button").forEach(x=>x.setAttribute("aria-pressed",x===bt));draw()});
+$("stop").oninput=draw;draw();
+</script>
+</body>
+</html>
