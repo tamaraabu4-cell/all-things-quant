@@ -1,84 +1,40 @@
-# All Things Quant — 2026
+# Heritage Edge - 2026
+    > Trading ideas, built with code. A portfolio and knowledge hub on markets, trading, and the technology that is changing how both work.
 
-> Self-teaching quantitative finance from zero — mathematics, statistics, coding, and trading strategy — documented in public.
+**Live site:** tamaraabu4-cell.github.io/all-things-quant 
 
----
 
-## What this is
+## About
 
-I am a final-year university student targeting a career in quantitative finance by the end of 2026. This repository is my learning infrastructure — interactive study notes, quantitative trading projects, and a live portfolio website built from scratch as I progress through each subject.
+I'm Tamara, a London-based graduate in Business, Computing & IT (Aston University, 2026). I research trades across rates, FX and commodities, and I build the tools to test them: pricing models, backtests and trade memos.
 
-Everything here is built in public. The notes grow as I study. The projects are added as skills are acquired. The goal is to go from zero to a working quant researcher and trader within a year.
+Heritage Edge is where that work is published. It has two jobs:
 
-**Live site:** [tamaraabu4-cell.github.io/quant-study-notes](https://tamaraabu4-cell.github.io/quant-study-notes)
+- Portfolio: Finished, documented work that shows how I think about markets and how I use code to test an idea.
+- Knowledge hub: Structured notes on the markets, maths and technology behind trading, written to be understood rather than memorised.
 
----
+Everything is built from scratch and published publically!
 
-## Current progress
 
-| Subject | Level | Status | Topics complete |
-|---|---|---|---|
-| Finance | LV I | In progress | 7 / 7 |
-| Mathematics | LV I | In progress | 0 / 6 |
-| Probability & Statistics | LV I | In progress | 0 / 7 |
-| Computer Science | LV I | In progress | 0 / 6 |
-| Machine Learning | LV I | In progress | 0 / 6 |
+## What's on the site?
 
-Each subject runs across 5 levels — from LV I foundations to LV V advanced quantitative modelling.
+| Section | What it holds |
+|---|---|
+| Work | Trade memos, pricing models and backtests. Each project follows the same four parts: Thesis → Method → Tech → Result. | 
+| Notes | The knowledge hub: interactive notes organised around how markets are traded, not around university subjects. | 
+| Desk Notes | Short pieces on how technology is changing trading, plus post-mortems on my own trades. |
+| About | Who I am, my CV, and how to get in touch. | 
 
----
 
-## Study curriculum
+## Featured Work
 
-### Finance
-`LV I` Foundations of Valuation — TVM, Compounding, EAR, NPV, IRR, Annuities, Portfolio Risk  
-`LV II` Pricing Principles — No-Arbitrage, Forwards, Options, CAPM, Risk-Neutral Valuation  
-`LV III` Fixed Income — Bonds, Duration, Yield Curves, Convexity  
-`LV IV` Options & Risk Management — Black-Scholes, Greeks, Dynamic Hedging, Vol Surfaces  
-`LV V` Quantitative Strategy — Factor Models, Signal Construction, Alpha Modelling  
-
-### Mathematics
-`LV I` Core Calculus — Limits, Derivatives, Integrals, Exponential & Log Functions  
-`LV II` Multivariable Calculus — Partial Derivatives, Optimisation, Multiple Integrals  
-`LV III` Linear Algebra — Vector Spaces, Eigenvalues, Matrix Decompositions  
-`LV IV` Differential Equations — ODEs, Laplace Transforms, Finite Difference Methods  
-`LV V` Stochastic Calculus — Brownian Motion, Itô's Lemma, SDEs, GBM  
-
-### Probability & Statistics
-`LV I` Foundations — Probability, Conditional Probability, Bayes, Random Variables  
-`LV II` Stochastic Processes — CLT, Markov Chains, Stationary Distributions  
-`LV III` Markov Chain Theory — Irreducibility, Recurrence, First Passage Times  
-`LV IV` Continuous-Time Processes — CTMCs, Birth-Death, Queueing Theory  
-`LV V` Martingales — Brownian Motion, Conditional Expectation, Stopping Times  
-
-### Computer Science
-`LV I` Programming Foundations — Python, Control Flow, NumPy, Pandas  
-`LV II` Data Structures & Algorithms — Arrays, Hash Tables, Sorting, Big-O  
-`LV III` Numerical Methods — Differentiation, Integration, Monte Carlo, Root-Finding  
-`LV IV` Quant Infrastructure — Vectorisation, Backtesting Architecture, API Interaction  
-`LV V` Research Engineering — Data Pipelines, Strategy Versioning, Production Systems  
-
-### Machine Learning
-`LV I` Statistical Learning — Supervised vs Unsupervised, Linear Regression, Overfitting  
-`LV II` Supervised Methods — Logistic Regression, Decision Trees, Random Forests, XGBoost  
-`LV III` Optimisation & Tuning — Gradient Descent, Regularisation, Feature Engineering  
-`LV IV` Time Series — ARIMA, State-Space Models, Hidden Markov Models, LSTMs  
-`LV V` Alpha Modelling — Factor Models, Signal Construction, Regime Detection, Walk-Forward Testing  
-
----
-
-## Projects
-
-Projects are built level by level as each skill is acquired. Starting after Finance & CS LV I.
-
-| # | Project | Skills used | Status |
-|---|---|---|---|
-| 1 | Moving Average Crossover Strategy | Python, Pandas, Backtesting | Upcoming |
-| 2 | FX Carry Trade Strategy | FRED API, NumPy, Sharpe analysis | Upcoming |
-| 3 | Fama-French Factor Model | Linear regression, Portfolio construction | Upcoming |
+| # | Project | Thesis | Method & Tech | Result |
+|---|---|---|---|---|
+| 1 | Liquidity-Sweep Reversal Backtest | Do false breakouts of recent highs and lows reverse often enough to trade? | 96-combination grid search on EURUSD daily data, in-sample/out-of-sample split, Sharpe decay test. Python. | Performance was poor on daily data. The write-up diagnoses why (wrong timeframe, too few signals, no session or trend filter) and sets out a better test. |
+| 2 | Pricing Coffee Derivatives | A six-month coffee call needs a fair price, and the desk needs to know its risk after selling it. | Cost of carry → Black-76 → Monte Carlo (500k paths); coffee-linked structured note; desk risk review. Python, NumPy, SciPy. | Black-76 and Monte Carlo agree to within 0.02%. Note solved at 40.9% participation. Citi Markets Quant job simulation (Forage). |
+| 3 | December FOMC Trade Memo | The market prices about a 10% chance the Fed holds on 9 December; I put it nearer 30%. | Bull call spread on SR3Z6 SOFR futures options, with scenario pricing and expected value. | Paper trade: max loss $750, max gain $2,375, positive EV at my odds. Post-mortem to follow the decision. |
 | 4 | Black-Scholes Options Pricer | Python, Greeks, Implied vol solver | Upcoming |
 
----
 
 ## Repository structure
 
@@ -94,8 +50,6 @@ quant-study-notes/
         └── finance-lv1.html
 ```
 
----
-
 ## Stack
 
 - **Notes** — Vanilla HTML, CSS, JavaScript. No frameworks.
@@ -104,22 +58,23 @@ quant-study-notes/
 - **Data** — yfinance, FRED API, Polygon.io, HistData
 - **Analysis** — Python, NumPy, Pandas, Matplotlib
 
----
 
 ## Goal
 
-Quantitative trader or researcher role by end of 2026 — through self-study, live projects, and prop firm trading to generate returns while building the portfolio.
+Quantitative trader or researcher role — through self-study, live projects, and prop firm trading to generate returns while building the portfolio.
 
 Currently targeting: systematic trading roles, quant research positions, and prop firm evaluation programmes (FTMO, Topstep, funded trader programmes).
 
----
 
 ## Contact
 
-Built and maintained by **Tamara** — open to conversations about quant finance, trading strategies, or collaboration.
+Built and maintained by **Tamara** :
 
-GitHub: [@tamaraabu4-cell](https://github.com/tamaraabu4-cell)
+- GitHub: [@tamaraabu4-cell](https://github.com/tamaraabu4-cell)
 
----
+- LinkedIn: (https://www.linkedin.com/in/tamara-abu-767577255/)
+
+- Email: tamaraabu4@gmail.com
+
 
 *Started March 2026. Updated continuously.*
