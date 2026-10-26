@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <span class="footer-heading">Projects</span>
+        <a href="/projects/projects.html">All projects</a>
+        <a href="/projects/sofr-fomc-trade-memo.html">December FOMC trade memo</a>
+        <a href="/projects/citi-coffee-derivatives.html">Pricing coffee derivatives</a>
+        <a href="/projects/turtle-soup.html">Liquidity-sweep backtest</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Knowledge Hub</span>
+        <a href="/study-guide/study-guide.html">All notes</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Blog</span>
+        <a href="/blog/blog.html">Latest</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Connect</span>
+        {% if site.cv %}<a href="{{ site.cv }}">CV</a>{% endif %}
+        {% if site.linkedin %}<a href="{{ site.linkedin }}">LinkedIn</a>{% endif %}
+        {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
+        <a href="{{ site.github }}">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>{{ site.name }} · {{ site.year }} · Built in public</span>
+      <span>Paper trades and research only, not investment advice.</span>
+    </div>
+  </div>
+</footer>

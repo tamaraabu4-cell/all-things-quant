@@ -1,0 +1,233 @@
+/* ==========================================================
+   Heritage Edge — website design for every page
+   ========================================================== */
+
+/* 1. Design tokens: change a colour here, it changes everywhere */
+:root {
+  color-scheme: light;
+  --font: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: "DM Mono", "Courier New", monospace;
+
+  --bg: #ffffff;
+  --surface: #f5f5f7;       /* grey tiles and footer */
+  --border: #d2d2d7;
+  --text: #1d1d1f;
+  --text-2: #6e6e73;        /* secondary text */
+  --text-3: #424245;        /* footer links */
+  --accent: #047857;        /* Heritage Edge green */
+  --accent-hover: #065f46;
+  --on-accent: #ffffff;     /* text on green buttons */
+  --nav-bg: rgba(251, 251, 253, 0.9);
+  --nav-border: rgba(0, 0, 0, 0.08);
+
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --container: 1024px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #09090b;                          /* old charcoal background */
+  --surface: #18181b;                     /* old grey for tiles and footer */
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #fafafa;
+  --text-2: #a1a1aa;
+  --text-3: #d4d4d8;                      /* footer links */
+  --accent: #10b981;                      /* old dark-mode green */
+  --accent-hover: #34d399;
+  --on-accent: #052e16;                   /* dark green text on green buttons */
+  --nav-bg: rgba(9, 9, 11, 0.7);          /* old see-through nav */
+  --nav-border: rgba(255, 255, 255, 0.06);
+}
+
+/* 2. Basics */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+h1, h2, h3, p { margin: 0; }
+
+/* 3. Layout */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 4. Navigation */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--nav-border);
+}
+
+.nav-inner {
+  min-height: 56px;
+  padding: 0 clamp(20px, 4vw, 48px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
+}
+
+.nav-logo {
+  margin-right: auto;       /* pushes everything else to the right */
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.nav-logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  font-size: 13px;
+}
+.nav-links a { color: var(--text); padding: 12px 0; }
+.nav-links a:hover { color: var(--accent); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-search { width: 220px; }   /* the slot for the search bar */
+
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.theme-toggle:hover { background: var(--surface); color: var(--text); }
+
+/* Show the moon in light mode, the sun in dark mode */
+.icon-sun { display: none; }
+[data-theme="dark"] .icon-sun { display: block; }
+[data-theme="dark"] .icon-moon { display: none; }
+
+.nav-inner {
+  min-height: 56px;
+  padding: 0 clamp(20px, 4vw, 48px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.nav-logo {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.nav-logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  font-size: 13px;
+}
+.nav-links a { color: var(--text); padding: 12px 0; }
+.nav-links a:hover { color: var(--accent); }
+
+/* 5. Buttons and links */
+.btn {
+  display: inline-block;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 980px;
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+.btn-dark { background: var(--text); color: var(--bg); }
+.btn-dark:hover { opacity: 0.85; color: var(--bg); }
+.btn-small { font-size: 12px; padding: 7px 14px; }
+.link-arrow { font-size: 17px; font-weight: 500; }
+
+/* 6. Homepage — hero */
+.hero {
+  text-align: center;
+  padding: clamp(64px, 9vw, 120px) 20px clamp(56px, 7vw, 96px);
+}
+.hero-eyebrow {
+  margin-bottom: 12px;
+  font-size: clamp(17px, 1.6vw, 21px);
+  font-weight: 600;
+  color: var(--accent);
+}
+.hero-title {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: clamp(44px, 7vw, 88px);
+  line-height: 1.04;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.hero-intro {
+  max-width: 640px;
+  margin: 20px auto 0;
+  font-size: clamp(19px, 2vw, 24px);
+  line-height: 1.35;
+  color: var(--text-2);
+}
+.hero-actions {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px 28px;
+}
+
+/* 7. Footer */
+.site-footer {
+  margin-top: 64px;
+  background: var(--surface);
+  font-size: 12px;
+  color: var(--text-2);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 24px;
+  padding-top: 32px;
+}
+.footer-col { display: flex; flex-direction: column; gap: 8px; }
+.footer-heading { font-weight: 600; color: var(--text); }
+.footer-col a { color: var(--text-3); }
+.footer-col a:hover { color: var(--accent); }
+.footer-bottom {
+  margin-top: 28px;
+  padding: 16px 0 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}

@@ -1,0 +1,25 @@
+{
+  "name": "heritage-edge",
+  "version": "1.0.0",
+  "description": "Heritage Edge is my own personal website of trading ideas, built with code. It acts as both a portfolio and knowledge hub on markets, trading, and the technology that is changing how both work.",
+  "main": "index.js",
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tamaraabu4-cell/heritage-edge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/tamaraabu4-cell/heritage-edge/issues"
+  },
+  "homepage": "https://github.com/tamaraabu4-cell/heritage-edge#readme",
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.7"
+  }
+}
