@@ -23,7 +23,7 @@ Everything is built from scratch and published publically!
 |---|---|
 | Work | Trade memos, pricing models and backtests. Each project follows the same four parts: Thesis → Method → Tech → Result. | 
 | Notes | The knowledge hub: interactive notes organised around how markets are traded, not around university subjects. | 
-| Desk Notes | Short pieces on how technology is changing trading, plus post-mortems on my own trades. |
+| Blogs | Short pieces on how technology is changing trading, plus post-mortems on my own trades. |
 | About | Who I am, my CV, and how to get in touch. | 
 
 
