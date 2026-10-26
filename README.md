@@ -1,5 +1,6 @@
 # Heritage Edge - 2026
-    > Trading ideas, built with code. A portfolio and knowledge hub on markets, trading, and the technology that is changing how both work.
+
+Heritage Edge is my own personal website of trading ideas, built with code. It acts as both a portfolio and knowledge hub on markets, trading, and the technology that is changing how both work.
 
 **Live site:** tamaraabu4-cell.github.io/all-things-quant 
 
