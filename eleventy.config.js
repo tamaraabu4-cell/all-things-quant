@@ -19,5 +19,5 @@ export default function (eleventyConfig) {
 export const config = {
   dir: { input: "src", output: "_site" },
   templateFormats: ["njk", "md"],
-  pathPrefix: "/heritage-edge/",
+  pathPrefix: "/",
 };
