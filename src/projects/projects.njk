@@ -1,0 +1,39 @@
+---
+layout: layouts/base.njk
+title: Projects
+permalink: /projects/projects.html
+---
+<section class="page-header">
+  <div class="container">
+    <p class="page-eyebrow">Projects</p>
+    <h1 class="page-title">Trading ideas, <span>tested with code.</span></h1>
+    <p class="page-intro">Every project follows the same four steps: a thesis, a method to test it, the tech behind it, and an honest result.</p>
+  </div>
+</section>
+
+<section class="project-list">
+  <div class="container">
+    {% for project in projects %}
+    <article class="project-row">
+      <div class="project-info">
+        <p class="project-tag">{{ project.tag }}</p>
+        <h2 class="project-title">{{ project.title }}</h2>
+        <p class="project-headline">{{ project.headline }}</p>
+        {% if project.context %}<p class="project-context">{{ project.context }}</p>{% endif %}
+        <div class="project-links">
+          <a class="btn btn-primary" href="{{ project.url }}">{{ project.cta }}</a>
+          {% if project.code %}<a class="link-arrow" href="{{ project.code }}">View the code ›</a>{% endif %}
+        </div>
+      </div>
+      {% if project.steps %}
+      <dl class="project-steps">
+        <div class="project-step"><dt>Thesis</dt><dd>{{ project.steps.thesis }}</dd></div>
+        <div class="project-step"><dt>Method</dt><dd>{{ project.steps.method }}</dd></div>
+        <div class="project-step"><dt>Tech</dt><dd>{{ project.steps.tech }}</dd></div>
+        <div class="project-step"><dt>Result</dt><dd>{{ project.steps.result }}</dd></div>
+      </dl>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>

@@ -442,3 +442,99 @@ h1, h2, h3, p { margin: 0; }
   font-weight: 500;
 }
 .about-links .btn { text-align: center; }
+
+/* 12. Page headers (Projects now, other pages later) */
+.page-header { padding: clamp(64px, 8vw, 110px) 0 clamp(32px, 4vw, 48px); }
+.page-eyebrow {
+  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.page-title {
+  max-width: 900px;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.page-title span { color: var(--text-2); }
+.page-intro {
+  max-width: 680px;
+  margin-top: 18px;
+  font-size: clamp(18px, 1.8vw, 21px);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* 13. Projects page */
+.project-list { padding-bottom: 40px; }
+.project-list .container { display: flex; flex-direction: column; gap: 16px; }
+
+.project-row {
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+  gap: 32px 48px;
+}
+
+.project-tag { font-size: 13px; font-weight: 600; color: var(--accent); }
+.project-title {
+  margin-top: 8px;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.project-headline {
+  margin-top: 10px;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.project-context { margin-top: 10px; font-size: 13px; color: var(--text-2); }
+
+.project-links {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+.project-links .btn { font-size: 15px; padding: 10px 20px; }
+.project-links .link-arrow { font-size: 15px; }
+
+.project-steps {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.project-step {
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.project-step dt {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.project-step dd {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+@media (max-width: 800px) {
+  .project-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .project-steps { grid-template-columns: 1fr; }
+}

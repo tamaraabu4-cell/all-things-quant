@@ -6,7 +6,8 @@ export default function (eleventyConfig) {
 
   // Copy these folders across exactly as they are
   eleventyConfig.addPassthroughCopy("src/assets");
-  eleventyConfig.addPassthroughCopy("src/projects");
+  eleventyConfig.addPassthroughCopy("src/projects/*.html");
+  eleventyConfig.addPassthroughCopy("src/projects/*.py");
   eleventyConfig.addPassthroughCopy("src/study-guide");
   eleventyConfig.addPassthroughCopy("src/blog");
 }
