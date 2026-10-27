@@ -539,7 +539,7 @@ h1, h2, h3, p { margin: 0; }
   .project-steps { grid-template-columns: 1fr; }
 }
 
-/* 14. Blog page â€” list of posts */
+/* 14. Blog page - ” list of posts */
 .post-list { padding-bottom: 40px; }
 .post-list .container { display: flex; flex-direction: column; gap: 12px; }
 
@@ -585,7 +585,7 @@ h1, h2, h3, p { margin: 0; }
   .post-arrow { display: none; }
 }
 
-/* 15. Blog post â€” a single post */
+/* 15. Blog post - ” a single post */
 .post .container { max-width: 720px; }
 
 .post-header {
