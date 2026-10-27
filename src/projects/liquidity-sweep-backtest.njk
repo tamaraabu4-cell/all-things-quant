@@ -1,142 +1,16 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>Turtle Soup Backtest — Heritage Edge</title>
-<style>
-:root{--bg:#ffffff;--bg2:#f5f5f7;--bg3:#e8e8ed;--tx1:#1d1d1f;--tx2:#6e6e73;--tx3:#aeaeb2;--br:rgba(0,0,0,.10);--br2:rgba(0,0,0,.18);--green:#059669;--green-bg:#ecfdf5;--green-dk:#065f46;--amber:#d97706;--amber-bg:#fffbeb;--blue:#2563eb;--blue-bg:#eff6ff;--purple:#7c3aed;--purple-bg:#f5f3ff;--red:#dc2626;--red-bg:#fff1f2}
-[data-theme="dark"]{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--tx1:#f5f5f7;--tx2:#98989d;--tx3:#636366;--br:rgba(255,255,255,.09);--br2:rgba(255,255,255,.16);--green:#34d399;--green-bg:#022c22;--green-dk:#6ee7b7;--amber:#fbbf24;--amber-bg:#1c1200;--blue:#60a5fa;--blue-bg:#0d1b3e;--purple:#a78bfa;--purple-bg:#1e0e3e;--red:#f87171;--red-bg:#1c0505}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx1);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-
-/* Nav */
-.nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--br);height:52px;display:flex;align-items:center;padding:0 32px;gap:8px}
-[data-theme="dark"] .nav{background:rgba(28,28,30,.82)}
-.nav-logo{font-size:17px;font-weight:600;letter-spacing:-.02em;margin-right:auto}
-.nav-logo span{color:var(--green)}
-.nav-links{display:flex;gap:2px}
-.nav-link{padding:6px 12px;font-size:13px;color:var(--tx2);border-radius:10px;transition:background .15s,color .15s}
-.nav-link:hover{background:var(--bg2);color:var(--tx1)}
-.nav-link.active{color:var(--tx1);font-weight:500}
-.nav-badge{font-size:10px;padding:1px 5px;border-radius:4px;background:var(--bg2);color:var(--tx3);margin-left:3px}
-.nav-divider{width:.5px;height:20px;background:var(--br2);margin:0 6px}
-.icon-btn{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--tx2);font-size:15px;transition:background .15s;border:.5px solid transparent}
-.icon-btn:hover{background:var(--bg2);color:var(--tx1);border-color:var(--br)}
-
-/* Page layout */
-.page-wrap{max-width:860px;margin:0 auto;padding:0 40px 80px}
-.page-hero{padding:52px 0 40px;border-bottom:.5px solid var(--br);margin-bottom:48px}
-.back-link{font-size:13px;color:var(--tx3);display:flex;align-items:center;gap:6px;margin-bottom:24px}
-.back-link:hover{color:var(--tx1)}
-.project-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:980px;background:var(--green-bg);color:var(--green);margin-bottom:16px}
-.page-title{font-size:36px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px}
-.page-sub{font-size:17px;color:var(--tx2);line-height:1.6;max-width:600px;margin-bottom:24px}
-.meta-row{display:flex;gap:20px;flex-wrap:wrap}
-.meta-item{font-size:12px;color:var(--tx3)}
-.meta-item strong{color:var(--tx1);font-weight:500}
-
-/* Stats strip */
-.stats-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:48px}
-.stat-card{background:var(--bg2);border-radius:16px;padding:16px 18px}
-.stat-label{font-size:11px;color:var(--tx3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
-.stat-value{font-size:22px;font-weight:600;letter-spacing:-.02em}
-.stat-note{font-size:11px;color:var(--tx3);margin-top:3px}
-
-/* Section */
-.section{margin-bottom:48px}
-.section-title{font-size:20px;font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
-.section-sub{font-size:14px;color:var(--tx2);line-height:1.7;margin-bottom:16px}
-
-/* Cards */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
-.card{background:var(--bg2);border-radius:16px;padding:16px 18px}
-.card-title{font-size:13px;font-weight:600;margin-bottom:6px}
-.card-body{font-size:12px;color:var(--tx2);line-height:1.55}
-.card-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:980px;margin-top:8px;font-weight:500}
-.tag-green{background:var(--green-bg);color:var(--green)}
-.tag-amber{background:var(--amber-bg);color:var(--amber)}
-.tag-red{background:var(--red-bg);color:var(--red)}
-.tag-blue{background:var(--blue-bg);color:var(--blue)}
-.tag-purple{background:var(--purple-bg);color:var(--purple)}
-
-/* Alert boxes */
-.alert{border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:13px;line-height:1.7}
-.alert-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.alert-amber{background:var(--amber-bg);border-left:3px solid var(--amber)}
-.alert-amber .alert-title{color:var(--amber)}
-.alert-green{background:var(--green-bg);border-left:3px solid var(--green)}
-.alert-green .alert-title{color:var(--green)}
-.alert-blue{background:var(--blue-bg);border-left:3px solid var(--blue)}
-.alert-blue .alert-title{color:var(--blue)}
-.alert-red{background:var(--red-bg);border-left:3px solid var(--red)}
-.alert-red .alert-title{color:var(--red)}
-
-/* Improvements list */
-.improve-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.improve-item{background:var(--bg2);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
-.improve-num{width:24px;height:24px;border-radius:50%;background:var(--purple-bg);color:var(--purple);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.improve-body{}
-.improve-title{font-size:13px;font-weight:600;margin-bottom:4px}
-.improve-desc{font-size:12px;color:var(--tx2);line-height:1.55}
-
-/* Code block */
-.code-wrap{background:#0d1117;border-radius:16px;overflow:hidden;margin-bottom:20px}
-.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#161b22;border-bottom:1px solid #30363d}
-.code-lang{font-size:12px;color:#8b949e;font-family:'Courier New',monospace}
-.code-copy{font-size:11px;color:#8b949e;cursor:pointer;padding:3px 8px;border-radius:6px;background:transparent;border:.5px solid #30363d;transition:background .15s;font-family:inherit}
-.code-copy:hover{background:#21262d}
-pre{padding:20px;overflow-x:auto;font-size:12.5px;line-height:1.65;color:#e6edf3;font-family:'Courier New',monospace}
-.kw{color:#ff7b72}
-.fn{color:#d2a8ff}
-.st{color:#a5d6ff}
-.cm{color:#8b949e;font-style:italic}
-.nm{color:#79c0ff}
-.op{color:#ffa657}
-
-/* Table */
-.data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
-.data-table th{padding:8px 12px;background:var(--bg2);font-weight:500;font-size:11px;text-align:left;border-bottom:.5px solid var(--br2);color:var(--tx2);letter-spacing:.03em}
-.data-table td{padding:8px 12px;border-bottom:.5px solid var(--br)}
-.data-table tr:last-child td{border-bottom:none}
-.data-table .positive{color:var(--green);font-weight:500}
-.data-table .negative{color:var(--red);font-weight:500}
-.data-table .highlight{background:var(--green-bg)}
-
-/* Divider */
-hr{border:none;border-top:.5px solid var(--br);margin:40px 0}
-
-/* Footer */
-.footer{border-top:.5px solid var(--br);padding:24px 40px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--tx3)}
-.footer a:hover{color:var(--tx1)}
-
-@media(max-width:700px){.page-wrap{padding:0 20px 60px}.nav{padding:0 16px}.footer{padding:16px 20px;flex-direction:column;gap:6px}.stats-strip{grid-template-columns:repeat(2,1fr)}}
-</style>
-</head>
-<body>
-
-<nav class="nav">
-  <a href="../index.html" class="nav-logo">Heritage <span>Edge</span></a>
-  <div class="nav-links">
-    <a class="nav-link" href="../index.html">Home</a>
-    <a class="nav-link" href="../study-guide/study-guide.html">Study Guide</a>
-    <a class="nav-link active" href="projects.html">Projects</a>
-    <a class="nav-link" href="../blog/blog.html">Blog</a>
-  </div>
-  <div class="nav-divider"></div>
-  <button class="icon-btn" onclick="toggleTheme()">&#9788;</button>
-</nav>
+---
+layout: layouts/base.njk
+title: ICT Turtle Soup Backtest
+permalink: /projects/liquidity-sweep-backtest.html
+styles: [projects/liquidity-sweep-backtest.css]
+---
+<div class="project-page">
 
 <div class="page-wrap">
 
   <!-- Hero -->
   <div class="page-hero">
-    <a class="back-link" href="projects.html">&#8592; All projects</a>
+    <a class="back-link" href="/projects/projects.html">&#8592; All projects</a>
     <div class="project-tag">
       <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
       Project 1
@@ -147,7 +21,7 @@ hr{border:none;border-top:.5px solid var(--br);margin:40px 0}
       <span class="meta-item"><strong>Market:</strong> EURUSD / EURGBP (FX)</span>
       <span class="meta-item"><strong>Timeframe:</strong> Daily</span>
       <span class="meta-item"><strong>Language:</strong> Python</span>
-      <span class="meta-item"><strong>Status:</strong> Complete — v1</span>
+      <span class="meta-item"><strong>Status:</strong> Complete</span>
     </div>
   </div>
 
@@ -419,7 +293,7 @@ Turtle Soup ICT — Parameter Optimisation + Out-of-Sample Test
   <hr>
 
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
-    <a href="projects.html" style="font-size:13px;color:var(--tx3)">&#8592; Back to projects</a>
+    <a href="/projects/projects.html" style="font-size:13px;color:var(--tx3)">&#8592; Back to projects</a>
     <div style="display:flex;gap:10px">
       <span style="font-size:13px;color:var(--tx3)">Version 1 &mdash; March 2026</span>
     </div>
@@ -427,16 +301,10 @@ Turtle Soup ICT — Parameter Optimisation + Out-of-Sample Test
 
 </div>
 
-<footer class="footer">
-  <span>Heritage Edge &middot; Projects</span>
-  <a href="https://github.com/tamaraabu4-cell/heritage-edge" target="_blank">github.com/tamaraabu4-cell &nearr;</a>
-</footer>
+</div>
 
 <script>
-function toggleTheme(){
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-}
+// Copy button on the code block
 function copyCode(){
   const code = document.getElementById('code-block').innerText;
   navigator.clipboard.writeText(code).then(()=>{
@@ -445,11 +313,4 @@ function copyCode(){
     setTimeout(()=>{ btn.textContent = 'Copy'; }, 2000);
   });
 }
-if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
-  document.documentElement.setAttribute('data-theme','dark');
-} else {
-  document.documentElement.setAttribute('data-theme','light');
-}
 </script>
-</body>
-</html>

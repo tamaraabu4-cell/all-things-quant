@@ -1,11 +1,17 @@
 const root = document.documentElement;
 const deviceDark = window.matchMedia("(prefers-color-scheme: dark)");
 
+// Tells any page with charts that the theme just changed, so it can redraw
+function announceTheme() {
+  document.dispatchEvent(new CustomEvent("themechange"));
+}
+
 // Follow the device live: if it switches mode while the page is open, so does the site
 deviceDark.addEventListener("change", (event) => {
   let chosen = null;
   try { chosen = sessionStorage.getItem("theme"); } catch (e) {}
   if (!chosen) root.setAttribute("data-theme", event.matches ? "dark" : "light");
+  announceTheme(); 
 });
 
 // Toggle button: switch mode for this visit only
@@ -16,5 +22,6 @@ if (themeToggle) {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     try { sessionStorage.setItem("theme", next); } catch (e) {}
+    announceTheme(); 
   });
 }

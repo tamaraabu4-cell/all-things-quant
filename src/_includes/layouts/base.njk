@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/site.css">
+{% for sheet in styles %}<link rel="stylesheet" href="/assets/css/{{ sheet }}">{% endfor %}
+{% for src in scripts %}<script src="{{ src }}"></script>{% endfor %}
   <script>
     // Follow the device's light/dark setting, unless the toggle was clicked during this visit
     (function () {
