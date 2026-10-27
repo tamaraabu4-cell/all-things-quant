@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Foundations",
+    "icon": "foundations",
+    "description": "The toolkit behind everything else: maths, probability and valuation.",
+    "url": ""
+  },
+  {
+    "name": "Trading",
+    "icon": "trading",
+    "description": "How markets work, what moves them, and how traders make money.",
+    "url": ""
+  },
+  {
+    "name": "Quant",
+    "icon": "quant",
+    "description": "The systematic edge: building, testing and running strategies with code.",
+    "url": ""
+  },
+  {
+    "name": "Real Estate",
+    "icon": "realestate",
+    "description": "Where trading capital goes next: property, financing and development.",
+    "url": ""
+  },
+  {
+    "name": "Fintech & Nigeria",
+    "icon": "fintech",
+    "description": "Building for home: Nigerian markets, payments and the products to come.",
+    "url": ""
+  }
+]

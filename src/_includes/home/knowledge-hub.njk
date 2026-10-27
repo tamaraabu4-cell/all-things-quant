@@ -1,0 +1,22 @@
+{% from "partials/icons.njk" import icon %}
+<section class="hub-section">
+  <div class="container">
+    <h2 class="section-title">Explore the knowledge hub.</h2>
+    <p class="section-intro">Five areas, one plan: trade, build capital, develop property, build for Nigeria.</p>
+    <ul class="tracks">
+      {% for area in hub %}
+      <li class="track">
+        <span class="track-icon">{{ icon(area.icon) }}</span>
+        <h3 class="track-name">{{ area.name }}</h3>
+        <span class="track-rule"></span>
+        <p class="track-text">{{ area.description }}</p>
+        {% if area.url %}
+        <a class="track-link" href="{{ area.url }}">Explore ›</a>
+        {% else %}
+        <span class="track-soon">Coming soon</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

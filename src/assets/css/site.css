@@ -339,3 +339,93 @@ h1, h2, h3, p { margin: 0; }
   color: var(--text-3);
 }
 .steps-link { display: inline-block; margin-top: 28px; }
+
+/* 10. Homepage — knowledge hub */
+.hub-section {
+  padding: clamp(72px, 8vw, 110px) 0 40px;
+  text-align: center;
+}
+.hub-section .section-intro { margin: 16px auto 0; }
+
+.tracks {
+  margin: 56px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 40px 24px;
+}
+.track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.track-icon { color: var(--accent); }
+.track-name {
+  min-height: 2.5em;          /* room for two lines, so the dividers line up */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.track-rule { width: 100%; height: 1px; background: var(--border); }
+.track-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+.track-link {
+  margin-top: auto;           /* keeps every link on the same line */
+  font-size: 15px;
+  font-weight: 500;
+}
+.track-soon {
+  margin-top: auto;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+@media (max-width: 600px) {
+  .track-name { min-height: 0; }
+}
+
+/* 11. Homepage — about me */
+.about-section { padding: clamp(64px, 8vw, 100px) 20px 0; }
+
+.about-card {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px 64px;
+}
+.about-text { flex: 999 1 420px; min-width: 0; }
+.about-plan {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.about-bio {
+  margin-top: 16px;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.about-links {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 17px;
+  font-weight: 500;
+}
+.about-links .btn { text-align: center; }
