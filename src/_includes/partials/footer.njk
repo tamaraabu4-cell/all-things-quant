@@ -1,20 +1,32 @@
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-col">
+            <div class="footer-col">
         <span class="footer-heading">Projects</span>
         <a href="/projects/projects.html">All projects</a>
-        <a href="/projects/sofr-fomc-trade-memo.html">December FOMC trade memo</a>
-        <a href="/projects/citi-coffee-derivatives.html">Pricing coffee derivatives</a>
-        <a href="/projects/src/projects/liquidity-sweep-backtest.html">Liquidity-sweep backtest</a>
+        {% for project in projects.slice(0, 3) %}
+        <a href="{{ project.url }}">{{ project.title }}</a>
+        {% endfor %}
       </div>
-      <div class="footer-col">
+            <div class="footer-col">
         <span class="footer-heading">Knowledge Hub</span>
         <a href="/study-guide/study-guide.html">All notes</a>
+        {% if collections.notes %}
+          {% set latestNotes = collections.notes | reverse %}
+          {% for note in latestNotes.slice(0, 3) %}
+          <a href="{{ note.url }}">{{ note.data.title }}</a>
+          {% endfor %}
+        {% endif %}
       </div>
-      <div class="footer-col">
+            <div class="footer-col">
         <span class="footer-heading">Blog</span>
-        <a href="/blog/blog.html">Latest</a>
+        <a href="/blog/blog.html">All posts</a>
+        {% if collections.posts %}
+          {% set latestPosts = collections.posts | reverse %}
+          {% for post in latestPosts.slice(0, 3) %}
+          <a href="{{ post.url }}">{{ post.data.title }}</a>
+          {% endfor %}
+        {% endif %}
       </div>
       <div class="footer-col">
         <span class="footer-heading">Connect</span>

@@ -298,3 +298,44 @@ h1, h2, h3, p { margin: 0; }
 .highlight-card.is-dark .card-tag,
 .highlight-card.is-dark .card-cta { color: var(--feature-accent); }
 .highlight-card.is-dark .card-point { background: rgba(255, 255, 255, 0.08); }
+
+/* 9. Homepage — every project, four steps */
+.steps-section {
+  margin-top: 40px;
+  padding: clamp(64px, 8vw, 110px) 0;
+  background: var(--surface);
+}
+.section-intro {
+  max-width: 820px;
+  margin-top: 18px;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.steps {
+  margin: 44px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.step {
+  padding: 26px 24px 28px;
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.step-number { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+.step-title {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.step-text {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+.steps-link { display: inline-block; margin-top: 28px; }

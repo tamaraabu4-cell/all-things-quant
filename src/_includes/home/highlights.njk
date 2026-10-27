@@ -2,18 +2,20 @@
   <div class="container">
     <h2 class="section-title">Get the highlights.</h2>
   </div>
-  <div class="carousel" role="region" aria-label="Project highlights, scroll sideways" tabindex="0">
-    {% for project in projects %}
-    <a class="highlight-card{% if project.dark %} is-dark{% endif %}" href="{{ project.url }}">
+  <div class="carousel" role="region" aria-label="Highlights from across the site, scroll sideways" tabindex="0">
+    {% for item in highlights %}
+    <a class="highlight-card{% if item.dark %} is-dark{% endif %}" href="{{ item.url }}">
       <span class="card-top">
-        <span class="card-tag">{{ project.tag }}</span>
-        <span class="card-headline">{{ project.headline }}</span>
+        <span class="card-tag">{{ item.tag }}</span>
+        <span class="card-headline">{{ item.headline }}</span>
       </span>
       <span class="card-bottom">
-        {% for point in project.points %}
-        <span class="card-point">{{ point }}</span>
-        {% endfor %}
-        <span class="card-cta">{{ project.cta }} ›</span>
+        {% if item.points %}
+          {% for point in item.points %}
+          <span class="card-point">{{ point }}</span>
+          {% endfor %}
+        {% endif %}
+        <span class="card-cta">{{ item.cta }} ›</span>
       </span>
     </a>
     {% endfor %}
