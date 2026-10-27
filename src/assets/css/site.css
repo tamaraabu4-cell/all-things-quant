@@ -102,6 +102,10 @@ h1, h2, h3, p { margin: 0; }
   color: var(--text);
 }
 .nav-logo span { color: var(--accent); }
+.nav-logo { display: inline-flex; align-items: center; gap: 8px; }
+.logo-mark { width: 30px; height: auto; transform: translateY(3px); }
+.logo-mark .h { fill: currentColor; }
+.logo-mark .e { fill: var(--accent); }
 
 .nav-links {
   display: flex;
