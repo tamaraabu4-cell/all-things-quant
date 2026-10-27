@@ -1,0 +1,21 @@
+<section class="highlights">
+  <div class="container">
+    <h2 class="section-title">Get the highlights.</h2>
+  </div>
+  <div class="carousel" role="region" aria-label="Project highlights, scroll sideways" tabindex="0">
+    {% for project in projects %}
+    <a class="highlight-card{% if project.dark %} is-dark{% endif %}" href="{{ project.url }}">
+      <span class="card-top">
+        <span class="card-tag">{{ project.tag }}</span>
+        <span class="card-headline">{{ project.headline }}</span>
+      </span>
+      <span class="card-bottom">
+        {% for point in project.points %}
+        <span class="card-point">{{ point }}</span>
+        {% endfor %}
+        <span class="card-cta">{{ project.cta }} ›</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

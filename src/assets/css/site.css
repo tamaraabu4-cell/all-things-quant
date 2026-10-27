@@ -19,6 +19,9 @@
   --on-accent: #ffffff;     /* text on green buttons */
   --nav-bg: rgba(251, 251, 253, 0.9);
   --nav-border: rgba(0, 0, 0, 0.08);
+  --feature-bg: #1d1d1f;      /* the dark featured card */
+  --feature-text: #f5f5f7;
+  --feature-accent: #34d399;
 
   --radius-sm: 12px;
   --radius: 20px;
@@ -39,6 +42,7 @@
   --on-accent: #052e16;                   /* dark green text on green buttons */
   --nav-bg: rgba(9, 9, 11, 0.7);          /* old see-through nav */
   --nav-border: rgba(255, 255, 255, 0.06);
+  --feature-bg: #27272a;
 }
 
 /* 2. Basics */
@@ -231,3 +235,66 @@ h1, h2, h3, p { margin: 0; }
   justify-content: space-between;
   gap: 8px;
 }
+
+/* 8. Homepage — project highlights carousel */
+.section-title {
+  font-size: clamp(36px, 4.6vw, 56px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.section-title span { color: var(--text-2); }
+
+.highlights { padding: clamp(72px, 8vw, 110px) 0 40px; }
+
+.carousel {
+  margin-top: 36px;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 4px max(20px, calc((100% - 984px) / 2)) 24px;
+  scroll-padding-inline: max(20px, calc((100% - 984px) / 2));
+}
+
+.highlight-card {
+  scroll-snap-align: start;
+  flex: 0 0 min(340px, 82vw);
+  min-height: 460px;
+  padding: 32px 28px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  transition: transform 0.2s ease;
+}
+.highlight-card:hover { color: var(--text); transform: scale(1.015); }
+
+.card-top { display: flex; flex-direction: column; gap: 8px; }
+.card-bottom { display: flex; flex-direction: column; gap: 10px; }
+
+.card-tag { font-size: 13px; font-weight: 600; color: var(--accent); }
+.card-headline {
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.card-point {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-size: 14px;
+  font-weight: 500;
+}
+.card-cta { margin-top: 8px; font-size: 15px; font-weight: 500; color: var(--accent); }
+
+/* The dark "featured" card */
+.highlight-card.is-dark { background: var(--feature-bg); color: var(--feature-text); }
+.highlight-card.is-dark:hover { color: var(--feature-text); }
+.highlight-card.is-dark .card-tag,
+.highlight-card.is-dark .card-cta { color: var(--feature-accent); }
+.highlight-card.is-dark .card-point { background: rgba(255, 255, 255, 0.08); }
