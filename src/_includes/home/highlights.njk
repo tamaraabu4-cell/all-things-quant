@@ -4,7 +4,7 @@
   </div>
   <div class="carousel" role="region" aria-label="Highlights from across the site, scroll sideways" tabindex="0">
     {% for item in highlights %}
-    <a class="highlight-card{% if item.dark %} is-dark{% endif %}" href="{{ item.url }}">
+    <a class="highlight-card" href="{{ item.url }}">
       <span class="card-top">
         <span class="card-tag">{{ item.tag }}</span>
         <span class="card-headline">{{ item.headline }}</span>
