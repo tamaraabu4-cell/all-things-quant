@@ -1,0 +1,36 @@
+---
+layout: layouts/base.njk
+title: Blog
+permalink: /blog/blog.html
+---
+<section class="page-header">
+  <div class="container">
+    <p class="page-eyebrow">Blog</p>
+    <h1 class="page-title">Learning in public, <span>one week at a time.</span></h1>
+    <p class="page-intro">Weekly progress updates, reflections on what I'm learning, and an honest record of building Heritage Edge.</p>
+  </div>
+</section>
+
+<section class="post-list">
+  <div class="container">
+    {% set allPosts = (collections.posts or []) | reverse %}
+    {% if allPosts.length %}
+      {% for post in allPosts %}
+      <a class="post-row" href="{{ post.url }}">
+        <time class="post-date" datetime="{{ post.date | htmlDate }}">{{ post.date | readableDate }}</time>
+        <div class="post-main">
+          {% if post.data.category %}<p class="post-tag">{{ post.data.category }}</p>{% endif %}
+          <h2 class="post-title">{{ post.data.title }}</h2>
+          {% if post.data.summary %}<p class="post-summary">{{ post.data.summary }}</p>{% endif %}
+        </div>
+        <span class="post-arrow" aria-hidden="true">›</span>
+      </a>
+      {% endfor %}
+    {% else %}
+      <div class="post-empty">
+        <p class="post-empty-title">First post coming soon.</p>
+        <p class="post-empty-text">In the meantime, the <a href="/projects/projects.html">projects</a> show what I've been building.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>

@@ -1,0 +1,16 @@
+---
+layout: layouts/base.njk
+---
+<article class="post">
+  <div class="container">
+    <header class="post-header">
+      <a class="post-back" href="/blog/blog.html">‹ All posts</a>
+      <p class="page-eyebrow">{% if category %}{{ category }} · {% endif %}<time datetime="{{ page.date | htmlDate }}">{{ page.date | readableDate }}</time></p>
+      <h1 class="post-heading">{{ title }}</h1>
+      {% if summary %}<p class="page-intro">{{ summary }}</p>{% endif %}
+    </header>
+    <div class="post-body">
+      {{ content | safe }}
+    </div>
+  </div>
+</article>
