@@ -1,0 +1,77 @@
+---
+layout: layouts/base.njk
+title: About
+permalink: /about/
+---
+<section class="page-header">
+  <div class="container">
+    <p class="page-eyebrow">About</p>
+    <h1 class="page-title">Hi, I'm Tamara. <span>Here's the story so far.</span></h1>
+    <p class="page-intro">{{ about.intro }}</p>
+  </div>
+</section>
+
+<section class="about-block">
+  <div class="container">
+    <h2 class="section-title">Background.</h2>
+    <ol class="timeline">
+      {% for item in about.background %}
+      <li class="timeline-row">
+        <p class="timeline-when">{{ item.when }}</p>
+        <div>
+          <h3 class="timeline-role">{{ item.role }}</h3>
+          <p class="timeline-org">{{ item.org }}</p>
+          {% if item.text %}<p class="timeline-text">{{ item.text }}</p>{% endif %}
+          {% if item.link %}<a class="timeline-link" href="{{ item.link }}">{{ item.linkText }}</a>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="about-block">
+  <div class="container">
+    <h2 class="section-title">Skills <span>&amp; markets.</span></h2>
+    <div class="skill-groups">
+      {% for group in about.skills %}
+      <div class="skill-group">
+        <h3 class="skill-title">{{ group.title }}</h3>
+        <ul class="skill-list">
+          {% for skill in group.items %}<li>{{ skill }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="about-block">
+  <div class="container">
+    <h2 class="section-title">Now.</h2>
+    <p class="section-intro">What I'm working on at the moment. Last updated {{ about.now.updated }}.</p>
+    <dl class="now-list">
+      {% for item in about.now.items %}
+      <div class="now-item">
+        <dt>{{ item.label }}</dt>
+        <dd>{{ item.text }}{% if item.link %} <a href="{{ item.link }}">{{ item.linkText }}</a>{% endif %}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </div>
+</section>
+
+<section class="about-block about-contact">
+  <div class="container">
+    <div class="contact-card">
+      <h2 class="section-title">Get in touch.</h2>
+      <p class="section-intro">{{ about.contact }}</p>
+      <div class="contact-links">
+        {% if site.email %}<a class="btn btn-primary" href="mailto:{{ site.email }}">Email me</a>{% endif %}
+        {% if site.cv %}<a class="link-arrow" href="{{ site.cv }}">CV ›</a>{% endif %}
+        {% if site.linkedin %}<a class="link-arrow" href="{{ site.linkedin }}">LinkedIn ›</a>{% endif %}
+        <a class="link-arrow" href="{{ site.github }}">GitHub ›</a>
+      </div>
+    </div>
+  </div>
+</section>

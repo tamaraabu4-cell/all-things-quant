@@ -1,0 +1,57 @@
+{
+  "intro": "A London-based graduate in Business, Computing & IT from Aston University. I research trades across rates, FX and commodities, build the tools to test them, and write down everything I learn along the way.",
+
+  "background": [
+    {
+      "when": "Sep 2026 – now",
+      "role": "Junior Software Engineer (Freelance)",
+      "org": "CST Technology",
+      "text": "Building Python and TypeScript tools for a UAE government client's crypto-regulation platform, including an API lookup tool that saves around 3 hours a week and an LLM chatbot for organising case information."
+    },
+    {
+      "when": "Jun – Sep 2026",
+      "role": "Regional Finance & Treasury Intern",
+      "org": "Inchcape plc",
+      "text": "Helped prepare a £1m GBP/USD forward hedge on Bloomberg, built forecasts and cash-flow models for a ~£300m acquisition, and automated a monthly manual process with Excel VBA."
+    },
+    {
+      "when": "Jul 2026",
+      "role": "Markets Quantitative Analyst job simulation",
+      "org": "Citi · Forage",
+      "text": "Priced a coffee option three ways and designed a coffee-linked structured note for a client.",
+      "link": "/projects/citi-coffee-derivatives.html",
+      "linkText": "See the project ›"
+    },
+    {
+      "when": "2021 – 2026",
+      "role": "BSc Business, Computing & IT",
+      "org": "Aston University",
+      "text": "Graduated with a 2:1. Modules included Software for Analytics (First) and Optimisation & Decision Analytics."
+    },
+    {
+      "when": "Jun – Aug 2024",
+      "role": "Intern",
+      "org": "Heritage Oil (UK)",
+      "text": "Built cash-flow analysis for a live capital raise and presented project economics to investors in a joint-venture pitch that raised $18m."
+    }
+  ],
+
+  "skills": [
+    { "title": "Languages", "items": ["Python", "SQL", "TypeScript / React", "Excel VBA", "Rust (learning)"] },
+    { "title": "Data & tools", "items": ["NumPy", "SciPy", "pandas", "Power BI", "Chart.js", "REST APIs", "LLM integration", "Git / GitHub"] },
+    { "title": "Markets", "items": ["SOFR futures & options", "Fed policy pricing", "FX forwards & hedging", "Commodities"] },
+    { "title": "Methods", "items": ["Option pricing (Black-76)", "Monte Carlo simulation", "Backtesting", "VaR & expected shortfall", "DCF valuation", "Cash-flow modelling", "Hypothesis testing & regression"] },
+    { "title": "Systems", "items": ["Bloomberg Terminal", "SAP", "BPC", "Microsoft Office"] }
+  ],
+
+  "now": {
+    "updated": "October 2026",
+    "items": [
+      { "label": "Learning", "text": "Programming fundamentals through Harvard's CS50, and rebuilding my maths from A level up for quant work." },
+      { "label": "Building", "text": "Trading projects in Python, C++, OCaml and Rust, focused on FX, gold and bonds. Next up: a limit order book in Rust." },
+      { "label": "Waiting on", "text": "The 9 December FOMC decision, which will score my SOFR trade memo.", "link": "/projects/sofr-fomc-trade-memo.html", "linkText": "Read the memo ›" }
+    ]
+  },
+
+  "contact": "I'm looking for off-cycle internships and graduate roles starting September 2027, across trading, quant research, investment management and investment banking. The quickest way to reach me is email."
+}
