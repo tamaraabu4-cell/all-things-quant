@@ -1,9 +1,13 @@
 // ==========================================================
-// Heritage Edge: the Knowledge Hub vault home
+// Heritage Edge: the Knowledge Hub
 //
-// The page is built by Eleventy; this file fills in the parts
-// that depend on what you've read: the three cards at the top
-// and the last three notes opened on each shelf.
+// The pages are built by Eleventy; this file fills in the parts
+// that depend on what you've read. It runs on two kinds of page:
+//   - the vault home (/hub/): the three cards at the top and the
+//     last three notes opened on each shelf
+//   - a topic home (/hub/<topic>/): the progress bar, the Continue
+//     and Up next buttons, which chapter you're on, and how far
+//     you've got with each note
 //
 // Reading progress is kept in this browser for now. Once the
 // passcode lock is in, only the `store` below changes, so it is
@@ -14,7 +18,8 @@
   const dataEl = document.getElementById("hub-data");
   if (!dataEl) return;
 
-  const { shelves, notes } = JSON.parse(dataEl.textContent);
+  const data = JSON.parse(dataEl.textContent);
+  const { shelves, notes } = data;
   const DAY = 24 * 60 * 60 * 1000;
   const REVISIT_DAYS = [7, 30, 90];   // a done note comes back after 1 week, 1 month, 3 months
   const GOALS = { trading: "Trading", realestate: "Real estate", fintech: "Nigeria fintech" };
@@ -68,17 +73,11 @@
     return new Date(time).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   }
 
-  // Learning order: Foundations, then Core, then Advanced; inside a level,
-  // the subtopic order in shelves.json, then each note's own `order`.
-  function orderKey(note) {
-    const shelf = shelves.find((s) => s.slug === note.shelf);
-    const i = shelf && shelf.subtopics ? shelf.subtopics.indexOf(note.subtopic) : -1;
-    return [note.rank, i === -1 ? 99 : i, note.order];
-  }
-
+  // Learning order: chapter by chapter, then the subtopic order inside the
+  // chapter, then each note's own `order`. Eleventy works this out as `pos`.
   function inLearningOrder(list) {
     return list.slice().sort((a, b) => {
-      const x = orderKey(a), y = orderKey(b);
+      const x = a.pos, y = b.pos;
       for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] - y[i];
       return 0;
     });
@@ -94,6 +93,14 @@
 
   // ---------- fill the page ----------
   store.load().then((progress) => {
+    if (data.page === "topic") fillTopic(data.shelf, data.planned || 0, progress);
+    else fillVault(progress);
+  });
+
+  // ==========================================================
+  // Vault home
+  // ==========================================================
+  function fillVault(progress) {
     const get = (note) => progress[note.url] || {};
     const opened = notes.filter((n) => get(n).opened).sort((a, b) => get(b).opened - get(a).opened);
 
@@ -119,7 +126,7 @@
     fillRevisit(notes, get);
     fillShelves(get);
     setUpPlanFilter();
-  });
+  }
 
   function fillContinue(current, fallback, get) {
     const card = document.querySelector('[data-card="continue"]');
@@ -134,7 +141,7 @@
     a.append(el("span", "continue-title", note.title));
 
     const p = current ? get(current) : {};
-    const where = p.where ? " · " + p.where : current ? "" : " · " + note.level;
+    const where = p.where ? " · " + p.where : current ? "" : " · " + note.chapterTitle;
     a.append(el("span", "continue-where", shelfName(note.shelf) + where));
 
     if (current && p.read) {
@@ -263,5 +270,83 @@
           : matched + " of " + shown.length + " notes on show serve " + GOALS[goal].toLowerCase() + ".";
       });
     });
+  }
+
+  // ==========================================================
+  // Topic home
+  // ==========================================================
+  function fillTopic(slug, plannedCount, progress) {
+    const get = (url) => progress[url] || {};
+    const mine = notes.filter((n) => n.shelf === slug);
+    const done = mine.filter((n) => get(n.url).done);
+    const reading = mine.filter((n) => get(n.url).opened && !get(n.url).done);
+    const notStarted = mine.length - done.length - reading.length;
+
+    // Each written note: Done, Reading, or Not started
+    document.querySelectorAll("[data-note]").forEach((a) => {
+      const p = get(a.getAttribute("data-note"));
+      const state = p.done ? "done" : p.opened ? "reading" : "ready";
+      a.classList.remove("is-ready");
+      a.classList.add("is-" + state);
+      a.querySelector("[data-state]").textContent =
+        state === "done" ? "Done" : state === "reading" ? "Reading" + (p.where ? " · " + p.where : "") : "Not started";
+    });
+
+    // Progress bar and count: done, reading, not started, still to write
+    const total = mine.length + plannedCount;
+    if (total) {
+      document.querySelector("[data-bar-done]").style.width = (done.length / total) * 100 + "%";
+      document.querySelector("[data-bar-reading]").style.width = (reading.length / total) * 100 + "%";
+      const parts = [done.length + " done"];
+      if (reading.length) parts.push(reading.length + " reading");
+      if (notStarted) parts.push(notStarted + " not started");
+      if (plannedCount) parts.push(plannedCount + " to write");
+      document.querySelector("[data-count]").textContent = parts.join(" · ");
+    }
+
+    // Chapters: finished, the one you're on, locked (soft: still opens), or empty.
+    // A chapter is finished when every note in it, written or planned, is done.
+    const isDone = (el) => el.hasAttribute("data-note") && get(el.getAttribute("data-note")).done;
+    let currentStep = null;
+    document.querySelectorAll("[data-chapter]").forEach((step) => {
+      const own = Array.prototype.slice.call(step.querySelectorAll(".path-note:not(.is-guest)"));
+      const finished = own.filter(isDone).length;
+      let state = "locked";
+      if (!own.length) state = "empty";
+      else if (finished === own.length) state = "done";
+      else if (!currentStep) { state = "current"; currentStep = step; }
+
+      step.classList.add("is-" + state);
+      step.querySelector("[data-meta]").textContent =
+        state === "empty" ? "Nothing written yet"
+        : state === "done" ? "Finished"
+        : state === "current" ? finished + " of " + own.length + " done"
+        : "Locked";
+      step.querySelector("[data-bar]").style.width = own.length ? (finished / own.length) * 100 + "%" : "0";
+      if (state === "current") step.querySelector("[data-here]").textContent = " · You are here";
+
+      // Subtopic chips turn green once everything in that subtopic is done
+      const chips = step.querySelectorAll("[data-chip]");
+      step.querySelectorAll("[data-subtopic]").forEach((sub, i) => {
+        const items = Array.prototype.slice.call(sub.querySelectorAll(".path-note:not(.is-guest)"));
+        if (chips[i] && items.length && items.every(isDone)) chips[i].classList.add("is-done");
+      });
+    });
+    if (currentStep) currentStep.querySelector("details").open = true;
+
+    // Continue: the note you opened last and haven't finished.
+    // Up next: the first unfinished note in learning order.
+    const current = reading.sort((a, b) => get(b.url).opened - get(a.url).opened)[0] || null;
+    const next = inLearningOrder(mine).find((n) => !get(n.url).done && n !== current) || null;
+    const actions = document.querySelector("[data-actions]");
+    if (current) actions.append(button(current, "Continue: ", "btn-dark"));
+    if (next) actions.append(button(next, current ? "Up next: " : "Start: ", current ? "topic-btn-line" : "btn-dark"));
+    if (current || next) actions.hidden = false;
+  }
+
+  function button(note, prefix, style) {
+    const a = el("a", "btn " + style, prefix + note.title);
+    a.href = note.url;
+    return a;
   }
 })();

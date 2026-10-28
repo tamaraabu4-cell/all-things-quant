@@ -96,5 +96,5 @@ styles: [hub.css]
 </div>
 
 {# Everything hub.js needs to know about the notes, as data #}
-<script id="hub-data" type="application/json">{"shelves": {{ shelves | dump | safe }}, "notes": {{ collections.hubNote | hubIndex | dump | safe }}}</script>
+<script id="hub-data" type="application/json">{"shelves": {{ shelves | dump | safe }}, "notes": {{ collections.hubNote | hubIndex(shelves) | dump | safe }}}</script>
 <script src="/assets/js/hub.js" defer></script>

@@ -1,0 +1,144 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: shelves
+  size: 1
+  alias: shelf
+permalink: "/hub/{{ shelf.slug }}/"
+eleventyComputed:
+  title: "{{ shelf.name }}"
+styles: [hub.css]
+---
+{#
+  One topic home per topic in _data/shelves.json, at /hub/<slug>/.
+  The path (chapters -> subtopics -> notes) is built by the `topicPath`
+  filter in eleventy.config.js; hub.js then marks what you've read,
+  works out which chapter you're on and opens it.
+#}
+{% from "partials/hub-icons.njk" import hubIcon %}
+{% set path = shelf | topicPath(collections.hubNote, shelves) %}
+<div class="hub topic">
+
+  {# Top line: where you are on the left, Lock on the right #}
+  <div class="hub-hello-top">
+    <nav class="topic-crumbs" aria-label="Breadcrumb">
+      <a href="/hub/">Knowledge hub</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ shelf.name }}</span>
+    </nav>
+    <a class="hub-lock" href="/api/lock" title="Lock the hub and sign out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+      Lock
+    </a>
+  </div>
+
+  {# Header: icon, name, progress, and where to pick up #}
+  <section class="topic-hello">
+    <span class="topic-icon">{{ hubIcon(shelf.icon, 48) }}</span>
+    <div class="topic-hello-text">
+      <h1 class="hub-title">{{ shelf.name }}</h1>
+      <p class="hub-intro">{{ shelf.description }}</p>
+      <div class="topic-progress">
+        <span class="topic-bar"><span class="topic-bar-done" data-bar-done></span><span class="topic-bar-reading" data-bar-reading></span></span>
+        <span class="topic-count" data-count>
+          {%- if path.written or path.planned -%}
+            {{ path.written }} written{% if path.planned %} · {{ path.planned }} to write{% endif %}
+          {%- else -%}
+            Nothing written yet
+          {%- endif -%}
+        </span>
+      </div>
+      <div class="topic-actions" data-actions hidden></div>
+    </div>
+  </section>
+
+  {# The path: one step per chapter #}
+  <section class="topic-path" aria-label="Chapters">
+    <div class="topic-path-head">
+      <h2>Your route through {{ shelf.name }}</h2>
+      <p>Finish a chapter to unlock the next. Locked chapters can still be opened.</p>
+    </div>
+
+    {% if path.chapters.length %}
+    <ol class="path">
+      {% for chapter in path.chapters %}
+      <li class="path-step" data-chapter data-planned="{{ chapter.planned }}">
+        <div class="path-rail" aria-hidden="true">
+          <span class="path-node">{{ chapter.num }}</span>
+          <span class="path-line"></span>
+        </div>
+
+        <details class="path-card">
+          <summary>
+            <span class="path-card-text">
+              <span class="path-kicker">Chapter {{ chapter.num }}<span data-here></span></span>
+              <span class="path-title">{{ chapter.title }}</span>
+              {% if chapter.blurb %}<span class="path-blurb">{{ chapter.blurb }}</span>{% endif %}
+              {# Subtopics as chips, shown while the chapter is closed #}
+              {% if chapter.subtopics.length %}
+              <span class="path-chips">
+                {% for sub in chapter.subtopics %}<span data-chip>{{ sub.name }}</span>{% endfor %}
+              </span>
+              {% endif %}
+            </span>
+            <span class="path-status">
+              <span class="path-meta">
+                <span class="path-meta-text" data-meta>{% if chapter.written or chapter.planned %}{{ chapter.written + chapter.planned }} notes{% else %}Nothing written yet{% endif %}</span>
+                <span class="path-bar"><span data-bar></span></span>
+              </span>
+              <svg class="path-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+            </span>
+          </summary>
+
+          {# Shown once it's opened #}
+          <div class="path-body">
+            <p class="path-locked">You haven't finished the chapter before this one yet. You can still look ahead.</p>
+            <div class="path-subtopics">
+              {% for sub in chapter.subtopics %}
+              <div class="path-subtopic" data-subtopic>
+                <h3>{{ sub.name }}</h3>
+                {% for item in sub.items %}
+                  {% if item.kind == "written" %}
+                  <a class="path-note is-ready" href="{{ item.url }}" data-note="{{ item.url }}">
+                    <span class="path-dot" aria-hidden="true"></span>
+                    <span class="path-note-title">{{ item.title }}</span>
+                    <span class="path-note-state" data-state>Not started</span>
+                  </a>
+                  {% elif item.kind == "guest" %}
+                  <a class="path-note is-guest" href="{{ item.url }}">
+                    <span class="path-dot" aria-hidden="true"></span>
+                    <span class="path-note-title">{{ item.title }}</span>
+                    <span class="path-note-state">Lives in {{ item.home }} ↗</span>
+                  </a>
+                  {% else %}
+                  <span class="path-note is-planned">
+                    <span class="path-dot" aria-hidden="true"></span>
+                    <span class="path-note-title">{{ item.title }}</span>
+                    <span class="path-note-state">Not written yet</span>
+                  </span>
+                  {% endif %}
+                {% else %}
+                  <p class="path-none">Nothing here yet.</p>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </details>
+      </li>
+      {% endfor %}
+    </ol>
+
+    {% else %}
+    <div class="topic-empty">
+      <p class="topic-empty-title">No chapters yet.</p>
+      <p>Add this topic's chapters and subtopics to its entry in <code>src/_data/shelves.json</code>. Notes you write show up here on their own.</p>
+    </div>
+    {% endif %}
+  </section>
+
+</div>
+
+{# Everything hub.js needs, as data #}
+<script id="hub-data" type="application/json">{"page": "topic", "shelf": {{ shelf.slug | dump | safe }}, "planned": {{ path.planned }}, "shelves": {{ shelves | dump | safe }}, "notes": {{ collections.hubNote | hubIndex(shelves) | dump | safe }}}</script>
+<script src="/assets/js/hub.js" defer></script>
