@@ -17,7 +17,7 @@ styles: [hub.css]
 #}
 {% from "partials/hub-icons.njk" import hubIcon %}
 {% set path = shelf | topicPath(collections.hubNote, shelves) %}
-<div class="hub topic">
+<div class="hub topic{% if shelf.colour %} tone-{{ shelf.colour }}{% endif %}">
 
   {# Top line: where you are on the left, Lock on the right #}
   <div class="hub-hello-top">

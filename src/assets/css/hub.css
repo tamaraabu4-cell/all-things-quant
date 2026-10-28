@@ -15,7 +15,7 @@
   --due: #8a4b0f;
   --hub-inset: #f0eee6;              /* boxes and chips inside a card */
   --hub-dash: #c9c4b6;               /* dashed outlines: not written yet, locked */
-  --hub-locked: #f5f3ec;             /* locked chapter card */ 
+  --hub-locked: #f5f3ec;             /* locked chapter card */
 }
 
 [data-theme="dark"] {
@@ -29,11 +29,17 @@
   --due: #fbbf24;
   --hub-inset: rgba(255, 255, 255, 0.08);
   --hub-dash: rgba(255, 255, 255, 0.24);
-  --hub-locked: #2b2b29;  
+  --hub-locked: #2b2b29;
 }
 
 /* 2. Page frame */
 .hub {
+  /* A topic's own colour (section 9). Without one, the site's green. */
+  --tone: var(--accent);
+  --tone-bg: var(--hub-icon-bg);
+  --tone-mid: var(--card-1-accent);
+  --on-tone: var(--on-accent);
+
   max-width: 1200px;
   margin: 0 auto;
   padding: clamp(32px, 5vw, 56px) 20px 96px;
@@ -153,8 +159,8 @@
   height: 52px;
   flex-shrink: 0;
   border-radius: 14px;
-  background: var(--hub-icon-bg);
-  color: var(--accent);
+  background: var(--tone-bg);
+  color: var(--tone);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +170,7 @@
 .shelf-name:hover { color: var(--accent); }
 .shelf-progress { display: flex; align-items: center; gap: 10px; }
 .shelf-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--hub-track); }
-.shelf-bar span { display: block; height: 5px; width: 0; border-radius: 3px; background: var(--accent); }
+.shelf-bar span { display: block; height: 5px; width: 0; border-radius: 3px; background: var(--tone); }
 .shelf-count { font-size: 12px; color: var(--text-2); white-space: nowrap; }
 
 .shelf-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -218,8 +224,8 @@
   height: 84px;
   flex-shrink: 0;
   border-radius: 22px;
-  background: var(--hub-icon-bg);
-  color: var(--accent);
+  background: var(--tone-bg);
+  color: var(--tone);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,8 +234,8 @@
 .topic-progress { display: flex; align-items: center; gap: 14px; max-width: 560px; }
 .topic-bar { flex: 1; height: 8px; border-radius: 4px; background: var(--hub-track); display: flex; overflow: hidden; }
 .topic-bar span { width: 0; transition: width 0.4s; }
-.topic-bar-done { background: var(--accent); }
-.topic-bar-reading { background: var(--card-1-accent); }
+.topic-bar-done { background: var(--tone); }
+.topic-bar-reading { background: var(--tone-mid); }
 .topic-count { font-size: 14px; color: var(--text-2); white-space: nowrap; }
 
 .topic-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -266,21 +272,21 @@
 }
 .path-line { flex: 1; width: 2px; min-height: 24px; margin: 6px 0; background: var(--border); }
 .path-step:last-child .path-line { display: none; }
-.path-step.is-done .path-node { background: var(--accent); color: var(--on-accent); border: none; }
-.path-step.is-done .path-line { background: var(--accent); }
-.path-step.is-current .path-node { background: var(--hub-card); color: var(--accent); border: 3px solid var(--accent); box-shadow: 0 0 0 6px var(--hub-icon-bg); }
+.path-step.is-done .path-node { background: var(--tone); color: var(--on-tone); border: none; }
+.path-step.is-done .path-line { background: var(--tone); }
+.path-step.is-current .path-node { background: var(--hub-card); color: var(--tone); border: 3px solid var(--tone); box-shadow: 0 0 0 6px var(--tone-bg); }
 
 /* Chapter card */
 .path-card { margin-bottom: 20px; padding: 22px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--hub-card); }
-.path-step.is-current .path-card { border-color: var(--accent); }
+.path-step.is-current .path-card { border-color: var(--tone); }
 .path-step.is-locked .path-card,
 .path-step.is-empty .path-card { background: var(--hub-locked); }
 
 .path-card summary { list-style: none; display: flex; align-items: flex-start; gap: 12px 20px; flex-wrap: wrap; cursor: pointer; }
 .path-card summary::-webkit-details-marker { display: none; }
-.path-card summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 8px; }
+.path-card summary:focus-visible { outline: 2px solid var(--tone); outline-offset: 6px; border-radius: 8px; }
 .path-card-text { flex: 1 1 300px; display: flex; flex-direction: column; gap: 6px; }
-.path-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.path-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
 .path-step.is-locked .path-kicker,
 .path-step.is-empty .path-kicker { color: var(--text-2); }
 .path-title { font-size: 22px; font-weight: 700; line-height: 1.2; }
@@ -289,18 +295,18 @@
 .path-status { display: flex; align-items: center; gap: 14px; padding-top: 2px; }
 .path-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .path-meta-text { font-size: 13px; font-weight: 600; color: var(--text); }
-.path-step.is-done .path-meta-text { color: var(--accent); }
+.path-step.is-done .path-meta-text { color: var(--tone); }
 .path-step.is-locked .path-meta-text,
 .path-step.is-empty .path-meta-text { color: var(--text-2); }
 .path-bar { display: block; width: 140px; height: 5px; border-radius: 3px; background: var(--hub-track); }
-.path-bar span { display: block; width: 0; height: 5px; border-radius: 3px; background: var(--accent); }
+.path-bar span { display: block; width: 0; height: 5px; border-radius: 3px; background: var(--tone); }
 .path-chevron { flex-shrink: 0; color: var(--text-2); transition: transform 0.2s; }
 .path-card[open] .path-chevron { transform: rotate(180deg); }
 
 /* Closed: subtopics as chips. Open: the full list */
 .path-chips { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
 .path-chips span { font-size: 13px; font-weight: 500; border-radius: 980px; padding: 6px 12px; background: var(--hub-inset); }
-.path-chips span.is-done { background: var(--tag-trading-bg); color: var(--tag-trading); }
+.path-chips span.is-done { background: var(--tone-bg); color: var(--tone); }
 .path-step.is-locked .path-chips span:not(.is-done),
 .path-step.is-empty .path-chips span { background: none; border: 1px dashed var(--hub-dash); color: var(--text-2); }
 .path-card[open] .path-chips { display: none; }
@@ -333,10 +339,10 @@ a.path-note:hover { background: var(--hub-inset); color: var(--text); }
 .path-note-state { font-size: 12px; color: var(--text-2); white-space: nowrap; }
 .path-dot { width: 12px; height: 12px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; border: 1.5px solid var(--text-2); }
 
-.path-note.is-done .path-dot { background: var(--accent); border: none; }
-.path-note.is-reading { background: var(--hub-icon-bg); }
-.path-note.is-reading .path-dot { border: 3px solid var(--accent); background: var(--hub-card); }
-.path-note.is-reading .path-note-state { color: var(--accent); font-weight: 600; }
+.path-note.is-done .path-dot { background: var(--tone); border: none; }
+.path-note.is-reading { background: var(--tone-bg); }
+.path-note.is-reading .path-dot { border: 3px solid var(--tone); background: var(--hub-card); }
+.path-note.is-reading .path-note-state { color: var(--tone); font-weight: 600; }
 .path-note.is-planned { color: var(--text-2); }
 .path-note.is-planned .path-dot { border-style: dashed; }
 .path-note.is-guest { font-style: italic; }
@@ -367,8 +373,37 @@ a.path-note:hover { background: var(--hub-inset); color: var(--text); }
   .topic-count { white-space: normal; }
   .path-step { grid-template-columns: 40px minmax(0, 1fr); gap: 0 12px; }
   .path-node { width: 36px; height: 36px; font-size: 15px; }
-  .path-step.is-current .path-node { box-shadow: 0 0 0 4px var(--hub-icon-bg); }
+  .path-step.is-current .path-node { box-shadow: 0 0 0 4px var(--tone-bg); }
   .path-card { padding: 18px; }
   .path-status { width: 100%; justify-content: space-between; }
   .path-meta { align-items: flex-start; }
 }
+
+/* 9. Topic colours
+   Each topic in shelves.json picks one with "colour". Light mode uses the deep
+   ink on a pale tint; dark mode flips to a bright version on a soft wash.
+   --tone      icons, bars, circles, dots, "You are here"
+   --tone-bg   icon tiles, finished chips, the note you're reading
+   --tone-mid  the "reading" part of a topic's progress bar
+   --on-tone   the number on a finished chapter's circle */
+.tone-plum { --tone: #4b2a60; --tone-bg: #ece3f2; --tone-mid: rgba(75, 42, 96, 0.45); --on-tone: #ffffff; }
+.tone-teal { --tone: #0f4a4f; --tone-bg: #d6ecec; --tone-mid: rgba(15, 74, 79, 0.45); --on-tone: #ffffff; }
+.tone-ochre { --tone: #6b4c0e; --tone-bg: #f4ebd0; --tone-mid: rgba(107, 76, 14, 0.45); --on-tone: #ffffff; }
+.tone-rust { --tone: #7a2e12; --tone-bg: #f6e0d4; --tone-mid: rgba(122, 46, 18, 0.45); --on-tone: #ffffff; }
+.tone-olive { --tone: #48501a; --tone-bg: #e9ebd5; --tone-mid: rgba(72, 80, 26, 0.45); --on-tone: #ffffff; }
+.tone-forest { --tone: #123b2e; --tone-bg: #dcebe3; --tone-mid: rgba(18, 59, 46, 0.45); --on-tone: #ffffff; }
+.tone-indigo { --tone: #2f2f6e; --tone-bg: #e3e3f5; --tone-mid: rgba(47, 47, 110, 0.45); --on-tone: #ffffff; }
+.tone-graphite { --tone: #33322f; --tone-bg: #e8e6e0; --tone-mid: rgba(51, 50, 47, 0.45); --on-tone: #ffffff; }
+.tone-burgundy { --tone: #4a1d24; --tone-bg: #f3e1e3; --tone-mid: rgba(74, 29, 36, 0.45); --on-tone: #ffffff; }
+.tone-navy { --tone: #1b2a44; --tone-bg: #dfe5ef; --tone-mid: rgba(27, 42, 68, 0.45); --on-tone: #ffffff; }
+
+[data-theme="dark"] .tone-plum { --tone: #d8b4fe; --tone-bg: rgba(216, 180, 254, 0.16); --tone-mid: rgba(216, 180, 254, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-teal { --tone: #5eead4; --tone-bg: rgba(94, 234, 212, 0.16); --tone-mid: rgba(94, 234, 212, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-ochre { --tone: #fcd34d; --tone-bg: rgba(252, 211, 77, 0.16); --tone-mid: rgba(252, 211, 77, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-rust { --tone: #fdba74; --tone-bg: rgba(253, 186, 116, 0.16); --tone-mid: rgba(253, 186, 116, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-olive { --tone: #d9f99d; --tone-bg: rgba(217, 249, 157, 0.16); --tone-mid: rgba(217, 249, 157, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-forest { --tone: #6ee7b7; --tone-bg: rgba(110, 231, 183, 0.16); --tone-mid: rgba(110, 231, 183, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-indigo { --tone: #a5b4fc; --tone-bg: rgba(165, 180, 252, 0.16); --tone-mid: rgba(165, 180, 252, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-graphite { --tone: #d6d3d1; --tone-bg: rgba(214, 211, 209, 0.16); --tone-mid: rgba(214, 211, 209, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-burgundy { --tone: #fda4af; --tone-bg: rgba(253, 164, 175, 0.16); --tone-mid: rgba(253, 164, 175, 0.45); --on-tone: #1d1d1f; }
+[data-theme="dark"] .tone-navy { --tone: #93c5fd; --tone-bg: rgba(147, 197, 253, 0.16); --tone-mid: rgba(147, 197, 253, 0.45); --on-tone: #1d1d1f; }

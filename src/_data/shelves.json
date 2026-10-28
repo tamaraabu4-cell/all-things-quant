@@ -2,7 +2,8 @@
   {
     "slug": "maths",
     "name": "Maths",
-    "icon": "maths",
+    "icon": "maths", 
+    "colour": "plum",
     "open": true,
     "description": "The maths that Trading and Quant work runs on.",
     "chapters": [
@@ -25,7 +26,8 @@
   {
     "slug": "probability",
     "name": "Probability and Statistics",
-    "icon": "probability",
+    "icon": "probability", 
+    "colour": "teal",
     "open": true,
     "description": "Odds, averages and spread: how to think about uncertainty.",
     "chapters": [
@@ -44,7 +46,8 @@
   {
     "slug": "valuation",
     "name": "Valuation",
-    "icon": "valuation",
+    "icon": "valuation", 
+    "colour": "ochre",
     "open": true,
     "description": "What something is worth, and why.",
     "chapters": [
@@ -61,7 +64,8 @@
   {
     "slug": "markets",
     "name": "Markets",
-    "icon": "markets",
+    "icon": "markets", 
+    "colour": "rust",
     "open": true,
     "description": "What markets are and how they actually trade.",
     "chapters": [
@@ -86,7 +90,8 @@
   {
     "slug": "macro",
     "name": "Macro",
-    "icon": "macro",
+    "icon": "macro", 
+    "colour": "olive",
     "open": true,
     "description": "Interest rates, inflation and the big forces that move every market.",
     "chapters": [
@@ -107,7 +112,8 @@
   {
     "slug": "trading",
     "name": "Trading",
-    "icon": "trading",
+    "icon": "trading", 
+    "colour": "forest",
     "open": true,
     "description": "How institutional traders think, decide and manage risk.",
     "chapters": [
@@ -128,7 +134,8 @@
   {
     "slug": "quant",
     "name": "Quant",
-    "icon": "quant",
+    "icon": "quant", 
+    "colour": "indigo",
     "open": true,
     "description": "Quant Trading, Research and Development.",
     "chapters": [
@@ -153,7 +160,8 @@
   {
     "slug": "code",
     "name": "Code and Infrastructure",
-    "icon": "code",
+    "icon": "code", 
+    "colour": "graphite",
     "open": true,
     "description": "The languages and systems behind trading.",
     "chapters": [
@@ -176,7 +184,8 @@
   {
     "slug": "real-estate",
     "name": "Real Estate",
-    "icon": "realestate",
+    "icon": "realestate", 
+    "colour": "burgundy",
     "open": true,
     "description": "Villas, development and property finance.",
     "chapters": [
@@ -199,7 +208,8 @@
   {
     "slug": "fintech",
     "name": "Fintech and Nigeria",
-    "icon": "fintech",
+    "icon": "fintech", 
+    "colour": "navy",
     "open": true,
     "description": "Nigerian markets, payments and the products to come.",
     "chapters": [

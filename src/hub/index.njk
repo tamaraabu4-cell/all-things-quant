@@ -62,7 +62,7 @@ styles: [hub.css]
     </div>
     <div class="shelf-grid">
       {% for shelf in shelves %}{% if shelf.open %}
-      <article class="shelf" data-shelf="{{ shelf.slug }}">
+      <article class="shelf{% if shelf.colour %} tone-{{ shelf.colour }}{% endif %}" data-shelf="{{ shelf.slug }}">
         <div class="shelf-head">
           <span class="shelf-icon">{{ hubIcon(shelf.icon) }}</span>
           <div class="shelf-title">
