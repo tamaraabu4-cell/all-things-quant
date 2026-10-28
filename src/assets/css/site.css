@@ -735,3 +735,239 @@ h1, h2, h3, p { margin: 0; }
   .timeline-row, .now-item { grid-template-columns: 1fr; }
 }
  
+
+/* 17. Knowledge Hub passcode page */
+.unlock {
+  --danger: #dc2626;
+  padding: clamp(32px, 6vw, 80px) 20px;
+  display: flex;
+  justify-content: center;
+}
+[data-theme="dark"] .unlock { --danger: #f87171; }
+
+.unlock-card {
+  width: 100%;
+  max-width: 520px;
+  padding: clamp(28px, 5vw, 48px) clamp(20px, 5vw, 48px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+}
+
+/* The padlock (its top loop is a separate piece so it can spring open) */
+.unlock-emblem {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--accent);
+}
+.unlock-icon { width: 40px; height: 40px; overflow: visible; }
+.lock-shackle {
+  transform-box: view-box;
+  transform-origin: 16px 10.5px;   /* the right-hand leg acts as the hinge */
+}
+
+.unlock-title {
+  font-size: clamp(28px, 3.4vw, 36px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.unlock-intro { margin-top: 10px; font-size: 17px; color: var(--text-2); }
+
+/* Six boxes, with one invisible field on top that takes the typing */
+.unlock-form { margin-top: 28px; }
+.pin-field {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.pin-boxes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 52px));
+  justify-content: center;
+  gap: clamp(6px, 2vw, 10px);
+}
+.pin-box {
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease;
+}
+.pin-box.is-filled::after {        /* a dot for each digit entered */
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  animation: pin-dot 0.15s ease;
+}
+@keyframes pin-dot { from { transform: scale(0.3); } }
+
+.is-focused .pin-box.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.pin-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-size: 16px;                 /* stops iPhones zooming in */
+  cursor: text;
+}
+.pin-input:disabled { cursor: default; }
+
+/* Without JavaScript the field is a normal visible box */
+.unlock-form:not(.has-keypad) .pin-boxes { visibility: hidden; }
+.unlock-form:not(.has-keypad) .pin-input {
+  opacity: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 26px;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+/* Number keypad */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  justify-content: center;
+  gap: 12px 22px;
+  margin-top: 6px;
+}
+.keypad[hidden] { display: none; }
+.key {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 26px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.12s ease, transform 0.08s ease, opacity 0.3s ease;
+}
+.key:hover { background: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+.key:active, .key.is-pressed {
+  transform: scale(0.93);
+  background: color-mix(in srgb, var(--accent) 20%, var(--bg));
+}
+.key:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.key:disabled { opacity: 0.4; cursor: default; transform: none; background: var(--bg); }
+.key-small {                        /* Clear and Delete */
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 15px;
+}
+.key-small:disabled { background: transparent; }
+
+/* Wrong passcode: red boxes and a small shake */
+.is-wrong .pin-box { border-color: var(--danger); }
+.is-wrong .pin-boxes { animation: pin-shake 0.35s ease; }
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.unlock-message { min-height: 1.5em; margin: 12px 0 10px; font-size: 15px; color: var(--text-2); }
+.is-wrong .unlock-message, .is-locked .unlock-message { color: var(--danger); }
+.is-checking .pin-box { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+
+.unlock-button { min-width: 160px; margin-top: 4px; border: none; font-family: inherit; cursor: pointer; }
+.unlock-button:disabled { opacity: 0.5; cursor: default; }
+.has-keypad .unlock-button { display: none; }   /* the keypad unlocks by itself after six digits */
+.unlock-back { display: inline-block; margin-top: 24px; font-size: 15px; }
+
+/* ---------- The unlock animation ---------- */
+/* 1. Boxes turn green one after another */
+.is-unlocked .pin-box {
+  border-color: var(--accent);
+  background: var(--accent);
+  animation: pin-pop 0.35s ease both;
+  animation-delay: calc(var(--i) * 60ms);
+  transition-delay: calc(var(--i) * 60ms);
+}
+.is-unlocked .pin-box::after { background: var(--on-accent); }
+@keyframes pin-pop {
+  50% { transform: scale(1.1); }
+}
+.is-unlocked .unlock-message { color: var(--accent); }
+.is-unlocked .keypad .key { opacity: 0.35; pointer-events: none; }
+
+/* 2. The padlock springs open, with a ring of light */
+.is-unlocked .lock-shackle { animation: shackle-open 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) 0.45s both; }
+@keyframes shackle-open {
+  0%   { transform: translateY(0) rotate(0); }
+  40%  { transform: translateY(-3px) rotate(0); }
+  100% { transform: translateY(-3px) rotate(40deg); }
+}
+.is-unlocked .unlock-emblem { animation: emblem-pop 0.5s ease 0.45s both; }
+@keyframes emblem-pop {
+  0%   { background: transparent; transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { background: color-mix(in srgb, var(--accent) 14%, transparent); transform: scale(1.05); }
+}
+.unlock-emblem::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.is-unlocked .unlock-emblem::after { animation: emblem-ring 0.8s ease-out 0.6s; }
+@keyframes emblem-ring {
+  from { opacity: 0.7; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.7); }
+}
+
+/* 3. The card lifts away, then the Knowledge Hub opens */
+.unlock-card { transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease; }
+.is-leaving .unlock-card {
+  opacity: 0;
+  transform: translateY(-16px) scale(1.03);
+  filter: blur(6px);
+}
+
+/* Less motion if the device asks for it */
+@media (prefers-reduced-motion: reduce) {
+  .is-wrong .pin-boxes,
+  .is-unlocked .pin-box,
+  .is-unlocked .unlock-emblem,
+  .is-unlocked .unlock-emblem::after { animation: none; }
+  .is-unlocked .lock-shackle { animation: none; transform: translateY(-3px) rotate(40deg); }
+}
+
+/* Narrow phones */
+@media (max-width: 400px) {
+  .pin-box { height: 52px; }
+  .keypad { grid-template-columns: repeat(3, 60px); gap: 10px 18px; }
+  .key { width: 60px; height: 60px; font-size: 24px; }
+  .key-small { font-size: 14px; }
+}

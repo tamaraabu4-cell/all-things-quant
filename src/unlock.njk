@@ -1,0 +1,236 @@
+---
+layout: layouts/base.njk
+title: Knowledge Hub
+permalink: /unlock/
+---
+<section class="unlock" data-unlock-page>
+  <div class="unlock-card">
+    <div class="unlock-emblem" aria-hidden="true">
+      <svg class="unlock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path class="lock-shackle" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path>
+        <rect class="lock-body" x="4.5" y="10.5" width="15" height="10" rx="2.5"></rect>
+      </svg>
+    </div>
+    <p class="page-eyebrow">Knowledge Hub</p>
+    <h1 class="unlock-title">Enter your passcode.</h1>
+    <p class="unlock-intro">This part of Heritage Edge is private.</p>
+
+    <form class="unlock-form" method="post" action="/api/unlock" data-unlock>
+      <!-- Six boxes on screen; one real (invisible) field on top of them takes the typing -->
+      <div class="pin-field">
+        <div class="pin-boxes" aria-hidden="true">
+          {% for i in range(0, 6) %}<span class="pin-box" style="--i: {{ i }}"></span>{% endfor %}
+        </div>
+        <input class="pin-input" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" aria-label="6-digit passcode" required>
+      </div>
+      <input type="hidden" name="next">
+      <p class="unlock-message" role="alert" aria-live="polite"></p>
+
+      <!-- On-screen keypad (shown once the page's script runs) -->
+      <div class="keypad" role="group" aria-label="Number keypad" hidden>
+        {% for n in [1, 2, 3, 4, 5, 6, 7, 8, 9] %}<button class="key" type="button" data-key="{{ n }}">{{ n }}</button>{% endfor %}
+        <button class="key key-small" type="button" data-key="clear">Clear</button>
+        <button class="key" type="button" data-key="0">0</button>
+        <button class="key key-small" type="button" data-key="delete" aria-label="Delete">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6-7z"></path><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"></path></svg>
+        </button>
+      </div>
+
+      <button class="btn btn-primary unlock-button" type="submit">Unlock</button>
+    </form>
+
+    <a class="unlock-back" href="/">‹ Back to Heritage Edge</a>
+  </div>
+</section>
+
+<script>
+  // Passcode page: type on your keyboard, tap the keypad, or paste six digits.
+  // The checking happens on Cloudflare (functions/_middleware.js), not here.
+  (function () {
+    var page = document.querySelector("[data-unlock-page]");
+    var form = document.querySelector("[data-unlock]");
+    if (!page || !form) return;
+
+    var input = form.querySelector(".pin-input");
+    var boxes = Array.prototype.slice.call(form.querySelectorAll(".pin-box"));
+    var keypad = form.querySelector(".keypad");
+    var keys = Array.prototype.slice.call(keypad.querySelectorAll(".key"));
+    var next = form.querySelector('input[name="next"]');
+    var message = form.querySelector(".unlock-message");
+    var button = form.querySelector(".unlock-button");
+    var title = page.querySelector(".unlock-title");
+    var params = new URLSearchParams(location.search);
+    var busy = false;
+    var lockTimer = null;
+    var finePointer = window.matchMedia("(pointer: fine)").matches;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    next.value = params.get("next") || "/study-guide/study-guide.html";
+    keypad.hidden = false;
+    form.classList.add("has-keypad");
+
+    // ---------- showing the digits ----------
+    function render() {
+      var length = input.value.length;
+      boxes.forEach(function (box, i) {
+        box.classList.toggle("is-filled", i < length);
+        box.classList.toggle("is-current", i === Math.min(length, boxes.length - 1));
+      });
+    }
+
+    function setDigits(value) {
+      input.value = value.replace(/\D/g, "").slice(0, 6);
+      form.classList.remove("is-wrong");
+      if (!form.classList.contains("is-locked")) message.textContent = "";
+      render();
+      if (input.value.length === 6) check();
+    }
+
+    function addDigit(d) { if (!busy && !input.disabled) setDigits(input.value + d); }
+    function deleteDigit() { if (!busy && !input.disabled) setDigits(input.value.slice(0, -1)); }
+    function clearDigits() { if (!busy && !input.disabled) setDigits(""); }
+
+    function pressKey(name) {
+      var key = keypad.querySelector('[data-key="' + name + '"]');
+      if (!key) return;
+      key.classList.add("is-pressed");
+      setTimeout(function () { key.classList.remove("is-pressed"); }, 120);
+    }
+
+    // Typing into the (invisible) field: device keyboard, phone number pad, or paste
+    input.addEventListener("input", function () { setDigits(input.value); });
+    input.addEventListener("focus", function () { form.classList.add("is-focused"); });
+    input.addEventListener("blur", function () { form.classList.remove("is-focused"); });
+
+    // On-screen keypad. Pressing a key doesn't move the focus, so a phone's own
+    // keyboard stays open (or closed) exactly as it was.
+    keys.forEach(function (key) {
+      key.addEventListener("pointerdown", function (e) { e.preventDefault(); });
+      key.addEventListener("click", function () {
+        var k = key.getAttribute("data-key");
+        if (k === "delete") deleteDigit();
+        else if (k === "clear") clearDigits();
+        else addDigit(k);
+      });
+    });
+
+    // Typing anywhere on the page also works (and lights up the matching key)
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      var inField = e.target === input;
+      if (!inField && e.target.matches && e.target.matches("input, textarea, select")) return;
+      if (/^[0-9]$/.test(e.key)) {
+        pressKey(e.key);
+        if (!inField) { e.preventDefault(); addDigit(e.key); }
+      } else if (e.key === "Backspace") {
+        pressKey("delete");
+        if (!inField) { e.preventDefault(); deleteDigit(); }
+      } else if (e.key === "Escape") {
+        pressKey("clear");
+        clearDigits();
+      }
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (input.value.length !== 6) {
+        message.textContent = "Enter all six digits.";
+        return;
+      }
+      check();
+    });
+
+    // ---------- asking Cloudflare ----------
+    function check() {
+      if (busy) return;
+      busy = true;
+      form.classList.add("is-checking");
+      var body = new URLSearchParams({ pin: input.value, next: next.value });
+
+      fetch("/api/unlock", {
+        method: "POST",
+        body: body,
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (result) {
+          busy = false;
+          form.classList.remove("is-checking");
+          if (result.ok) return unlocked(result.next);
+          if (result.error === "wrong") return wrong(result.left);
+          if (result.error === "locked") return locked(result.until);
+          message.textContent = "The Knowledge Hub lock isn't set up yet.";
+        })
+        .catch(function () {
+          // Couldn't get a short answer: send the form the ordinary way instead
+          busy = false;
+          HTMLFormElement.prototype.submit.call(form);
+        });
+    }
+
+    function wrong(left) {
+      setDigits("");
+      message.textContent = "That's not it. " + left + (left === 1 ? " try" : " tries") + " left before the hub locks for an hour.";
+      form.classList.remove("is-wrong");
+      void form.offsetWidth;            // restart the shake
+      form.classList.add("is-wrong");
+      if (navigator.vibrate) navigator.vibrate(120);
+      if (finePointer) input.focus();
+    }
+
+    function locked(until) {
+      setDigits("");
+      form.classList.add("is-locked");
+      input.disabled = true;
+      keys.forEach(function (k) { k.disabled = true; });
+      button.disabled = true;
+      function update() {
+        var minutes = Math.ceil((Number(until) - Date.now()) / 60000);
+        if (minutes <= 0) return unlockForm();
+        message.textContent = "Too many wrong tries. The hub is locked for about " + minutes + (minutes === 1 ? " minute." : " minutes.");
+      }
+      update();
+      clearInterval(lockTimer);
+      lockTimer = setInterval(update, 15000);
+    }
+
+    function unlockForm() {
+      clearInterval(lockTimer);
+      form.classList.remove("is-locked");
+      input.disabled = false;
+      keys.forEach(function (k) { k.disabled = false; });
+      button.disabled = false;
+      message.textContent = "You can try again now.";
+    }
+
+    // ---------- the unlock animation ----------
+    // 1. the boxes turn green one by one   2. the padlock springs open
+    // 3. the card lifts away               4. the Knowledge Hub opens
+    function unlocked(nextPath) {
+      busy = true;
+      input.blur();
+      title.textContent = "Unlocked.";
+      message.textContent = "Opening the Knowledge Hub…";
+      page.classList.add("is-unlocked");
+      var go = function () { location.replace(nextPath); };
+      if (reduceMotion) return setTimeout(go, 400);
+      setTimeout(function () { page.classList.add("is-leaving"); }, 1150);
+      setTimeout(go, 1600);
+    }
+
+    // ---------- messages sent back without JavaScript, and the start ----------
+    var error = params.get("error");
+    if (error === "wrong") {
+      wrong(Number(params.get("left")));
+      history.replaceState(null, "", location.pathname + "?next=" + encodeURIComponent(next.value));
+    } else if (error === "locked") {
+      locked(Number(params.get("until")));
+    }
+
+    render();
+    // On a laptop, put the cursor in the boxes. On a phone, wait for a tap,
+    // so the phone's keyboard doesn't cover the on-screen keypad.
+    if (finePointer && !input.disabled) input.focus();
+  })();
+</script>
