@@ -15,6 +15,15 @@ permalink: /unlock/
     <h1 class="unlock-title">Enter your passcode.</h1>
     <p class="unlock-intro">This part of Heritage Edge is private.</p>
 
+    <!-- Face ID / Touch ID: only shown once a device has been added (Knowledge Hub → Devices) -->
+    <div class="passkey-unlock" data-passkey hidden>
+      <button class="btn btn-primary passkey-button" type="button" data-passkey-button>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path><path d="M9 9.5v1M15 9.5v1M12 9.5V13h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"></path></svg>
+        <span data-passkey-label>Unlock with Face ID</span>
+      </button>
+      <p class="passkey-or"><span>or enter your passcode</span></p>
+    </div>
+
     <form class="unlock-form" method="post" action="/api/unlock" data-unlock>
       <!-- Six boxes on screen; one real (invisible) field on top of them takes the typing -->
       <div class="pin-field">
@@ -43,8 +52,9 @@ permalink: /unlock/
   </div>
 </section>
 
+<script src="/assets/js/passkey.js"></script>
 <script>
-  // Passcode page: type on your keyboard, tap the keypad, or paste six digits.
+  // Passcode page: Face ID / Touch ID, or type, tap the keypad, or paste six digits.
   // The checking happens on Cloudflare (functions/_middleware.js), not here.
   (function () {
     var page = document.querySelector("[data-unlock-page]");
@@ -210,6 +220,7 @@ permalink: /unlock/
     function unlocked(nextPath) {
       busy = true;
       input.blur();
+      boxes.forEach(function (box) { box.classList.add("is-filled"); });
       title.textContent = "Unlocked.";
       message.textContent = "Opening the Knowledge Hub…";
       page.classList.add("is-unlocked");
@@ -217,6 +228,43 @@ permalink: /unlock/
       if (reduceMotion) return setTimeout(go, 400);
       setTimeout(function () { page.classList.add("is-leaving"); }, 1150);
       setTimeout(go, 1600);
+    }
+
+    // ---------- Face ID / Touch ID ----------
+    var passkey = window.HubPasskey;
+    var passkeyBox = page.querySelector("[data-passkey]");
+    var passkeyButton = page.querySelector("[data-passkey-button]");
+    var passkeyOptions = null;
+
+    function preparePasskey() {
+      passkey.prepareUnlock().then(function (options) {
+        passkeyOptions = options;
+        passkeyBox.hidden = !options;
+      });
+    }
+
+    if (passkey && passkey.supported()) {
+      page.querySelector("[data-passkey-label]").textContent = "Unlock with " + passkey.label();
+      preparePasskey();
+      setInterval(preparePasskey, 4 * 60 * 1000);   // each puzzle expires after 5 minutes
+
+      passkeyButton.addEventListener("click", function () {
+        if (busy || !passkeyOptions) return;
+        busy = true;
+        passkeyButton.disabled = true;
+        if (!form.classList.contains("is-locked")) message.textContent = "";
+        passkey.unlock(passkeyOptions, next.value)
+          .then(function (result) {
+            if (!result.ok) throw new Error(result.error);
+            unlocked(result.next);
+          })
+          .catch(function () {
+            busy = false;
+            passkeyButton.disabled = false;
+            message.textContent = passkey.label() + " didn't unlock it this time. Try again, or use your passcode.";
+            preparePasskey();
+          });
+      });
     }
 
     // ---------- messages sent back without JavaScript, and the start ----------

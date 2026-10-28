@@ -1,0 +1,140 @@
+---
+layout: layouts/base.njk
+title: Face ID & Touch ID
+permalink: /hub/devices/
+---
+{# Inside /hub/, so the lock already protects this page #}
+<section class="unlock">
+  <div class="unlock-card devices-card" data-devices>
+    <div class="unlock-emblem" aria-hidden="true">
+      <svg class="unlock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path><path d="M9 9.5v1M15 9.5v1M12 9.5V13h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"></path></svg>
+    </div>
+    <p class="page-eyebrow">Knowledge Hub</p>
+    <h1 class="unlock-title">Face ID &amp; Touch ID</h1>
+    <p class="unlock-intro">Add a device once, then unlock the hub with your face or fingerprint. Your passcode always works too.</p>
+
+    <ul class="device-list" data-device-list></ul>
+    <p class="device-empty" data-device-empty hidden>No devices added yet.</p>
+
+    <button class="btn btn-primary passkey-button" type="button" data-add>Add this device</button>
+    <p class="unlock-message" data-message role="status" aria-live="polite"></p>
+    <p class="device-note">On Apple devices the key is saved in iCloud Keychain, so adding your Mac usually covers your iPhone too (same Apple ID).</p>
+
+    <a class="unlock-back" href="/hub/">‹ Back to the Knowledge Hub</a>
+  </div>
+</section>
+
+<script src="/assets/js/passkey.js"></script>
+<script>
+  // Devices page: add this device for Face ID / Touch ID, or remove one.
+  (function () {
+    var root = document.querySelector("[data-devices]");
+    var passkey = window.HubPasskey;
+    if (!root || !passkey) return;
+
+    var list = root.querySelector("[data-device-list]");
+    var empty = root.querySelector("[data-device-empty]");
+    var addButton = root.querySelector("[data-add]");
+    var message = root.querySelector("[data-message]");
+    var addOptions = null;
+
+    function say(text, good) {
+      message.textContent = text;
+      message.classList.toggle("is-good", !!good);
+    }
+
+    function when(ms) {
+      return ms ? new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "never";
+    }
+
+    // ---------- the list ----------
+    function load() {
+      passkey.list().then(function (result) {
+        if (!result.ok) return say("You've been signed out. Unlock the hub again to manage devices.");
+        list.innerHTML = "";
+        result.devices.forEach(function (device) {
+          var row = document.createElement("li");
+          row.className = "device";
+          var text = document.createElement("div");
+          var name = document.createElement("p");
+          name.className = "device-name";
+          name.textContent = device.name;
+          var meta = document.createElement("p");
+          meta.className = "device-meta";
+          meta.textContent = "Added " + when(device.created) + " · last used " + when(device.lastUsed);
+          text.append(name, meta);
+
+          // Remove: first tap asks "Sure?", second tap removes
+          var remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "device-remove";
+          remove.textContent = "Remove";
+          remove.addEventListener("click", function () {
+            if (!remove.classList.contains("is-sure")) {
+              remove.classList.add("is-sure");
+              remove.textContent = "Sure?";
+              setTimeout(function () { remove.classList.remove("is-sure"); remove.textContent = "Remove"; }, 4000);
+              return;
+            }
+            remove.disabled = true;
+            passkey.remove(device.id).then(function () {
+              say(device.name + " removed. You can also delete the passkey from that device's Passwords app.", true);
+              load();
+              prepare();
+            });
+          });
+
+          row.append(text, remove);
+          list.append(row);
+        });
+        empty.hidden = result.devices.length > 0;
+      }).catch(function () { say("Couldn't load your devices. Refresh to try again."); });
+    }
+
+    // ---------- adding this device ----------
+    // The puzzle is fetched in advance so the tap goes straight to Face ID / Touch ID
+    function prepare() {
+      passkey.prepareAdd().then(function (options) { addOptions = options; }).catch(function () { addOptions = null; });
+    }
+
+    addButton.addEventListener("click", function () {
+      if (!addOptions) { say("One moment, then try again."); prepare(); return; }
+      addButton.disabled = true;
+      say("");
+      passkey.add(addOptions)
+        .then(function (result) {
+          if (result.ok) {
+            say("Added. Next time, tap “Unlock with " + passkey.label() + "” on the passcode page.", true);
+            load();
+          } else if (result.error === "already-added") {
+            say("This device is already added.");
+          } else if (result.error === "too-many") {
+            say("You've added the most devices allowed. Remove one first.");
+          } else {
+            say("That didn't work. Try again.");
+          }
+        })
+        .catch(function (error) {
+          var name = error && error.name;
+          if (name === "InvalidStateError") say("This device already has a key for Heritage Edge (it may have come across from your other Apple devices through iCloud Keychain).");
+          else if (name === "NotAllowedError") say("Cancelled. Tap the button to try again.");
+          else if (error && error.message === "old-browser") say("This browser is too old to add a device. Update it, then try again.");
+          else say("That didn't work. Try again.");
+        })
+        .then(function () {
+          addButton.disabled = false;
+          prepare();
+        });
+    });
+
+    if (!passkey.supported()) {
+      addButton.disabled = true;
+      say("This browser can't use Face ID or Touch ID for websites.");
+    } else {
+      addButton.textContent = "Add this device (" + passkey.label() + ")";
+      prepare();
+      setInterval(prepare, 4 * 60 * 1000);   // each puzzle expires after 5 minutes
+    }
+    load();
+  })();
+</script>
