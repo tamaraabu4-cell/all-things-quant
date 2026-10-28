@@ -12,8 +12,8 @@
 //   HUB_KV          (KV binding) remembers wrong attempts for the lockout
 // ==========================================================
 
-const HUB_PATH = "/study-guide";            // everything under here is locked
-const HUB_HOME = "/study-guide/study-guide.html";
+const HUB_PATHS = ["/hub", "/study-guide"];  // everything under these is locked
+const HUB_HOME = "/hub/";                    // where you land after unlocking
 const UNLOCK_PAGE = "/unlock/";             // the passcode page
 const UNLOCK_API = "/api/unlock";           // where the passcode form is sent
 const LOCK_API = "/api/lock";               // visiting this signs you out
@@ -165,17 +165,18 @@ function safeEqual(a, b) {
 
 // ---------- small helpers ----------
 
-// Catches every way of writing the hub address: /Study-Guide, //study-guide, %73tudy-guide...
+// Catches every way of writing a hub address: /Hub, //hub, /%68ub, /Study-Guide...
 function isHubPath(pathname) {
   let path = pathname;
   try { path = decodeURIComponent(pathname); } catch (e) {}
   path = path.replace(/\/+/g, "/").toLowerCase();
-  return path === HUB_PATH || path.startsWith(HUB_PATH + "/");
+  return HUB_PATHS.some((hub) => path === hub || path.startsWith(hub + "/"));
 }
 
 // After unlocking, only ever send people back into the hub
 function safeNext(path) {
-  return /^\/study-guide\//i.test(path) ? path : HUB_HOME;
+  if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return HUB_HOME;
+  return isHubPath(path.split("?")[0]) ? path : HUB_HOME;
 }
 
 function getCookie(request, name) {
