@@ -1,8 +1,19 @@
 [
-  { "term": "Basis point", "short": "bp", "plain": "One hundredth of 1%. So 25 basis points is 0.25%.", "desk": "The Bank hiked 25 bps." },
-  { "term": "Determinant", "short": "", "plain": "How much a matrix scales area. 2 means areas double; 0 means everything gets squashed flat onto a line.", "desk": "" },
-  { "term": "Discount rate", "short": "r", "plain": "The growth you give up by waiting. Used to shrink future money back to what it's worth today.", "desk": "We're discounting at 6%." },
-  { "term": "Matrix", "short": "", "plain": "A grid of numbers that acts like a machine: feed it an arrow and it hands you back a new one.", "desk": "Multiply through by the sensitivity matrix." },
-  { "term": "Present value", "short": "PV", "plain": "What money you'll get later is worth today.", "desk": "PV of that cash flow is about seven and a half k." },
-  { "term": "Vector", "short": "", "plain": "An arrow, or just a list of numbers like [2, 1].", "desk": "Send me the positions vector." }
+  {"term": "Asymptote", "short": "", "plain": "A line a curve gets closer and closer to but never touches.", "desk": ""},
+  {"term": "Base", "short": "", "plain": "The number being multiplied over and over. In 2 to the power x, the base is 2.", "desk": ""},
+  {"term": "Basis point", "short": "bp", "plain": "One hundredth of 1%. So 25 basis points is 0.25%.", "desk": "The Bank hiked 25 bps."},
+  {"term": "CAGR", "short": "", "plain": "Compound annual growth rate: the steady yearly rate that takes you from a start value to an end value.", "desk": "The fund's done 11% CAGR over five years."},
+  {"term": "Compounding", "short": "", "plain": "Earning returns on your returns, so each period's gain becomes part of what grows next.", "desk": "Over 30 years, compounding does most of the work."},
+  {"term": "Decay factor", "short": "", "plain": "A growth factor below 1, so each period keeps only part of what was there.", "desk": ""},
+  {"term": "Determinant", "short": "", "plain": "How much a matrix scales area. 2 means areas double; 0 means everything gets squashed flat onto a line.", "desk": ""},
+  {"term": "Discount rate", "short": "r", "plain": "The growth you give up by waiting. Used to shrink future money back to what it's worth today.", "desk": "We're discounting at 6%."},
+  {"term": "Exponential decay", "short": "", "plain": "Shrinking where each step multiplies by the same number below 1. It gets close to zero but never reaches it.", "desk": ""},
+  {"term": "Exponential growth", "short": "", "plain": "Growth where each step multiplies by the same number, so it grows faster the bigger it gets.", "desk": ""},
+  {"term": "Exponentially weighted moving average", "short": "EWMA", "plain": "An average where older data gets exponentially smaller weights, so recent days count most.", "desk": "We use an EWMA vol with lambda 0.94."},
+  {"term": "Growth factor", "short": "", "plain": "What you multiply by each period. 5% growth is a growth factor of 1.05.", "desk": ""},
+  {"term": "Inflation", "short": "", "plain": "The rate at which prices rise, so each pound (or naira) buys a bit less each year.", "desk": "UK inflation came in at 3%."},
+  {"term": "Matrix", "short": "", "plain": "A grid of numbers that acts like a machine: feed it an arrow and it hands you back a new one.", "desk": "Multiply through by the sensitivity matrix."},
+  {"term": "Present value", "short": "PV", "plain": "What money you'll get later is worth today.", "desk": "PV of that cash flow is about seven and a half k."},
+  {"term": "Vector", "short": "", "plain": "An arrow, or just a list of numbers like [2, 1].", "desk": "Send me the positions vector."},
+  {"term": "Volatility", "short": "vol", "plain": "How much a price jumps around. Usually measured as the standard deviation of returns.", "desk": "Vol's picked up since the data."}
 ]

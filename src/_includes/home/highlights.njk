@@ -4,7 +4,8 @@
   </div>
   <div class="carousel" role="region" aria-label="Highlights from across the site, scroll sideways" tabindex="0">
     {% for item in highlights %}
-    <a class="highlight-card" href="{{ item.url }}">
+    {# Each card takes the colour of its "topic" (a slug from shelves.json) #}
+    <a class="highlight-card{% for s in shelves %}{% if s.slug == item.topic and s.colour %} tone-{{ s.colour }}{% endif %}{% endfor %}" href="{{ item.url }}">
       <span class="card-top">
         <span class="card-tag">{{ item.tag }}</span>
         <span class="card-headline">{{ item.headline }}</span>

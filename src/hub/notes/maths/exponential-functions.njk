@@ -1,0 +1,300 @@
+---
+title: Exponential Functions
+shelf: maths
+chapter: exponentials-and-logs
+subtopic: Exponential Growth
+order: 1
+summary: Growing by multiplying instead of adding, and where that shape turns up in markets, property and money.
+lede: What happens when something grows by multiplying instead of adding, why it ends up running away from everything else, and where that shape turns up in markets, property and money.
+goals: [trading, realestate, fintech]
+themes: [trading, real-estate, quant, fintech]
+noteScripts: [/assets/js/notes/maths/exponential-functions.js]
+
+quiz:
+  - q: 'Which point does every graph of \(y = a^{x}\) pass through?'
+    opts: ['\((1, 0)\)', '\((0, 1)\)', '\((0, 0)\)']
+    right: 1
+    why: 'Anything to the power \(0\) is \(1\), so at \(x = 0\) you always get \(y = 1\).'
+  - q: 'What does the graph of \(y = 0.5^{x}\) do as \(x\) gets bigger?'
+    opts: ['Increases', 'Decreases', 'Stays flat']
+    right: 1
+    why: 'The base \(0.5\) is between \(0\) and \(1\), so each step halves and the graph decreases.'
+  - q: '\(\text{£}1{,}000\) grows by \(10\%\) a year. How much is it after \(2\) years?'
+    opts: ['\(\text{£}1{,}200\)', '\(\text{£}1{,}210\)', '\(\text{£}1{,}100\)']
+    right: 1
+    why: '\(1000 \times 1.1^{2} = 1210\). The extra \(\text{£}10\) is the second year''s return on the first year''s \(\text{£}100\).'
+
+connected:
+  - { label: Builds on, title: Indices and surds, where: Maths · Algebra and functions, url: /hub/maths/ }
+  - { label: Used in, title: Compounding, where: Valuation · Time value of money, url: /hub/valuation/ }
+  - { label: Used in, title: Volatility, where: Quant · Statistical arbitrage, url: /hub/quant/ }
+---
+
+{% sec 1, "Growing by Multiplying", "What is exponential growth, in everyday words?" %}
+  <div class="prose">
+    <p>Most things we count grow by adding. Save \(\text{£}10\) a week and your savings go up by the same \(\text{£}10\) every week. Plot that on a graph and you get a straight line: the same climb, step after step.</p>
+    <p>{% gl "exponential growth" %}Exponential growth{% endgl %} follows a different rule. Instead of adding the same amount each step, you <em>multiply</em> by the same number each step. It sounds like a small change. It isn't.</p>
+    <p>Put \(1\) penny in a jar on day one. Every day after that, double whatever is in the jar.</p>
+  </div>
+  <div class="tiles" aria-label="Pennies in the jar">
+    <div class="tile"><span class="d">Day 1</span><span>\(1\text{p}\)</span></div>
+    <div class="tile"><span class="d">Day 2</span><span>\(2\text{p}\)</span></div>
+    <div class="tile"><span class="d">Day 3</span><span>\(4\text{p}\)</span></div>
+    <div class="tile"><span class="d">Day 7</span><span>\(64\text{p}\)</span></div>
+    <div class="tile"><span class="d">Day 10</span><span>\(\text{£}5.12\)</span></div>
+    <div class="tile"><span class="d">Day 20</span><span>\(\text{£}5{,}243\)</span></div>
+    <div class="tile hot"><span class="d">Day 30</span><span>\(\text{£}5.4\text{m}\)</span></div>
+  </div>
+  <div class="prose">
+    <p>For the first week the jar looks boring: \(64\text{p}\) after seven days. By day \(20\) it's over \(\text{£}5{,}000\), and by day \(30\) it's more than \(\text{£}5\) million. The rule never changed. It was "double it" every single day. What changed is the size of the thing being doubled. Doubling \(1\text{p}\) adds \(1\text{p}\). Doubling \(\text{£}1\) million adds \(\text{£}1\) million.</p>
+    <p>That is the defining feature of exponential growth: <strong>how much it grows by depends on how big it already is.</strong> The bigger it gets, the faster it grows, which is why it starts slowly and then seems to explode.</p>
+    <p>The same rule works in reverse. Start with \(\text{£}64\) and halve it every day: \(\text{£}32\), \(\text{£}16\), \(\text{£}8\), \(\text{£}4\), \(\text{£}2\), \(\text{£}1\), \(50\text{p}\)… It falls quickly at first, then more and more slowly. It gets very close to zero but never actually reaches it, because half of something is always still something. That's {% gl "exponential decay" %}exponential decay{% endgl %}.</p>
+    <h3>Where you've already met it</h3>
+    <ul>
+      <li>Savings and investments, through {% gl "compounding" %}compounding{% endgl %}: you earn returns on your returns.</li>
+      <li>Debt that isn't paid off: interest gets charged on the interest.</li>
+      <li>Prices under {% gl "inflation" %}inflation{% endgl %}: a rise of a few percent a year, every year, piles up.</li>
+      <li>Things that spread person to person, like a viral post or an illness.</li>
+    </ul>
+  </div>
+  <div class="big-idea">
+    <span class="lbl">The one thing to remember</span>
+    <p>Adding the same amount each step gives a straight line. Multiplying by the same amount each step gives an exponential curve.</p>
+  </div>
+{% endsec %}
+
+{% sec 2, "Key Words", "What do maths and the desk call these things?" %}
+  <div class="terms">
+    <div class="term"><div class="term-top"><h3>Base</h3><span class="tag">Maths</span></div><p>The number being multiplied over and over. It's the "multiply by this each step" number.</p><p class="eg">In \(2^{x}\) the base is \(2\): every step doubles.</p></div>
+    <div class="term"><div class="term-top"><h3>Exponent</h3><span class="tag">Maths</span></div><p>Also called the power or index. It counts how many times the base has been multiplied in.</p><p class="eg">In \(2^{x}\) the exponent is \(x\). In \(2^{5} = 32\) it's \(5\).</p></div>
+    <div class="term"><div class="term-top"><h3>Exponential function</h3><span class="tag">Maths</span></div><p>A function where the variable sits up in the power. That's what makes it exponential rather than a normal power function.</p><p class="eg">\(y = 3^{x}\) is exponential. \(y = x^{3}\) is not.</p></div>
+    <div class="term"><div class="term-top"><h3>Asymptote</h3><span class="tag">Maths</span></div><p>A line a curve gets closer and closer to but never touches or crosses.</p><p class="eg">For \(y = a^{x}\) it's the \(x\)-axis, the line \(y = 0\).</p></div>
+    <div class="term"><div class="term-top"><h3>Growth factor</h3><span class="tag desk">Desk</span></div><p>What you multiply by each period. It's the base, written in money language.</p><p class="eg">\(5\%\) growth a year means a growth factor of \(1.05\).</p></div>
+    <div class="term"><div class="term-top"><h3>Decay factor</h3><span class="tag desk">Desk</span></div><p>A growth factor below \(1\). Each period keeps only part of what was there.</p><p class="eg">Losing \(20\%\) a year means a factor of \(0.8\).</p></div>
+    <div class="term"><div class="term-top"><h3>Compounding</h3><span class="tag desk">Desk</span></div><p>Earning returns on your returns, so each period's gain becomes part of what grows next.</p><p class="eg">\(\text{£}1{,}000\) at \(10\%\): \(\text{£}1{,}100\), then \(\text{£}1{,}210\), not \(\text{£}1{,}200\).</p></div>
+    <div class="term"><div class="term-top"><h3>CAGR</h3><span class="tag desk">Desk</span></div><p>Compound annual growth rate: the steady yearly rate that would take you from a start value to an end value.</p><p class="eg">\(\text{£}100\) to \(\text{£}150\) in \(4\) years is about \(10.7\%\) a year.</p></div>
+  </div>
+{% endsec %}
+
+{% sec 3, "Try It", "What does it look like when I change things?" %}
+  <div class="lab">
+    <div class="lab-head"><h3>Move the base</h3><p>Drag the {% gl "base" %}base{% endgl %} \(a\) and watch \(y = a^{x}\) change shape. The dashed grey curve is \(y = 2^{x}\), left in place so you can compare.</p></div>
+    <div class="controls">
+      <div class="ctrl"><label for="base">Base \(a\)</label><input type="range" id="base" min="0.2" max="4" step="0.1" value="2"><output id="base-out" for="base">2.0</output></div>
+      <div class="presets" aria-label="Try these bases">
+        <button type="button" data-a="0.5">\(a = 0.5\)</button>
+        <button type="button" data-a="1">\(a = 1\)</button>
+        <button type="button" data-a="2">\(a = 2\)</button>
+        <button type="button" data-a="3">\(a = 3\)</button>
+      </div>
+    </div>
+    <svg class="chart" id="chart-base" viewBox="0 0 640 340" role="img" aria-label="Graph of y equals a to the power x"></svg>
+    <div class="readout"><span id="base-formula"></span><span class="state" id="base-state">Growth</span><span id="base-at2"></span></div>
+    <p class="look"><strong>Things to notice.</strong> Whatever \(a\) you pick, the curve goes through \((0, 1)\). Above \(1\) it climbs, below \(1\) it falls, and at exactly \(1\) it's flat. It never dips below the \(x\)-axis.</p>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Adding vs multiplying</h3><p>Both start at \(1\). One adds \(2\) each step. The other doubles. Slide the steps along.</p></div>
+    <div class="controls">
+      <div class="ctrl"><label for="steps">Steps</label><input type="range" id="steps" min="1" max="8" step="1" value="5"><output id="steps-out" for="steps">5</output></div>
+    </div>
+    <svg class="chart" id="chart-race" viewBox="0 0 640 300" role="img" aria-label="Bar chart comparing adding 2 with doubling"></svg>
+    <div class="legend"><span><i class="sw grey"></i>Add \(2\): \(1 + 2n\)</span><span><i class="sw tone"></i>Double: \(2^{n}\)</span></div>
+    <p class="readout" id="race-read"></p>
+    <p class="look"><strong>Things to notice.</strong> Adding wins at first. Doubling catches up at step \(3\) and then leaves it behind for good. Multiplying always wins in the end, however small the multiplier.</p>
+  </div>
+{% endsec %}
+
+{% sec 4, "How does this link to Trading, Real Estate, Quant and Fintech?", "Where this shape turns up in each part of the plan.", "How it links to the plan" %}
+  <div class="link-block">
+    <div class="link-block-head"><h3>Trading: returns compound</h3><a class="theme-link tone-forest" href="/hub/trading/">Trading</a></div>
+    <div class="prose">
+      <p>Money that earns a return each year grows exponentially, because each year's gain gets added to the pot and earns a return itself next year. If you invest \(\text{£}1{,}000\) at a return of \(r\) a year, after \(t\) years you have:</p>
+    </div>
+    <div class="formula"><span class="lbl">Compound growth</span>\[ V = 1000 \times (1 + r)^{t} \]</div>
+    <div class="prose">
+      <p>The {% gl "growth factor" %}growth factor{% endgl %} \(1 + r\) is the base and the number of years is the exponent. Compare that with simple interest, where you only ever earn on the original \(\text{£}1{,}000\) and the line stays straight.</p>
+    </div>
+    <div class="lab">
+      <div class="lab-head"><h3>Compound vs simple</h3><p>Change the yearly return and the number of years.</p></div>
+      <div class="controls">
+        <div class="ctrl"><label for="rate">Return a year</label><input type="range" id="rate" min="1" max="15" step="1" value="7"><output id="rate-out" for="rate">7%</output></div>
+        <div class="ctrl"><label for="years">Years</label><input type="range" id="years" min="5" max="40" step="1" value="30"><output id="years-out" for="years">30</output></div>
+      </div>
+      <svg class="chart" id="chart-desk" viewBox="0 0 640 320" role="img" aria-label="Compound versus simple growth of 1000 pounds"></svg>
+      <div class="legend"><span><i class="sw tone"></i>Compound</span><span><i class="sw grey"></i>Simple</span></div>
+      <div class="readout" id="desk-read"></div>
+    </div>
+    <div class="prose">
+      <p>This is why small differences in return matter so much over long periods. At \(7\%\) a year, \(\text{£}1{,}000\) becomes about \(\text{£}7{,}600\) after \(30\) years. At \(9\%\) it becomes about \(\text{£}13{,}300\). Two extra percentage points nearly doubles the result.</p>
+      <p>It works against you too. Losses compound in the same way, which is why a \(50\%\) loss needs a \(100\%\) gain to get back to where you started: \(0.5 \times 2 = 1\).</p>
+    </div>
+  </div>
+
+  <div class="link-block">
+    <div class="link-block-head"><h3>Real estate: values, rents and debt</h3><a class="theme-link tone-burgundy" href="/hub/real-estate/">Real Estate</a></div>
+    <div class="prose">
+      <p>Property prices and rents tend to be quoted as percentage changes, so over many years they compound in exactly the same way. Take a villa worth \(\text{£}250{,}000\) and suppose it rises \(4\%\) a year. These are made-up numbers to show the shape, not a forecast.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="numbers">
+        <thead><tr><th>Years</th><th>Working</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>\(0\)</td><td>\(250{,}000\)</td><td>\(\text{£}250{,}000\)</td></tr>
+          <tr><td>\(10\)</td><td>\(250{,}000 \times 1.04^{10}\)</td><td>\(\text{£}370{,}061\)</td></tr>
+          <tr><td>\(20\)</td><td>\(250{,}000 \times 1.04^{20}\)</td><td>\(\text{£}547{,}781\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p>The second ten years add about \(\text{£}178{,}000\), far more than the first ten years' \(\text{£}120{,}000\), even though the rate never changed. The same maths sits under a mortgage: interest is charged on what you still owe, so debt you don't pay down grows exponentially too.</p>
+    </div>
+  </div>
+
+  <div class="link-block">
+    <div class="link-block-head"><h3>Quant: decaying weights</h3><a class="theme-link tone-indigo" href="/hub/quant/">Quant</a></div>
+    <div class="prose">
+      <p>Quants often want recent data to count more than old data. A common way to do that is to give each past day a weight that shrinks exponentially: yesterday counts a lot, last week a bit less, last month hardly at all. This is called an {% gl "ewma" %}exponentially weighted moving average{% endgl %}, and it's widely used to estimate {% gl "volatility" %}volatility{% endgl %}.</p>
+      <p>The weight on a day \(k\) days ago is proportional to \(\lambda^{k}\), where \(\lambda\) (lambda) is a {% gl "decay factor" %}decay factor{% endgl %} between \(0\) and \(1\). A well-known choice for daily data is \(\lambda = 0.94\).</p>
+    </div>
+    <div class="lab">
+      <div class="lab-head"><h3>How fast do the weights fade?</h3><p>Each bar is one past day. Move \(\lambda\) to see how quickly old days stop mattering.</p></div>
+      <div class="controls">
+        <div class="ctrl"><label for="lam">Decay \(\lambda\)</label><input type="range" id="lam" min="0.80" max="0.99" step="0.01" value="0.94"><output id="lam-out" for="lam">0.94</output></div>
+      </div>
+      <svg class="chart" id="chart-ewma" viewBox="0 0 640 240" role="img" aria-label="Exponentially decaying weights over 60 past days"></svg>
+      <div class="readout" id="ewma-read"></div>
+    </div>
+  </div>
+
+  <div class="link-block">
+    <div class="link-block-head"><h3>Fintech and Nigeria: what inflation does to money</h3><a class="theme-link tone-navy" href="/hub/fintech/">Fintech and Nigeria</a></div>
+    <div class="prose">
+      <p>Inflation is exponential decay for the value of cash. If prices rise by a rate \(\pi\) each year, what \(\text{£}1{,}000\) (or \(\text{₦}1{,}000\)) can buy shrinks like this:</p>
+    </div>
+    <div class="formula"><span class="lbl">Purchasing power after \(t\) years</span>\[ P = 1000 \times \left(\frac{1}{1 + \pi}\right)^{t} \]</div>
+    <div class="prose">
+      <p>The base \(\frac{1}{1+\pi}\) is below \(1\), so the curve falls. At \(3\%\) inflation it takes about \(23\) years for money to lose half its buying power. At \(25\%\) it takes about \(3\) years. Nigeria's inflation has been well above \(20\%\) in recent years, which is a big part of why people look for ways to protect savings, and why payments and savings products there matter so much.</p>
+    </div>
+    <div class="lab">
+      <div class="lab-head"><h3>How fast does cash lose value?</h3><p>Pick an inflation rate and see what \(1{,}000\) buys over \(15\) years.</p></div>
+      <div class="controls">
+        <div class="ctrl"><label for="infl">Inflation a year</label><input type="range" id="infl" min="1" max="40" step="1" value="25"><output id="infl-out" for="infl">25%</output></div>
+      </div>
+      <svg class="chart" id="chart-infl" viewBox="0 0 640 280" role="img" aria-label="Purchasing power of 1000 over 15 years"></svg>
+      <div class="readout" id="infl-read"></div>
+    </div>
+  </div>
+{% endsec %}
+
+{% sec 5, "The Maths Underneath", "The rules, and why each one is true." %}
+  <div class="prose">
+    <p>An exponential function has the variable in the power:</p>
+  </div>
+  <div class="formula"><span class="lbl">Definition</span>\[ y = a^{x}, \qquad a > 0 \]</div>
+  <div class="prose">
+    <p>The base has to be positive. A negative base breaks down for many values of \(x\): \((-4)^{1/2}\) would be \(\sqrt{-4}\), which isn't a real number. A base of \(1\) is allowed but dull, because \(1^{x} = 1\) for every \(x\).</p>
+    <h3>Six facts, and why they're true</h3>
+  </div>
+  <ul class="facts">
+    <li><span class="n">1</span><span>Every graph \(y = a^{x}\) goes through \((0, 1)\).<span class="why">Because \(a^{0} = 1\) for any base. You can see why from the index laws: \(a^{0} = a^{1-1} = \frac{a}{a} = 1\).</span></span></li>
+    <li><span class="n">2</span><span>Each step of \(1\) in \(x\) multiplies \(y\) by \(a\).<span class="why">Because \(a^{x+1} = a^{x} \times a\). This is the "same multiplier every step" from section 1, written in symbols.</span></span></li>
+    <li><span class="n">3</span><span>If \(a > 1\) the graph increases, and if \(0 < a < 1\) it decreases.<span class="why">Multiplying by more than \(1\) makes things bigger each step. Multiplying by a number between \(0\) and \(1\) makes them smaller.</span></span></li>
+    <li><span class="n">4</span><span>\(a^{x} > 0\) for every \(x\), so the \(x\)-axis (\(y = 0\)) is an {% gl "asymptote" %}asymptote{% endgl %}.<span class="why">Multiplying or dividing a positive number by a positive number always gives a positive number. You can get as close to \(0\) as you like but never reach it.</span></span></li>
+    <li><span class="n">5</span><span>\(y = a^{-x}\) is \(y = a^{x}\) reflected in the \(y\)-axis.<span class="why">Because \(a^{-x} = \frac{1}{a^{x}} = \left(\frac{1}{a}\right)^{x}\). So \(2^{-x}\) is the same curve as \(\left(\tfrac{1}{2}\right)^{x}\).</span></span></li>
+    <li><span class="n">6</span><span>An exponential always overtakes any power of \(x\) in the end.<span class="why">\(2^{x}\) and \(x^{2}\) are equal at \(x = 2\) and \(x = 4\). After \(x = 4\), \(2^{x}\) pulls away for good. It even beats \(x^{10}\) eventually.</span></span></li>
+  </ul>
+
+  <div class="prose">
+    <h3>The general model: start value times growth factor</h3>
+    <p>In real problems you rarely start at \(1\). The general form puts a start value in front:</p>
+  </div>
+  <div class="formula"><span class="lbl">General exponential model</span>\[ y = k \times a^{x} \qquad k = \text{value at } x = 0, \quad a = \text{growth factor} \]</div>
+  <div class="prose">
+    <p>The compounding formula from section 4 is exactly this, with \(k = 1000\) and \(a = 1 + r\). Changing the formula changes the graph in predictable ways:</p>
+  </div>
+  <div class="table-wrap">
+    <table class="numbers">
+      <thead><tr><th>Formula</th><th>What it does to \(y = a^{x}\)</th><th>Crosses the \(y\)-axis at</th><th>Asymptote</th></tr></thead>
+      <tbody>
+        <tr><td>\(y = k\,a^{x}\)</td><td>Stretches it vertically by \(k\)</td><td>\((0, k)\)</td><td>\(y = 0\)</td></tr>
+        <tr><td>\(y = a^{x} + c\)</td><td>Moves it up by \(c\)</td><td>\((0, 1 + c)\)</td><td>\(y = c\)</td></tr>
+        <tr><td>\(y = a^{x + c}\)</td><td>Moves it left by \(c\), same as multiplying by \(a^{c}\)</td><td>\((0, a^{c})\)</td><td>\(y = 0\)</td></tr>
+        <tr><td>\(y = -a^{x}\)</td><td>Reflects it in the \(x\)-axis</td><td>\((0, -1)\)</td><td>\(y = 0\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <h3>Working backwards: finding the growth factor</h3>
+    <p>Often you know where something started and where it ended, and you want the steady rate in between. If a value goes from \(S\) to \(E\) in \(n\) steps, then \(S \times a^{n} = E\), so:</p>
+  </div>
+  <div class="formula"><span class="lbl">Growth factor from two values</span>\[ a = \left(\frac{E}{S}\right)^{1/n} \qquad \text{rate} = a - 1 \]</div>
+  <div class="prose">
+    <p>On the desk this is the {% gl "cagr" %}CAGR{% endgl %}, and it's how fund and company growth is usually quoted.</p>
+  </div>
+
+  <div class="worked">
+    <span class="lbl">Worked example 1</span>
+    <h3>Sketch \(y = 3^{x}\) and \(y = \left(\tfrac{1}{3}\right)^{x}\) on the same axes.</h3>
+    <div class="worked-grid">
+      <ol class="steps">
+        <li>Both go through \((0, 1)\), by fact 1.</li>
+        <li>\(3 > 1\), so \(y = 3^{x}\) increases. Check a couple of points: \(x = 1\) gives \(3\), \(x = -1\) gives \(\tfrac{1}{3}\).</li>
+        <li>\(\tfrac{1}{3} < 1\), so \(y = \left(\tfrac{1}{3}\right)^{x}\) decreases. By fact 5 it's the first curve reflected in the \(y\)-axis.</li>
+        <li>Both stay above the \(x\)-axis, which is the asymptote for each.</li>
+      </ol>
+      <svg class="chart" id="chart-we1" viewBox="0 0 240 200" role="img" aria-label="Sketch of y equals 3 to the x and one third to the x"></svg>
+    </div>
+  </div>
+
+  <div class="worked">
+    <span class="lbl">Worked example 2</span>
+    <h3>Sketch \(y = 2^{x} + 3\). Where does it cross the \(y\)-axis, and what's the asymptote?</h3>
+    <div class="worked-grid">
+      <ol class="steps">
+        <li>Start from \(y = 2^{x}\) and add \(3\) to every \(y\)-value. That moves the whole curve up by \(3\).</li>
+        <li>The asymptote moves up with it: \(y = 3\).</li>
+        <li>At \(x = 0\): \(y = 2^{0} + 3 = 1 + 3 = 4\), so it crosses at \((0, 4)\).</li>
+      </ol>
+      <svg class="chart" id="chart-we2" viewBox="0 0 240 200" role="img" aria-label="Sketch of y equals 2 to the x plus 3"></svg>
+    </div>
+  </div>
+
+  <div class="worked">
+    <span class="lbl">Worked example 3</span>
+    <h3>A fund grows from \(\text{£}100\) to \(\text{£}150\) in \(4\) years. What steady yearly rate does that equal?</h3>
+    <ol class="steps">
+      <li>Start \(S = 100\), end \(E = 150\), steps \(n = 4\).</li>
+      <li>\(a = \left(\frac{150}{100}\right)^{1/4} = 1.5^{0.25} \approx 1.1067\).</li>
+      <li>Rate \(= a - 1 \approx 0.1067\), so about \(10.7\%\) a year.</li>
+      <li>Check: \(100 \times 1.1067^{4} \approx 150\). ✓</li>
+    </ol>
+    <p class="answer"><strong>Why not just \(50\% \div 4 = 12.5\%\)?</strong> Because that ignores compounding. Each year's growth also grows, so the steady rate needed is lower.</p>
+  </div>
+
+  <div class="worked">
+    <span class="lbl">Worked example 4</span>
+    <h3>A curve \(y = k \times a^{x}\) passes through \((0, 5)\) and \((3, 40)\). Find \(k\) and \(a\).</h3>
+    <ol class="steps">
+      <li>At \(x = 0\): \(y = k \times a^{0} = k\), so \(k = 5\).</li>
+      <li>At \(x = 3\): \(5 \times a^{3} = 40\), so \(a^{3} = 8\).</li>
+      <li>\(a = 8^{1/3} = 2\). The curve is \(y = 5 \times 2^{x}\).</li>
+    </ol>
+  </div>
+{% endsec %}
+
+{% sec 6, "Practice", "Have a go, then open the answer." %}
+  <div class="practice">
+    <div class="pq"><p class="pq-text"><span class="n">1</span><span>Sketch \(y = 4^{x}\). Where does it cross the \(y\)-axis, and what is its asymptote?</span></p>
+      <details><summary>Show answer</summary><div><span>It crosses at \((0, 1)\) and the asymptote is \(y = 0\). Since \(4 > 1\), it increases, and it rises faster than \(2^{x}\): at \(x = 1\) it's already \(4\).</span></div></details></div>
+    <div class="pq"><p class="pq-text"><span class="n">2</span><span>Where does \(y = 5 \times 2^{x}\) cross the \(y\)-axis?</span></p>
+      <details><summary>Show answer</summary><div><span>At \((0, 5)\), because \(5 \times 2^{0} = 5 \times 1 = 5\). The \(k\) in front is always the starting value.</span></div></details></div>
+    <div class="pq"><p class="pq-text"><span class="n">3</span><span>You put \(\text{£}2{,}000\) in an account paying \(6\%\) a year, compounded yearly. How much is there after \(5\) years?</span></p>
+      <details><summary>Show answer</summary><div><span>\(2000 \times 1.06^{5} = 2000 \times 1.3382\ldots \approx \text{£}2{,}676.45\).</span><span>Simple interest would only give \(2000 \times (1 + 0.06 \times 5) = \text{£}2{,}600\).</span></div></details></div>
+    <div class="pq"><p class="pq-text"><span class="n">4</span><span>A share price goes from \(\text{£}40\) to \(\text{£}90\) over \(6\) years. What is its compound annual growth rate?</span></p>
+      <details><summary>Show answer</summary><div><span>\(a = \left(\frac{90}{40}\right)^{1/6} = 2.25^{1/6} \approx 1.1447\), so about \(14.5\%\) a year.</span></div></details></div>
+    <div class="pq"><p class="pq-text"><span class="n">5</span><span>Solve \(2^{x} = 32\). Then try \(2^{x} = 20\). What goes wrong?</span></p>
+      <details><summary>Show answer</summary><div><span>\(2^{5} = 32\), so \(x = 5\).</span><span>For \(2^{x} = 20\) there's no whole-number answer: \(2^{4} = 16\) and \(2^{5} = 32\), so \(x\) is somewhere between \(4\) and \(5\). Finding it exactly needs logarithms, which is where this chapter goes next.</span></div></details></div>
+  </div>
+{% endsec %}

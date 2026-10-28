@@ -316,6 +316,19 @@ h1, h2, h3, p { margin: 0; }
 }
 .card-cta { margin-top: 8px; font-size: 15px; font-weight: 500; color: var(--card-accent); }
 
+/* Topic colours: a card with "topic" in highlights.json takes that topic's colour
+   (the colour names come from shelves.json). Deep colour behind, bright version for the tag and link. */
+.highlight-card.tone-plum     { --card-bg: #4b2a60; --card-accent: #d8b4fe; }
+.highlight-card.tone-teal     { --card-bg: #0f4a4f; --card-accent: #5eead4; }
+.highlight-card.tone-ochre    { --card-bg: #6b4c0e; --card-accent: #fcd34d; }
+.highlight-card.tone-rust     { --card-bg: #7a2e12; --card-accent: #fdba74; }
+.highlight-card.tone-olive    { --card-bg: #48501a; --card-accent: #d9f99d; }
+.highlight-card.tone-forest   { --card-bg: #123b2e; --card-accent: #6ee7b7; }
+.highlight-card.tone-indigo   { --card-bg: #2f2f6e; --card-accent: #a5b4fc; }
+.highlight-card.tone-graphite { --card-bg: #33322f; --card-accent: #d6d3d1; }
+.highlight-card.tone-burgundy { --card-bg: #4a1d24; --card-accent: #fda4af; }
+.highlight-card.tone-navy     { --card-bg: #1b2a44; --card-accent: #93c5fd; }
+
 /* 9. Homepage — every project, four steps */
 .steps-section {
   margin-top: 40px;

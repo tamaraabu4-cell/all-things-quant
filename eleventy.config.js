@@ -85,7 +85,7 @@ export default function (eleventyConfig) {
   // Each subtopic lists, in order: notes you've written, notes you've planned
   // (from shelves.json) and guests (notes from other topics that point here).
   // Writing a note with the same title as a planned one replaces the planned one.
-  eleventyConfig.addFilter("topicPath", (shelf, notes = [], shelves = []) => {
+  function buildPath(shelf, notes = [], shelves = []) {
     const chapters = chaptersOf(shelf).map((c) => ({
       ...c,
       subtopics: c.subtopics.map((s) => ({ name: s.name, planned: s.planned, items: [] })),
@@ -151,7 +151,56 @@ export default function (eleventyConfig) {
       written: own.length,
       planned: all.reduce((sum, c) => sum + c.planned, 0),
     };
+  }
+  eleventyConfig.addFilter("topicPath", buildPath);
+
+  // Everything a note page needs to know about where it sits:
+  // its topic, its chapter, the chapter's notes in order, and what comes next.
+  eleventyConfig.addFilter("noteContext", (data, url, notes = [], shelves = []) => {
+    const shelf = shelves.find((s) => s.slug === data.shelf);
+    if (!shelf) return null;
+    const path = buildPath(shelf, notes, shelves);
+    const chapter = path.chapters.find((c) => c.subtopics.some((s) => s.items.some((i) => i.url === url)));
+    if (!chapter) return null;
+    const items = [];
+    chapter.subtopics.forEach((s) =>
+      s.items.forEach((i) => { if (i.kind !== "guest") items.push({ kind: i.kind, title: i.title, url: i.url || "", subtopic: s.name }); })
+    );
+    const index = items.findIndex((i) => i.url === url);
+    const theme = (slug) => {
+      const t = shelves.find((s) => s.slug === slug);
+      return t ? { name: t.name, url: "/hub/" + t.slug + "/", colour: t.colour || "" } : null;
+    };
+    return {
+      shelf: { name: shelf.name, slug: shelf.slug, colour: shelf.colour || "", url: "/hub/" + shelf.slug + "/" },
+      chapter: { num: chapter.num, title: chapter.title, slug: chapter.slug },
+      subtopic: data.subtopic || "",
+      items,
+      index,
+      total: items.length,
+      next: items[index + 1] || null,
+      themes: (data.themes || []).map(theme).filter(Boolean),
+    };
   });
+
+  // ---------- Shortcodes for writing notes ----------
+  // {% sec 1, "Title", "The question it answers" %} ... {% endsec %}  → a numbered note section
+  // Add a 4th, shorter title if the heading is too long for the contents rail:
+  // {% sec 4, "How does this link to trading, real estate, quant and fintech?", "…", "How it links to the plan" %}
+  eleventyConfig.addPairedShortcode("sec", (content, num, title, question = "", short = "") => {
+    const n = String(num).padStart(2, "0");
+    return `<section class="sec" id="s${num}" data-sec data-title="${short || title}">
+  <div class="sec-head">
+    <div class="sec-top"><span class="sec-num">${n}</span><button class="add-note" type="button" data-note-for="s${num}" aria-label="Add a note to this section"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Note</button></div>
+    <h2>${title}</h2>${question ? `<p class="sec-q">${question}</p>` : ""}
+  </div>
+${content}
+</section>`;
+  });
+  // {% gl "asymptote" %}asymptote{% endgl %}  → a glossary word with a dotted underline and a pop-up
+  eleventyConfig.addPairedShortcode("gl", (content, key) =>
+    `<span class="gl" data-g="${key || String(content).toLowerCase()}" tabindex="0">${content}</span>`
+  );
 }
 
 export const config = {

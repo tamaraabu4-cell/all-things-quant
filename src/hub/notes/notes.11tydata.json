@@ -1,4 +1,6 @@
 {
   "tags": "hubNote",
+  "layout": "layouts/note.njk",
+  "styles": ["hub.css", "note.css"],
   "permalink": "/hub/{{ shelf }}/{{ page.fileSlug }}/"
 }
