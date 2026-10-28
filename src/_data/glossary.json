@@ -1,0 +1,8 @@
+[
+  { "term": "Basis point", "short": "bp", "plain": "One hundredth of 1%. So 25 basis points is 0.25%.", "desk": "The Bank hiked 25 bps." },
+  { "term": "Determinant", "short": "", "plain": "How much a matrix scales area. 2 means areas double; 0 means everything gets squashed flat onto a line.", "desk": "" },
+  { "term": "Discount rate", "short": "r", "plain": "The growth you give up by waiting. Used to shrink future money back to what it's worth today.", "desk": "We're discounting at 6%." },
+  { "term": "Matrix", "short": "", "plain": "A grid of numbers that acts like a machine: feed it an arrow and it hands you back a new one.", "desk": "Multiply through by the sensitivity matrix." },
+  { "term": "Present value", "short": "PV", "plain": "What money you'll get later is worth today.", "desk": "PV of that cash flow is about seven and a half k." },
+  { "term": "Vector", "short": "", "plain": "An arrow, or just a list of numbers like [2, 1].", "desk": "Send me the positions vector." }
+]

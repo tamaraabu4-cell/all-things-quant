@@ -10,13 +10,9 @@
         <h3 class="track-name">{{ area.name }}</h3>
         <span class="track-rule"></span>
         <p class="track-text">{{ area.description }}</p>
-        {% if area.url %}
-        <a class="track-link" href="{{ area.url }}">Explore ›</a>
-        {% else %}
-        <span class="track-soon">Coming soon</span>
-        {% endif %}
       </li>
       {% endfor %}
     </ul>
+    <a class="link-arrow hub-link" href="/hub/">Explore the hub ›</a>
   </div>
 </section>

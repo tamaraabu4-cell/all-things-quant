@@ -395,15 +395,13 @@ h1, h2, h3, p { margin: 0; }
   line-height: 1.5;
   color: var(--text-3);
 }
-.track-link {
-  margin-top: auto;           /* keeps every link on the same line */
-  font-size: 15px;
-  font-weight: 500;
-}
-.track-soon {
-  margin-top: auto;
-  font-size: 15px;
-  color: var(--text-2);
+
+/* One link under the five areas, on the left like "See the projects ›" */
+.hub-link {
+  display: block;
+  width: fit-content;
+  margin-top: 44px;
+  margin-right: auto;
 }
 
 @media (max-width: 600px) {

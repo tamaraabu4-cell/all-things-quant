@@ -15,6 +15,22 @@ export default function (eleventyConfig) {
     new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
   );
   eleventyConfig.addFilter("htmlDate", (date) => new Date(date).toISOString().slice(0, 10));
+
+  // Knowledge Hub: turns the notes into a small list the vault home's script can read
+  const LEVELS = { Foundations: 1, Core: 2, Advanced: 3 };
+  eleventyConfig.addFilter("hubIndex", (notes = []) =>
+    notes.map((note) => ({
+      url: note.url,
+      title: note.data.title,
+      shelf: note.data.shelf,
+      subtopic: note.data.subtopic || "",
+      level: note.data.level || "",
+      rank: LEVELS[note.data.level] || 9,
+      order: note.data.order || 0,
+      summary: note.data.summary || "",
+      goals: note.data.goals || [],
+    }))
+  );
 }
 
 export const config = {

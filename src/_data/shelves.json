@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "maths",
+    "name": "Maths",
+    "icon": "maths",
+    "open": true,
+    "description": "The maths that trading and quant work runs on.",
+    "subtopics": ["Algebra and functions", "Exponentials and logs", "Trigonometry", "Calculus", "Linear algebra"]
+  },
+  {
+    "slug": "probability",
+    "name": "Probability and statistics",
+    "icon": "probability",
+    "open": true,
+    "description": "Odds, averages and spread: how to think about uncertainty.",
+    "subtopics": []
+  },
+  {
+    "slug": "valuation",
+    "name": "Valuation",
+    "icon": "valuation",
+    "open": true,
+    "description": "What something is worth, and why.",
+    "subtopics": []
+  },
+  {
+    "slug": "markets",
+    "name": "Markets",
+    "icon": "markets",
+    "open": true,
+    "description": "What markets are and how they actually trade.",
+    "subtopics": []
+  },
+  {
+    "slug": "macro",
+    "name": "Macro",
+    "icon": "macro",
+    "open": true,
+    "description": "Interest rates, inflation and the big forces that move every market.",
+    "subtopics": []
+  },
+  {
+    "slug": "quant",
+    "name": "Quant",
+    "icon": "quant",
+    "open": true,
+    "description": "Quant trading, research and development.",
+    "subtopics": []
+  },
+  {
+    "slug": "code",
+    "name": "Code and infrastructure",
+    "icon": "code",
+    "open": true,
+    "description": "The languages and systems behind trading.",
+    "subtopics": []
+  },
+  {
+    "slug": "real-estate",
+    "name": "Real estate",
+    "icon": "realestate",
+    "open": true,
+    "description": "Villas, development and property finance.",
+    "subtopics": []
+  },
+  {
+    "slug": "fintech",
+    "name": "Fintech and Nigeria",
+    "icon": "fintech",
+    "open": true,
+    "description": "Nigerian markets, payments and the products to come.",
+    "subtopics": []
+  }
+]

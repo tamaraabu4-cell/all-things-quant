@@ -1,0 +1,100 @@
+---
+layout: layouts/base.njk
+title: Knowledge Hub
+permalink: /hub/
+styles: [hub.css]
+---
+{% from "partials/hub-icons.njk" import hubIcon %}
+<div class="hub">
+
+  {# Welcome: the lock button shares the top line, so it stays top right on every screen #}
+  <section class="hub-hello">
+    <div class="hub-hello-top">
+      <p class="hub-eyebrow">Knowledge hub · private</p>
+      <a class="hub-lock" href="/api/lock" title="Lock the hub and sign out">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        Lock
+      </a>
+    </div>
+    <h1 class="hub-title">Welcome back, Tamara.</h1>
+    <p class="hub-intro">Everything you learn about the industry all in one place.</p>
+  </section>
+
+  {# Three cards. hub.js fills them in from your reading progress. #}
+  <section class="hub-cards" aria-label="Pick up where you left off">
+    <div class="hub-card hub-card-continue" data-card="continue">
+      <p class="hub-card-label" data-label>Continue reading</p>
+      <div data-body><p class="hub-card-empty">Write your first note and it will show up here.</p></div>
+    </div>
+    <div class="hub-card" data-card="next">
+      <p class="hub-card-label">Up next</p>
+      <ul class="hub-card-list" data-body></ul>
+      <p class="hub-card-hint">The next note, in order, in each topic you're working on.</p>
+    </div>
+    <div class="hub-card" data-card="revisit">
+      <p class="hub-card-label" data-label>Due for a revisit</p>
+      <ul class="hub-card-list" data-body></ul>
+      <p class="hub-card-hint">Finished notes come back after a week, a month, then three months.</p>
+    </div>
+  </section>
+
+  {# Life plan filter: fades out notes that don't serve the chosen step #}
+  <section class="hub-plan" aria-label="Filter by life plan">
+    <div class="hub-plan-head">
+      <h2>See the shelves through your plan</h2>
+      <p class="hub-plan-note" data-plan-note>Tap a step to fade out notes that don't serve it.</p>
+    </div>
+    <div class="hub-plan-steps">
+      <button type="button" class="plan-step" data-goal="all" aria-pressed="true">All notes</button>
+      <button type="button" class="plan-step plan-trading" data-goal="trading" aria-pressed="false">1 · Trading</button>
+      <span class="plan-arrow" aria-hidden="true">→</span>
+      <button type="button" class="plan-step plan-realestate" data-goal="realestate" aria-pressed="false">2 · Real estate</button>
+      <span class="plan-arrow" aria-hidden="true">→</span>
+      <button type="button" class="plan-step plan-fintech" data-goal="fintech" aria-pressed="false">3 · Nigeria fintech</button>
+    </div>
+  </section>
+
+  {# Shelves: one card per open topic in _data/shelves.json #}
+  <section class="hub-shelves" aria-label="Shelves">
+    <div class="hub-section-head">
+      <h2>Shelves</h2>
+      <p>Your last three notes opened in each topic</p>
+    </div>
+    <div class="shelf-grid">
+      {% for shelf in shelves %}{% if shelf.open %}
+      <article class="shelf" data-shelf="{{ shelf.slug }}">
+        <div class="shelf-head">
+          <span class="shelf-icon">{{ hubIcon(shelf.icon) }}</span>
+          <div class="shelf-title">
+            <a class="shelf-name" href="/hub/{{ shelf.slug }}/">{{ shelf.name }}</a>
+            <div class="shelf-progress">
+              <span class="shelf-bar"><span data-bar></span></span>
+              <span class="shelf-count" data-count>No notes yet</span>
+            </div>
+          </div>
+        </div>
+        <ul class="shelf-notes" data-list></ul>
+        <a class="shelf-open" href="/hub/{{ shelf.slug }}/">Open {{ shelf.name }} ›</a>
+      </article>
+      {% endif %}{% endfor %}
+    </div>
+  </section>
+
+  {# Glossary #}
+  <section class="hub-glossary" aria-label="Glossary">
+    <div class="hub-glossary-text">
+      <h2>Glossary</h2>
+      <p>Every term defined once, plain English first.</p>
+    </div>
+    <ul class="hub-glossary-terms">
+      {% for item in glossary | sort(false, false, "term") %}
+      <li title="{{ item.plain }}">{{ item.term }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+</div>
+
+{# Everything hub.js needs to know about the notes, as data #}
+<script id="hub-data" type="application/json">{"shelves": {{ shelves | dump | safe }}, "notes": {{ collections.hubNote | hubIndex | dump | safe }}}</script>
+<script src="/assets/js/hub.js" defer></script>

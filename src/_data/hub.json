@@ -2,31 +2,26 @@
   {
     "name": "Foundations",
     "icon": "foundations",
-    "description": "The toolkit behind everything else: maths, probability and valuation.",
-    "url": ""
+    "description": "The toolkit behind everything else: maths, probability and valuation."
   },
   {
     "name": "Trading",
     "icon": "trading",
-    "description": "How markets work, what moves them, and how traders make money.",
-    "url": ""
+    "description": "How markets work, what moves them, and how traders make money."
   },
   {
     "name": "Quant",
     "icon": "quant",
-    "description": "The systematic edge: building, testing and running strategies with code.",
-    "url": ""
+    "description": "The systematic edge: building, testing and running strategies with code."
   },
   {
     "name": "Real Estate",
     "icon": "realestate",
-    "description": "Where trading capital goes next: property, financing and development.",
-    "url": ""
+    "description": "Where trading capital goes next: property, financing and development."
   },
   {
     "name": "Fintech & Nigeria",
     "icon": "fintech",
-    "description": "Building for home: Nigerian markets, payments and the products to come.",
-    "url": ""
+    "description": "Building for home: Nigerian markets, payments and the products to come."
   }
 ]

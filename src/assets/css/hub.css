@@ -1,0 +1,202 @@
+/* ==========================================================
+   Heritage Edge — Knowledge Hub
+   Only loaded on hub pages. Colours come from site.css tokens.
+   ========================================================== */
+
+/* 1. Hub colours: life-plan tags and soft fills */
+:root {
+  --hub-card: #ffffff;
+  --hub-line: #efece3;
+  --hub-icon-bg: #e3efe9;
+  --hub-track: #e8e4d9;
+  --tag-trading-bg: #dcebe3;    --tag-trading: #123b2e;
+  --tag-realestate-bg: #f3e1e3; --tag-realestate: #4a1d24;
+  --tag-fintech-bg: #dfe5ef;    --tag-fintech: #1b2a44;
+  --due: #8a4b0f;
+  --hub-inset: #f0eee6;              /* boxes and chips inside a card */
+}
+
+[data-theme="dark"] {
+  --hub-card: #30302e;
+  --hub-line: rgba(255, 255, 255, 0.07);
+  --hub-icon-bg: rgba(16, 185, 129, 0.14);
+  --hub-track: rgba(255, 255, 255, 0.1);
+  --tag-trading-bg: rgba(110, 231, 183, 0.14);    --tag-trading: #6ee7b7;
+  --tag-realestate-bg: rgba(253, 164, 175, 0.14); --tag-realestate: #fda4af;
+  --tag-fintech-bg: rgba(147, 197, 253, 0.14);    --tag-fintech: #93c5fd;
+  --due: #fbbf24;
+  --hub-inset: rgba(255, 255, 255, 0.08);
+}
+
+/* 2. Page frame */
+.hub {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(32px, 5vw, 56px) 20px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.hub h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+
+/* 3. Welcome */
+.hub-hello { display: flex; flex-direction: column; gap: 8px; }
+
+/* Top line: "Knowledge hub · private" on the left, Lock on the right, on every screen */
+.hub-hello-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.hub-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 980px;
+  background: var(--hub-card);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.hub-lock svg { color: var(--accent); }
+.hub-lock:hover { border-color: var(--accent); color: var(--accent); }
+
+.hub-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.hub-title { font-size: clamp(36px, 6vw, 52px); line-height: 1.05; font-weight: 700; letter-spacing: -0.03em; }
+.hub-intro { font-size: 17px; color: var(--text-2); }
+
+/* 4. The three cards */
+.hub-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.hub-card {
+  background: var(--hub-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hub-card-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.hub-card-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.hub-card-list li { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.hub-card-list a { color: var(--text); }
+.hub-card-list a:hover { color: var(--accent); }
+.hub-card-meta { font-size: 13px; color: var(--text-2); white-space: nowrap; }
+.hub-card-meta.is-due { color: var(--due); font-weight: 600; }
+.hub-card-hint { margin-top: auto; font-size: 13px; color: var(--text-2); }
+.hub-card-empty { font-size: 15px; color: var(--text-2); }
+
+/* Continue reading: forest green in both modes */
+.hub-card-continue { background: var(--card-1); border-color: var(--card-1); color: var(--card-text); }
+.hub-card-continue .hub-card-label { color: var(--card-1-accent); }
+.hub-card-continue .hub-card-empty { color: #d5e9df; }
+.continue-link { display: flex; flex-direction: column; gap: 10px; color: var(--card-text); }
+.continue-link:hover { color: var(--card-text); }
+.continue-title { font-size: 24px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.continue-where { font-size: 14px; color: #d5e9df; }
+.continue-bar { display: block; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.16); }
+.continue-bar span { display: block; height: 6px; border-radius: 3px; background: var(--card-1-accent); }
+
+/* 5. Life plan filter */
+.hub-plan { background: var(--surface); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.hub-plan-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; }
+.hub-plan-note { font-size: 14px; color: var(--text-2); }
+.hub-plan-steps { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.plan-arrow { color: var(--text-2); font-size: 18px; }
+.plan-step {
+  --step: var(--text);
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 980px;
+  border: 1.5px solid var(--step);
+  background: var(--hub-card);
+  color: var(--step);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.plan-trading { --step: var(--tag-trading); }
+.plan-realestate { --step: var(--tag-realestate); }
+.plan-fintech { --step: var(--tag-fintech); }
+.plan-step[aria-pressed="true"] { background: var(--step); color: var(--bg); }
+
+/* 6. Shelves */
+.hub-section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.hub-section-head h2 { font-size: 28px; letter-spacing: -0.02em; }
+.hub-section-head p { font-size: 13px; color: var(--text-2); }
+
+.shelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+@media (max-width: 400px) { .shelf-grid { grid-template-columns: 1fr; } }
+
+.shelf {
+  background: var(--hub-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.shelf-head { display: flex; align-items: center; gap: 14px; }
+.shelf-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: var(--hub-icon-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shelf-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.shelf-name { font-size: 20px; font-weight: 700; line-height: 1.2; color: var(--text); }
+.shelf-name:hover { color: var(--accent); }
+.shelf-progress { display: flex; align-items: center; gap: 10px; }
+.shelf-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--hub-track); }
+.shelf-bar span { display: block; height: 5px; width: 0; border-radius: 3px; background: var(--accent); }
+.shelf-count { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+
+.shelf-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.hub-note { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-top: 1px solid var(--hub-line); transition: opacity 0.2s; }
+.hub-note.is-faded { opacity: 0.3; }
+.hub-note-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.hub-note-title { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--text); }
+.hub-note-title:hover { color: var(--accent); }
+.hub-note-when { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.hub-note-summary { font-size: 14px; line-height: 1.45; color: var(--text-2); }
+.hub-note-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.goal-tag { font-size: 11px; font-weight: 600; border-radius: 6px; padding: 3px 7px; }
+.goal-trading { background: var(--tag-trading-bg); color: var(--tag-trading); }
+.goal-realestate { background: var(--tag-realestate-bg); color: var(--tag-realestate); }
+.goal-fintech { background: var(--tag-fintech-bg); color: var(--tag-fintech); }
+
+/* A shelf with nothing opened yet */
+.shelf-start { background: var(--hub-inset); border-radius: var(--radius-sm); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.shelf-start-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+.shelf-empty { font-size: 14px; color: var(--text-2); padding: 12px 0; border-top: 1px solid var(--hub-line); }
+
+.shelf-open { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--hub-line); font-size: 15px; font-weight: 600; }
+
+/* 7. Glossary strip */
+.hub-glossary {
+  background: var(--hub-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+.hub-glossary-text { flex: 1 1 240px; display: flex; flex-direction: column; gap: 4px; }
+.hub-glossary-text p { font-size: 14px; color: var(--text-2); }
+.hub-glossary-terms { flex: 2 1 420px; list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.hub-glossary-terms li { font-size: 14px; background: var(--hub-inset); border-radius: 980px; padding: 8px 14px; cursor: help; }

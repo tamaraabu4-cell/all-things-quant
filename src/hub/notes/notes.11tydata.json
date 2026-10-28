@@ -1,0 +1,4 @@
+{
+  "tags": "hubNote",
+  "permalink": "/hub/{{ shelf }}/{{ page.fileSlug }}/"
+}
