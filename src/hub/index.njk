@@ -11,10 +11,16 @@ styles: [hub.css]
   <section class="hub-hello">
     <div class="hub-hello-top">
       <p class="hub-eyebrow">Knowledge hub · private</p>
-      <a class="hub-lock" href="/api/lock" title="Lock the hub and sign out">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-        Lock
-      </a>
+      <div class="hub-hello-actions">
+        <a class="hub-lock" href="/hub/devices/" title="Face ID and Touch ID devices">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path><path d="M9 9.5v1M15 9.5v1M12 9.5V13h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"></path></svg>
+          <span class="hub-devices-label">Devices</span>
+        </a>
+        <a class="hub-lock" href="/api/lock" title="Lock the hub and sign out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+          Lock
+        </a>
+      </div>
     </div>
     <h1 class="hub-title">Welcome back, Tamara.</h1>
     <p class="hub-intro">Everything you learn about the industry all in one place.</p>
