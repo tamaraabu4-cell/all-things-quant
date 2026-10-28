@@ -9,7 +9,7 @@
   },
   {
     "slug": "probability",
-    "name": "Probability and statistics",
+    "name": "Probability and Statistics",
     "icon": "probability",
     "open": true,
     "description": "Odds, averages and spread: how to think about uncertainty.",
@@ -49,7 +49,7 @@
   },
   {
     "slug": "code",
-    "name": "Code and infrastructure",
+    "name": "Code and Infrastructure",
     "icon": "code",
     "open": true,
     "description": "The languages and systems behind trading.",
@@ -57,7 +57,7 @@
   },
   {
     "slug": "real-estate",
-    "name": "Real estate",
+    "name": "Real Estate",
     "icon": "realestate",
     "open": true,
     "description": "Villas, development and property finance.",
