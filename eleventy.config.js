@@ -7,7 +7,6 @@ export default function (eleventyConfig) {
   // Copy these across exactly as they are
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("src/projects/*.py");
-  eleventyConfig.addPassthroughCopy("src/study-guide");
   eleventyConfig.addPassthroughCopy("src/favicon.ico");
 
   // Dates for blog posts: "27 October 2026" on the page, "2026-10-27" inside the <time> tag
@@ -181,6 +180,112 @@ export default function (eleventyConfig) {
       next: items[index + 1] || null,
       themes: (data.themes || []).map(theme).filter(Boolean),
     };
+  });
+
+  // ==========================================================
+  // Projects page
+  //
+  // Each project in _data/projects.json says which topic it belongs to
+  // (a topic's slug from shelves.json, or "simulations") and which
+  // markets it trades. A topic only shows once it has a project, and
+  // the market filter only lists markets that a project uses.
+  // ==========================================================
+  const marketOrder = ["Rates", "FX", "Gold", "Commodities", "Equities", "Credit", "Crypto", "Property", "Naira"];
+  const marketRank = (m) => (marketOrder.indexOf(m) === -1 ? 99 : marketOrder.indexOf(m));
+
+  eleventyConfig.addFilter("projectsPage", (projects = [], shelves = []) => {
+    const all = projects.map((p) => ({
+      ...p,
+      markets: p.markets || [],
+      tags: p.tags || [],
+      marketSlugs: (p.markets || []).map(slugify).join(" "),
+    }));
+
+    // Warn about a topic that doesn't exist, so a project never silently disappears
+    const known = shelves.map((s) => s.slug).concat(["simulations"]);
+    all.forEach((p) => {
+      if (known.indexOf(p.topic) === -1) console.warn(`[projects] "${p.title}" has topic "${p.topic}", which isn't in shelves.json.`);
+    });
+
+    // One shelf per hub topic that has a project, in the hub's order
+    const topicShelves = shelves
+      .map((s) => ({
+        slug: s.slug,
+        name: s.name,
+        icon: s.icon,
+        colour: s.colour || "",
+        blurb: s.projectsBlurb || s.description || "",
+        projects: all.filter((p) => p.topic === s.slug),
+      }))
+      .filter((s) => s.projects.length);
+
+    const simulations = all.filter((p) => p.topic === "simulations");
+
+    const topics = topicShelves.map((s) => ({ slug: s.slug, name: s.name, colour: s.colour }));
+    if (simulations.length) topics.push({ slug: "simulations", name: "Simulations", colour: "walnut" });
+
+    const markets = [];
+    all.forEach((p) => p.markets.forEach((m) => { if (markets.indexOf(m) === -1) markets.push(m); }));
+    markets.sort((a, b) => marketRank(a) - marketRank(b) || a.localeCompare(b));
+
+    const tools = [];
+    all.forEach((p) => (p.tools || []).forEach((t) => { if (tools.indexOf(t) === -1) tools.push(t); }));
+
+    return {
+      shelves: topicShelves,
+      simulations,
+      topics,
+      markets: markets.map((m) => ({ label: m, slug: slugify(m) })),
+      tools,
+      total: all.length,
+    };
+  });
+
+  // Everything a project page needs (layouts/project.njk): its entry in
+  // projects.json (found by the page's URL), its topic and colour, up to
+  // three projects to suggest (same topic first, then same market), and the next one.
+  eleventyConfig.addFilter("projectContext", (url, projects = [], shelves = []) => {
+    const topicOf = (p) => {
+      if (p.topic === "simulations") return { name: "Simulations", colour: "walnut" };
+      const shelf = shelves.find((s) => s.slug === p.topic);
+      return shelf ? { name: shelf.name, colour: shelf.colour || "" } : { name: "Projects", colour: "" };
+    };
+    const i = projects.findIndex((p) => p.url === url);
+    if (i === -1) {
+      console.warn(`[projects] ${url} isn't in _data/projects.json, so its page has no topic or four steps.`);
+      return null;
+    }
+    const project = projects[i];
+    const mine = project.markets || [];
+    const shared = (q) => (q.markets || []).find((m) => mine.indexOf(m) !== -1);
+    const rank = (q) => (q.topic === project.topic ? 0 : shared(q) ? 1 : 2);
+    const more = projects
+      .map((q, j) => ({ q, j }))
+      .filter((x) => x.j !== i)
+      .sort((a, b) => rank(a.q) - rank(b.q) || a.j - b.j)
+      .slice(0, 3)
+      .map(({ q }) => {
+        const t = topicOf(q);
+        const why = q.topic === project.topic ? "Also in " + t.name : shared(q) ? "Also trades " + shared(q) : t.name;
+        return { title: q.title, url: q.url, colour: t.colour, why, where: [q.kind].concat(q.markets || []).filter(Boolean).join(" · ") };
+      });
+    const next = projects.length > 1 ? projects[(i + 1) % projects.length] : null;
+    return { project, topic: topicOf(project), more, next: next ? { title: next.title, url: next.url } : null };
+  });
+
+  // {% psec 1, "Title", "The question it answers", "Short rail title" %} ... {% endpsec %}
+  // → a numbered section on a project page. The 4th argument is optional.
+  eleventyConfig.addPairedShortcode("psec", (content, num, title, question = "", short = "") => {
+    const n = String(num).padStart(2, "0");
+    return `<section class="psec" id="s${num}" data-psec data-title="${short || title}">
+  <div class="psec-head">
+    <span class="psec-num">${n}</span>
+    <h2>${title}</h2>${question ? `<p class="psec-q">${question}</p>` : ""}
+  </div>
+  <div class="project-page psec-body">
+${content}
+  </div>
+</section>`;
   });
 
   // ---------- Shortcodes for writing notes ----------

@@ -1,309 +1,235 @@
 ---
-layout: layouts/base.njk
+layout: layouts/project.njk
 title: December FOMC Trade Memo
 permalink: /projects/sofr-fomc-trade-memo.html
-styles: [projects/study-layout.css]
+styles: [hub.css, projects/study-layout.css, projects/project.css]
 scripts: ["https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"]
+meta: ["Written 23 Oct 2026", "Result on 9 Dec 2026", "SR3Z6 options", "Paper trade, not investment advice"]
 ---
-<div class="project-page">
 
-<div class="page-header">
-  <div class="breadcrumb">
-    <a href="/">Home</a><span>/</span>
-    <a href="/projects/projects.html">Projects</a><span>/</span>
-    <span style="color:var(--tx1)">December FOMC Trade Memo</span>
+{% psec 1, "The Market Is Too Sure the Fed Hikes in December", "What is the bet, in one line?", "Summary" %}
+<p class="topic-intro">
+  Futures price roughly a \(90\%\) chance that the Fed raises rates again on 9 December. I think a pause is far more likely than 1-in-10: jobs growth has stalled, housing is weakening, and much of the inflation jump is an energy shock the Fed can't fix with higher rates. I express that view with a small, capped-risk bet that pays if the Fed holds.
+</p>
+
+<div class="worked">
+  <div class="worked-title">Trade ticket</div>
+  <div class="dt-wrap"><table class="dt" style="margin:0">
+    <tr><td>Instrument</td><td>Options on December 2026 Three-Month SOFR futures (SR3Z6), expiring 11 Dec 2026</td></tr>
+    <tr><td>Structure</td><td>Buy \(95.875\) call, sell \(96.00\) call (a \(12.5\) basis point bull call spread)</td></tr>
+    <tr><td>Entry</td><td>Pay no more than <strong>\(3.0\text{ bp}\)</strong> (\(\$75\)) per spread</td></tr>
+    <tr><td>Size</td><td>\(10\) spreads &rarr; maximum loss <strong>\(\$750\)</strong></td></tr>
+    <tr><td>Maximum gain</td><td>\(9.5\text{ bp}\) per spread &rarr; <strong>\(\$2{,}375\)</strong> on \(10\) spreads (about \(3.2\times\) the risk)</td></tr>
+    <tr><td>Wins if</td><td>The Fed holds on 9 December</td></tr>
+    <tr><td>Break-even odds</td><td>A hold needs at least a <strong>\(24\%\)</strong> chance; the market says \(\approx 10\%\), I say \(\approx 30\%\)</td></tr>
+  </table></div>
+</div>
+
+<div class="metric-row">
+  <div class="metric"><div class="metric-lbl">Market odds of a hold</div><div class="metric-val">\(\approx 10\%\)</div><div class="metric-sub">CME FedWatch, 22 Oct</div></div>
+  <div class="metric"><div class="metric-lbl">My odds of a hold</div><div class="metric-val">\(\approx 30\%\)</div><div class="metric-sub">see "My View"</div></div>
+  <div class="metric"><div class="metric-lbl">Risk : reward</div><div class="metric-val">\(1 : 3.2\)</div><div class="metric-sub">at a \(3\text{ bp}\) entry</div></div>
+  <div class="metric"><div class="metric-lbl">Expected value</div><div class="metric-val">\(+\$188\)</div><div class="metric-sub">\(10\) spreads, if I'm right on odds</div></div>
+</div>
+
+<div class="insight">
+  <div class="insight-lbl">The idea in one line</div>
+  I'm not betting that a hold is <strong>likely</strong>. I'm betting it's <strong>more likely than the price says</strong>. When something is priced at \(10\%\) but you think it's \(30\%\), a cheap bet on it can be worth making, even though you'll usually lose it.
+</div>
+{% endpsec %}
+
+{% psec 2, "What the Market Thinks", "What is already in the price?" %}
+<p class="topic-intro">Before having a view, you need to know what's already in the price. Right now, the market is close to certain the Fed hikes in December.</p>
+
+<div class="sh">The see-saw: price = 100 &minus; rate</div>
+<p class="np">A SOFR future is quoted as <strong>\(100\) minus the interest rate people expect</strong> over a three-month window. If traders expect \(4.18\%\), the future trades at \(95.82\). Rate and price move like two ends of a see-saw: <strong>if expected rates fall, the price rises</strong>. One basis point (\(0.01\%\)) is worth \(\$25\) per contract.</p>
+<div class="f-box">\[ \text{Futures price} = 100 - \text{expected average SOFR} \]</div>
+
+<div class="sh">Snapshot &mdash; 22&ndash;23 October 2026</div>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Measure</th><th>Level</th><th>What it tells us</th></tr>
+  <tr><td>Fed target range</td><td>\(3.75\text{–}4.00\%\)</td><td>After a unanimous hike on 16 September, the first in three years</td></tr>
+  <tr><td>SOFR (overnight)</td><td>\(3.88\%\)</td><td>Where overnight borrowing actually sits (21 Oct)</td></tr>
+  <tr><td>SR3Z6 future</td><td>\(\approx 95.82\)</td><td>Market expects SOFR to average \(\approx 4.18\%\) from mid-Dec to mid-Mar</td></tr>
+  <tr><td>October hike odds</td><td>\(\approx 16\%\)</td><td>A pause next week is expected</td></tr>
+  <tr class="hl"><td>December hike odds</td><td>\(\approx 90\%\)</td><td>A December hike is treated as almost certain</td></tr>
+</table></div>
+
+<div class="insight">
+  <div class="insight-lbl">Reading the price</div>
+  Overnight SOFR is \(3.88\%\) but the December future implies \(4.18\%\). That extra \(\approx 30\text{ bp}\) is the market saying: <strong>one more \(25\text{ bp}\) hike in December, plus a little chance of more early next year</strong>. If the Fed holds instead, that expected rate has to fall, and the future has to rise.
+</div>
+{% endpsec %}
+
+{% psec 3, "Why a Pause Is Underpriced", "Why do I disagree with the market?", "My View" %}
+<p class="topic-intro">My case rests on data, not on guessing what any politician wants. Here's the evidence for a hold, and the evidence against me, side by side.</p>
+
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-icon green">1</div><div class="sum-title">Jobs growth has stalled</div><div class="sum-body">September payrolls rose by just <strong>\(29{,}000\)</strong>, far below forecasts, and unemployment rose to <strong>\(4.2\%\)</strong>. Hiking into a weakening jobs market risks tipping it over.</div></div>
+  <div class="sum-card"><div class="sum-icon green">2</div><div class="sum-title">The inflation jump is mostly energy</div><div class="sum-body">Headline CPI hit <strong>\(3.7\%\)</strong>, but gasoline (\(+34\%\) year on year) did much of the work. Core CPI is <strong>\(2.6\%\)</strong>. Higher rates can't produce more oil, and central banks often look through supply shocks like this.</div></div>
+  <div class="sum-card"><div class="sum-icon green">3</div><div class="sum-title">Housing is already cracking</div><div class="sum-body">September housing starts fell and pending home sales dropped to a <strong>record low</strong>. The rate-sensitive parts of the economy are already slowing.</div></div>
+  <div class="sum-card"><div class="sum-icon green">4</div><div class="sum-title">The Fed hasn't committed</div><div class="sum-body">Chair Kevin Warsh declined to say when, or whether, further hikes would come, and senior officials have sounded more cautious since September. A \(90\%\) price leaves no room for that doubt.</div></div>
+</div>
+
+<div class="sh">The case against me</div>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Argument for a hike</th><th>My response</th></tr>
+  <tr><td>September minutes said another hike would likely be appropriate by year-end</td><td>That was before the weak jobs and housing data. The minutes also said decisions depend on incoming data.</td></tr>
+  <tr><td>Headline inflation is rising, not falling (\(3.4\%\) &rarr; \(3.7\%\))</td><td>True, and it's the biggest risk to this trade. But it's energy-led, and core rose only modestly.</td></tr>
+  <tr><td>Other central banks are hiking (the ECB raised rates)</td><td>Each bank sets policy for its own economy; US jobs data is weaker.</td></tr>
+  <tr><td>The economy has otherwise been strong</td><td>Yes, which is why I put a hold at \(\approx 30\%\), not \(50\%\)+. I'm arguing it's underpriced, not that it's the most likely outcome.</td></tr>
+</table></div>
+
+<div class="insight">
+  <div class="insight-lbl">Background, not a reason</div>
+  The US midterm elections on 3 November add political noise around rates. I don't rely on it: the Fed is independent, and the December meeting comes a month after the vote. If anything, the Fed will want any decision to look purely data-driven.
+</div>
+{% endpsec %}
+
+{% psec 4, "Turning the View Into a Trade", "How do I bet on it, and how much can I lose?", "The Trade" %}
+<p class="topic-intro">I want something that pays well if the Fed holds, costs little if I'm wrong, and can't lose more than I put in. A bull call spread on the December SOFR future does all three.</p>
+
+<div class="sh">Why SR3Z6, and why these dates line up</div>
+<p class="np">SR3Z6's options expire on <strong>11 December</strong>, just two days after the Fed's decision on 9 December, so the result is fully in the price before my options settle. The future itself prices the <strong>average rate from 16 December to mid-March</strong>, a window that includes the next (late-January) meeting. So a hold only helps fully if the market doesn't immediately price a January hike instead.</p>
+
+<div class="sh">Why these strikes</div>
+<p class="np">I worked out where the future should trade on 11 December under five outcomes, by averaging the expected overnight rate across the 91-day window. The \(95.875\) / \(96.00\) strikes sit neatly between the "hike" and "hold" clusters.</p>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Outcome on 9 Dec</th><th>Expected avg rate</th><th>SR3Z6 price</th><th>Spread pays</th></tr>
+  <tr><td>Hike, more hikes signalled</td><td>\(4.21\%\)</td><td>\(95.79\)</td><td>\(0\text{ bp}\)</td></tr>
+  <tr><td>Hike, "last one" tone</td><td>\(4.13\%\)</td><td>\(95.87\)</td><td>\(0\text{ bp}\)</td></tr>
+  <tr class="hl"><td>Hold, January hike fully priced</td><td>\(4.01\%\)</td><td>\(95.99\)</td><td>\(11.3\text{ bp}\)</td></tr>
+  <tr class="hl"><td>Hold, hikes on pause</td><td>\(3.92\%\)</td><td>\(96.08\)</td><td>\(12.5\text{ bp}\) (max)</td></tr>
+  <tr class="hl"><td>Surprise cut</td><td>\(3.63\%\)</td><td>\(96.37\)</td><td>\(12.5\text{ bp}\) (max)</td></tr>
+</table></div>
+<div class="insight">
+  <div class="insight-lbl">The design choice</div>
+  Even in the least helpful hold case &mdash; the Fed pauses but everyone expects a January hike &mdash; the spread still pays <strong>\(11.3\) of a possible \(12.5\text{ bp}\)</strong>. That's deliberate: the trade should reward being right about December without needing me to also be right about January.
+</div>
+
+<div class="chart-block">
+  <div class="chart-block-title">Profit or Loss at Expiry &mdash; 10 Spreads, 3 bp Entry</div>
+  <div class="chart-wrap"><canvas id="chartPay"></canvas></div>
+  <div class="chart-controls">
+    <div class="chart-control-row"><span class="cc-label">SR3Z6 on 11 Dec</span><input type="range" id="p-f" min="95.70" max="96.25" step="0.005" value="95.82"><span class="cc-value" id="p-f-v">95.820</span></div>
   </div>
-  <div class="page-title">December FOMC Trade Memo</div>
-  <div class="page-sub">SR3Z6 SOFR futures options &middot; bull call spread &middot; written 23 October 2026 &middot; paper trade</div>
-  <div class="lv-tabs">
-    <button class="lv-tab active"><div class="lv-pip"></div>Memo</button>
+  <div class="live-out" style="grid-template-columns:repeat(3,1fr)">
+    <div class="metric"><div class="metric-lbl">Implied rate</div><div class="metric-val" id="p-r">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Spread pays</div><div class="metric-val" id="p-bp">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Profit / loss</div><div class="metric-val" id="p-usd">&ndash;</div></div>
   </div>
 </div>
 
-<div class="study-shell">
-  <aside class="study-sidebar">
-    <div class="sb-label" style="margin-top:8px">Memo</div>
-    <button class="sb-item active" id="sb-1" onclick="switchTopic(1)"><div class="sb-dot"></div>Summary</button>
-    <button class="sb-item" id="sb-2" onclick="switchTopic(2)"><div class="sb-dot"></div>What the Market Thinks</button>
-    <button class="sb-item" id="sb-3" onclick="switchTopic(3)"><div class="sb-dot"></div>My View</button>
-    <button class="sb-item" id="sb-4" onclick="switchTopic(4)"><div class="sb-dot"></div>The Trade</button>
-    <button class="sb-item" id="sb-5" onclick="switchTopic(5)"><div class="sb-dot"></div>Risks &amp; Plan</button>
-    <button class="sb-item" id="sb-6" onclick="switchTopic(6)"><div class="sb-dot"></div>Method &amp; Sources</button>
-  </aside>
+<div class="sh">Is it worth it? Expected value</div>
+<p class="np">I'll lose this bet most of the time, so the question isn't "will it win?" but "<strong>does it pay enough when it wins?</strong>" Move the sliders: the trade only makes sense if your odds of a hold are above the break-even line.</p>
+<div class="chart-block">
+  <div class="chart-block-title">Expected Value per 10 Spreads</div>
+  <div class="chart-wrap" style="height:240px"><canvas id="chartEV"></canvas></div>
+  <div class="chart-controls">
+    <div class="chart-control-row"><span class="cc-label">My hold odds</span><input type="range" id="e-p" min="5" max="60" step="1" value="30"><span class="cc-value" id="e-p-v">30%</span></div>
+    <div class="chart-control-row"><span class="cc-label">Entry cost</span><input type="range" id="e-c" min="1" max="6" step="0.25" value="3"><span class="cc-value" id="e-c-v">3.00 bp</span></div>
+  </div>
+  <div class="live-out" style="grid-template-columns:repeat(3,1fr)">
+    <div class="metric"><div class="metric-lbl">Break-even odds</div><div class="metric-val" id="e-be">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">EV at my odds</div><div class="metric-val" id="e-me">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">EV at market odds (10%)</div><div class="metric-val" id="e-mk">&ndash;</div></div>
+  </div>
+</div>
+<div class="worked">
+  <div class="worked-title">The arithmetic</div>
+  <div class="worked-body">
+    <div class="worked-math tex">\[ \begin{aligned}
+\text{Max gain} &= 12.5 - 3.0 = 9.5\text{ bp} \qquad \text{Max loss} = 3.0\text{ bp} \\
+\text{Break-even} &= \frac{\text{cost}}{\text{width}} = \frac{3.0}{12.5} = 24\% \\
+\text{EV}(30\%) &= 0.30 \times 9.5 - 0.70 \times 3.0 = +0.75\text{ bp} = +\$18.75 \text{ per spread} \\
+\text{EV}(10\%) &= 0.10 \times 9.5 - 0.90 \times 3.0 = -1.75\text{ bp} = -\$43.75 \text{ per spread}
+\end{aligned} \]</div>
+    If the market's \(10\%\) is right, this is a losing trade. Its value comes entirely from my disagreement with the market &mdash; which is why the next section matters.
+  </div>
+</div>
+{% endpsec %}
 
-  <div class="study-content">
+{% psec 5, "Risks, Catalysts and the Plan", "What could go wrong, and what will I do about it?", "Risks and Plan" %}
+<p class="topic-intro">A trade is only as good as the plan for managing it. Here's what I'm watching, what would prove me wrong, and what I'll do.</p>
 
-    <!-- ════════════ 1: SUMMARY ════════════ -->
-    <div class="topic-pane" id="topic-1">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Trade Memo &middot; Rates</span>
-      <span class="badge badge-subtle">Paper trade &middot; not investment advice</span>
-    </div>
-    <div class="topic-title-lg">The Market Is Too Sure the Fed Hikes in December</div>
-    <p class="topic-intro">
-      Futures price roughly a 90% chance that the Fed raises rates again on 9 December. I think a pause is far more likely than 1-in-10: jobs growth has stalled, housing is weakening, and much of the inflation jump is an energy shock the Fed can't fix with higher rates. I express that view with a small, capped-risk bet that pays if the Fed holds.
-    </p>
+<div class="sh">Dates that will move this trade</div>
+<div class="flow">
+  <div class="flow-step"><div class="fs-n">27&ndash;28 Oct</div><div class="fs-t">October FOMC</div><div class="fs-b">Pause expected. The statement and press conference tone set up December.</div></div>
+  <div class="flow-step"><div class="fs-n">29 Oct</div><div class="fs-t">September PCE</div><div class="fs-b">The Fed's preferred inflation gauge.</div></div>
+  <div class="flow-step"><div class="fs-n">November</div><div class="fs-t">Jobs &amp; CPI</div><div class="fs-b">October payrolls and inflation &mdash; the biggest swing factors.</div></div>
+  <div class="flow-step"><div class="fs-n">9 &rarr; 11 Dec</div><div class="fs-t">Decision &amp; expiry</div><div class="fs-b">Fed decides; options settle two days later.</div></div>
+</div>
 
-    <div class="worked">
-      <div class="worked-title">Trade ticket</div>
-      <div class="dt-wrap"><table class="dt" style="margin:0">
-        <tr><td>Instrument</td><td>Options on December 2026 Three-Month SOFR futures (SR3Z6), expiring 11 Dec 2026</td></tr>
-        <tr><td>Structure</td><td>Buy 95.875 call, sell 96.00 call (a 12.5 basis point bull call spread)</td></tr>
-        <tr><td>Entry</td><td>Pay no more than <strong>3.0 bp</strong> ($75) per spread</td></tr>
-        <tr><td>Size</td><td>10 spreads &rarr; maximum loss <strong>$750</strong></td></tr>
-        <tr><td>Maximum gain</td><td>9.5 bp per spread &rarr; <strong>$2,375</strong> on 10 spreads (about 3.2&times; the risk)</td></tr>
-        <tr><td>Wins if</td><td>The Fed holds on 9 December</td></tr>
-        <tr><td>Break-even odds</td><td>A hold needs at least a <strong>24%</strong> chance; the market says ~10%, I say ~30%</td></tr>
-      </table></div>
-    </div>
+<div class="sh">Main risks</div>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Risk</th><th>Why it matters</th></tr>
+  <tr><td>Energy shock spreads</td><td>If higher oil starts lifting core inflation, the Fed hikes and the spread expires worthless.</td></tr>
+  <tr><td>Jobs rebound</td><td>A strong October payrolls number would undo my strongest argument.</td></tr>
+  <tr><td>Hold, but hawkish</td><td>A pause paired with a clear "January hike" signal reduces the payout (to \(\approx 11\text{ bp}\) in my model, more if the market prices extra hikes).</td></tr>
+  <tr><td>Execution cost</td><td>Options have bid-ask spreads. If the spread can't be bought at \(3\text{ bp}\) or less, the maths no longer works and I don't trade.</td></tr>
+  <tr><td>Year-end funding</td><td>SOFR often jumps briefly around 31 December; small for a 91-day average, but it nudges the expected rate up.</td></tr>
+</table></div>
 
-    <div class="metric-row">
-      <div class="metric"><div class="metric-lbl">Market odds of a hold</div><div class="metric-val">~10%</div><div class="metric-sub">CME FedWatch, 22 Oct</div></div>
-      <div class="metric"><div class="metric-lbl">My odds of a hold</div><div class="metric-val">~30%</div><div class="metric-sub">see "My View"</div></div>
-      <div class="metric"><div class="metric-lbl">Risk : reward</div><div class="metric-val">1 : 3.2</div><div class="metric-sub">at a 3 bp entry</div></div>
-      <div class="metric"><div class="metric-lbl">Expected value</div><div class="metric-val">+$188</div><div class="metric-sub">10 spreads, if I'm right on odds</div></div>
-    </div>
+<div class="sh">Rules</div>
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-icon blue">&rarr;</div><div class="sum-title">Entry</div><div class="sum-body">Buy \(10\) spreads only at <strong>\(3.0\text{ bp}\) or less</strong>. No chasing a higher price.</div></div>
+  <div class="sum-card"><div class="sum-icon green">&uarr;</div><div class="sum-title">Take profit</div><div class="sum-body">If dovish data lifts the spread to <strong>\(\ge 9\text{ bp}\)</strong> before the meeting, sell half and keep the rest for the decision.</div></div>
+  <div class="sum-card"><div class="sum-icon amber">!</div><div class="sum-title">What changes my mind</div><div class="sum-body">October payrolls above ~150k, <em>or</em> core CPI clearly accelerating, <em>or</em> Fed officials openly endorsing a December hike. Then I close and accept the loss.</div></div>
+  <div class="sum-card"><div class="sum-icon purple">&#9633;</div><div class="sum-title">Never</div><div class="sum-body">Add to the position if it moves against me. The \(\$750\) maximum loss is the whole risk budget.</div></div>
+</div>
 
-    <div class="insight">
-      <div class="insight-lbl">The idea in one line</div>
-      I'm not betting that a hold is <strong>likely</strong>. I'm betting it's <strong>more likely than the price says</strong>. When something is priced at 10% but you think it's 30%, a cheap bet on it can be worth making, even though you'll usually lose it.
-    </div>
+<div class="qbox">
+  <div class="qbox-lbl">After 11 December</div>
+  <p class="qbox-body">I'll publish a follow-up breaking down what happened: how much of the result came from the Fed decision, from changes in expectations for January, and from time decay. Whatever the result, the point is to compare my reasoning with what actually happened.</p>
+</div>
+{% endpsec %}
 
-    <div class="topic-nav">
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(2)">Next: What the Market Thinks &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 2: MARKET ════════════ -->
-    <div class="topic-pane" id="topic-2" style="display:none">
-    <div class="topic-eyebrow"><span class="badge badge-accent">Section 1</span><span class="badge badge-subtle">The starting point</span></div>
-    <div class="topic-title-lg">What the Market Thinks</div>
-    <p class="topic-intro">Before having a view, you need to know what's already in the price. Right now, the market is close to certain the Fed hikes in December.</p>
-
-    <div class="sh">The see-saw: price = 100 &minus; rate</div>
-    <p class="np">A SOFR future is quoted as <strong>100 minus the interest rate people expect</strong> over a three-month window. If traders expect 4.18%, the future trades at 95.82. Rate and price move like two ends of a see-saw: <strong>if expected rates fall, the price rises</strong>. One basis point (0.01%) is worth $25 per contract.</p>
-    <div class="f-box"><span class="math">Futures price = 100 &minus; expected average SOFR</span></div>
-
-    <div class="sh">Snapshot &mdash; 22&ndash;23 October 2026</div>
-    <div class="dt-wrap"><table class="dt">
-      <tr><th>Measure</th><th>Level</th><th>What it tells us</th></tr>
-      <tr><td>Fed target range</td><td>3.75&ndash;4.00%</td><td>After a unanimous hike on 16 September, the first in three years</td></tr>
-      <tr><td>SOFR (overnight)</td><td>3.88%</td><td>Where overnight borrowing actually sits (21 Oct)</td></tr>
-      <tr><td>SR3Z6 future</td><td>&asymp; 95.82</td><td>Market expects SOFR to average &asymp;4.18% from mid-Dec to mid-Mar</td></tr>
-      <tr><td>October hike odds</td><td>&asymp; 16%</td><td>A pause next week is expected</td></tr>
-      <tr class="hl"><td>December hike odds</td><td>&asymp; 90%</td><td>A December hike is treated as almost certain</td></tr>
-    </table></div>
-
-    <div class="insight">
-      <div class="insight-lbl">Reading the price</div>
-      Overnight SOFR is 3.88% but the December future implies 4.18%. That extra &asymp;30 bp is the market saying: <strong>one more 25 bp hike in December, plus a little chance of more early next year</strong>. If the Fed holds instead, that expected rate has to fall, and the future has to rise.
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(1)">&larr; Summary</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(3)">Next: My View &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 3: VIEW ════════════ -->
-    <div class="topic-pane" id="topic-3" style="display:none">
-    <div class="topic-eyebrow"><span class="badge badge-accent">Section 2</span><span class="badge badge-subtle">Why I disagree</span></div>
-    <div class="topic-title-lg">Why a Pause Is Underpriced</div>
-    <p class="topic-intro">My case rests on data, not on guessing what any politician wants. Here's the evidence for a hold, and the evidence against me, side by side.</p>
-
-    <div class="summary-grid">
-      <div class="sum-card"><div class="sum-icon green">1</div><div class="sum-title">Jobs growth has stalled</div><div class="sum-body">September payrolls rose by just <strong>29,000</strong>, far below forecasts, and unemployment rose to <strong>4.2%</strong>. Hiking into a weakening jobs market risks tipping it over.</div></div>
-      <div class="sum-card"><div class="sum-icon green">2</div><div class="sum-title">The inflation jump is mostly energy</div><div class="sum-body">Headline CPI hit <strong>3.7%</strong>, but gasoline (+34% year on year) did much of the work. Core CPI is <strong>2.6%</strong>. Higher rates can't produce more oil, and central banks often look through supply shocks like this.</div></div>
-      <div class="sum-card"><div class="sum-icon green">3</div><div class="sum-title">Housing is already cracking</div><div class="sum-body">September housing starts fell and pending home sales dropped to a <strong>record low</strong>. The rate-sensitive parts of the economy are already slowing.</div></div>
-      <div class="sum-card"><div class="sum-icon green">4</div><div class="sum-title">The Fed hasn't committed</div><div class="sum-body">Chair Kevin Warsh declined to say when, or whether, further hikes would come, and senior officials have sounded more cautious since September. A 90% price leaves no room for that doubt.</div></div>
-    </div>
-
-    <div class="sh">The case against me</div>
-    <div class="dt-wrap"><table class="dt">
-      <tr><th>Argument for a hike</th><th>My response</th></tr>
-      <tr><td>September minutes said another hike would likely be appropriate by year-end</td><td>That was before the weak jobs and housing data. The minutes also said decisions depend on incoming data.</td></tr>
-      <tr><td>Headline inflation is rising, not falling (3.4% &rarr; 3.7%)</td><td>True, and it's the biggest risk to this trade. But it's energy-led, and core rose only modestly.</td></tr>
-      <tr><td>Other central banks are hiking (the ECB raised rates)</td><td>Each bank sets policy for its own economy; US jobs data is weaker.</td></tr>
-      <tr><td>The economy has otherwise been strong</td><td>Yes, which is why I put a hold at ~30%, not 50%+. I'm arguing it's underpriced, not that it's the most likely outcome.</td></tr>
-    </table></div>
-
-    <div class="insight">
-      <div class="insight-lbl">Background, not a reason</div>
-      The US midterm elections on 3 November add political noise around rates. I don't rely on it: the Fed is independent, and the December meeting comes a month after the vote. If anything, the Fed will want any decision to look purely data-driven.
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(2)">&larr; What the Market Thinks</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(4)">Next: The Trade &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 4: TRADE ════════════ -->
-    <div class="topic-pane" id="topic-4" style="display:none">
-    <div class="topic-eyebrow"><span class="badge badge-accent">Section 3</span><span class="badge badge-subtle">Structure &middot; strikes &middot; payoff</span></div>
-    <div class="topic-title-lg">Turning the View Into a Trade</div>
-    <p class="topic-intro">I want something that pays well if the Fed holds, costs little if I'm wrong, and can't lose more than I put in. A bull call spread on the December SOFR future does all three.</p>
-
-    <div class="sh">Why SR3Z6, and why these dates line up</div>
-    <p class="np">SR3Z6's options expire on <strong>11 December</strong>, just two days after the Fed's decision on 9 December, so the result is fully in the price before my options settle. The future itself prices the <strong>average rate from 16 December to mid-March</strong>, a window that includes the next (late-January) meeting. So a hold only helps fully if the market doesn't immediately price a January hike instead.</p>
-
-    <div class="sh">Why these strikes</div>
-    <p class="np">I worked out where the future should trade on 11 December under five outcomes, by averaging the expected overnight rate across the 91-day window. The 95.875 / 96.00 strikes sit neatly between the "hike" and "hold" clusters.</p>
-    <div class="dt-wrap"><table class="dt">
-      <tr><th>Outcome on 9 Dec</th><th>Expected avg rate</th><th>SR3Z6 price</th><th>Spread pays</th></tr>
-      <tr><td>Hike, more hikes signalled</td><td>4.21%</td><td>95.79</td><td>0 bp</td></tr>
-      <tr><td>Hike, "last one" tone</td><td>4.13%</td><td>95.87</td><td>0 bp</td></tr>
-      <tr class="hl"><td>Hold, January hike fully priced</td><td>4.01%</td><td>95.99</td><td>11.3 bp</td></tr>
-      <tr class="hl"><td>Hold, hikes on pause</td><td>3.92%</td><td>96.08</td><td>12.5 bp (max)</td></tr>
-      <tr class="hl"><td>Surprise cut</td><td>3.63%</td><td>96.37</td><td>12.5 bp (max)</td></tr>
-    </table></div>
-    <div class="insight">
-      <div class="insight-lbl">The design choice</div>
-      Even in the least helpful hold case &mdash; the Fed pauses but everyone expects a January hike &mdash; the spread still pays <strong>11.3 of a possible 12.5 bp</strong>. That's deliberate: the trade should reward being right about December without needing me to also be right about January.
-    </div>
-
-    <div class="chart-block">
-      <div class="chart-block-title">Profit or Loss at Expiry &mdash; 10 Spreads, 3 bp Entry</div>
-      <div class="chart-wrap"><canvas id="chartPay"></canvas></div>
-      <div class="chart-controls">
-        <div class="chart-control-row"><span class="cc-label">SR3Z6 on 11 Dec</span><input type="range" id="p-f" min="95.70" max="96.25" step="0.005" value="95.82"><span class="cc-value" id="p-f-v">95.820</span></div>
-      </div>
-      <div class="live-out" style="grid-template-columns:repeat(3,1fr)">
-        <div class="metric"><div class="metric-lbl">Implied rate</div><div class="metric-val" id="p-r">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">Spread pays</div><div class="metric-val" id="p-bp">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">Profit / loss</div><div class="metric-val" id="p-usd">&ndash;</div></div>
-      </div>
-    </div>
-
-    <div class="sh">Is it worth it? Expected value</div>
-    <p class="np">I'll lose this bet most of the time, so the question isn't "will it win?" but "<strong>does it pay enough when it wins?</strong>" Move the sliders: the trade only makes sense if your odds of a hold are above the break-even line.</p>
-    <div class="chart-block">
-      <div class="chart-block-title">Expected Value per 10 Spreads</div>
-      <div class="chart-wrap" style="height:240px"><canvas id="chartEV"></canvas></div>
-      <div class="chart-controls">
-        <div class="chart-control-row"><span class="cc-label">My hold odds</span><input type="range" id="e-p" min="5" max="60" step="1" value="30"><span class="cc-value" id="e-p-v">30%</span></div>
-        <div class="chart-control-row"><span class="cc-label">Entry cost</span><input type="range" id="e-c" min="1" max="6" step="0.25" value="3"><span class="cc-value" id="e-c-v">3.00 bp</span></div>
-      </div>
-      <div class="live-out" style="grid-template-columns:repeat(3,1fr)">
-        <div class="metric"><div class="metric-lbl">Break-even odds</div><div class="metric-val" id="e-be">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">EV at my odds</div><div class="metric-val" id="e-me">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">EV at market odds (10%)</div><div class="metric-val" id="e-mk">&ndash;</div></div>
-      </div>
-    </div>
-    <div class="worked">
-      <div class="worked-title">The arithmetic</div>
-      <div class="worked-body">
-        <div class="worked-math">Max gain   = 12.5 &minus; 3.0 = 9.5 bp      Max loss = 3.0 bp
-Break-even = cost &divide; width = 3.0 &divide; 12.5 = 24%
-EV (30%)   = 0.30 &times; 9.5 &minus; 0.70 &times; 3.0 = +0.75 bp  = +$18.75 per spread
-EV (10%)   = 0.10 &times; 9.5 &minus; 0.90 &times; 3.0 = &minus;1.75 bp  = &minus;$43.75 per spread</div>
-        If the market's 10% is right, this is a losing trade. Its value comes entirely from my disagreement with the market &mdash; which is why the next section matters.
-      </div>
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(3)">&larr; My View</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(5)">Next: Risks &amp; Plan &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 5: RISKS ════════════ -->
-    <div class="topic-pane" id="topic-5" style="display:none">
-    <div class="topic-eyebrow"><span class="badge badge-accent">Section 4</span><span class="badge badge-subtle">What could go wrong</span></div>
-    <div class="topic-title-lg">Risks, Catalysts and the Plan</div>
-    <p class="topic-intro">A trade is only as good as the plan for managing it. Here's what I'm watching, what would prove me wrong, and what I'll do.</p>
-
-    <div class="sh">Dates that will move this trade</div>
-    <div class="flow">
-      <div class="flow-step"><div class="fs-n">27&ndash;28 Oct</div><div class="fs-t">October FOMC</div><div class="fs-b">Pause expected. The statement and press conference tone set up December.</div></div>
-      <div class="flow-step"><div class="fs-n">29 Oct</div><div class="fs-t">September PCE</div><div class="fs-b">The Fed's preferred inflation gauge.</div></div>
-      <div class="flow-step"><div class="fs-n">November</div><div class="fs-t">Jobs &amp; CPI</div><div class="fs-b">October payrolls and inflation &mdash; the biggest swing factors.</div></div>
-      <div class="flow-step"><div class="fs-n">9 &rarr; 11 Dec</div><div class="fs-t">Decision &amp; expiry</div><div class="fs-b">Fed decides; options settle two days later.</div></div>
-    </div>
-
-    <div class="sh">Main risks</div>
-    <div class="dt-wrap"><table class="dt">
-      <tr><th>Risk</th><th>Why it matters</th></tr>
-      <tr><td>Energy shock spreads</td><td>If higher oil starts lifting core inflation, the Fed hikes and the spread expires worthless.</td></tr>
-      <tr><td>Jobs rebound</td><td>A strong October payrolls number would undo my strongest argument.</td></tr>
-      <tr><td>Hold, but hawkish</td><td>A pause paired with a clear "January hike" signal reduces the payout (to ~11 bp in my model, more if the market prices extra hikes).</td></tr>
-      <tr><td>Execution cost</td><td>Options have bid-ask spreads. If the spread can't be bought at 3 bp or less, the maths no longer works and I don't trade.</td></tr>
-      <tr><td>Year-end funding</td><td>SOFR often jumps briefly around 31 December; small for a 91-day average, but it nudges the expected rate up.</td></tr>
-    </table></div>
-
-    <div class="sh">Rules</div>
-    <div class="summary-grid">
-      <div class="sum-card"><div class="sum-icon blue">&rarr;</div><div class="sum-title">Entry</div><div class="sum-body">Buy 10 spreads only at <strong>3.0 bp or less</strong>. No chasing a higher price.</div></div>
-      <div class="sum-card"><div class="sum-icon green">&uarr;</div><div class="sum-title">Take profit</div><div class="sum-body">If dovish data lifts the spread to <strong>&ge; 9 bp</strong> before the meeting, sell half and keep the rest for the decision.</div></div>
-      <div class="sum-card"><div class="sum-icon amber">!</div><div class="sum-title">What changes my mind</div><div class="sum-body">October payrolls above ~150k, <em>or</em> core CPI clearly accelerating, <em>or</em> Fed officials openly endorsing a December hike. Then I close and accept the loss.</div></div>
-      <div class="sum-card"><div class="sum-icon purple">&#9633;</div><div class="sum-title">Never</div><div class="sum-body">Add to the position if it moves against me. The $750 maximum loss is the whole risk budget.</div></div>
-    </div>
-
-    <div class="qbox">
-      <div class="qbox-lbl">After 11 December</div>
-      <p class="qbox-body">I'll publish a follow-up breaking down what happened: how much of the result came from the Fed decision, from changes in expectations for January, and from time decay. Whatever the result, the point is to compare my reasoning with what actually happened.</p>
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(4)">&larr; The Trade</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(6)">Next: Method &amp; Sources &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 6: METHOD ════════════ -->
-    <div class="topic-pane" id="topic-6" style="display:none">
-    <div class="topic-eyebrow"><span class="badge badge-accent">Section 5</span><span class="badge badge-subtle">How I got the numbers</span></div>
-    <div class="topic-title-lg">Method, Limits and Sources</div>
-
-    <div class="sh">Scenario prices</div>
-    <p class="np">The future settles on the average SOFR over 16 Dec 2026 &ndash; 17 Mar 2027 (91 days). For each outcome, I take SOFR's current position in the Fed's range (3.88%), shift it by the December decision, and add any January hike in proportion to how much of the window comes after a late-January meeting (about 48 of 91 days):</p>
-    <div class="code">def sr3z6_price(sofr_after_dec, p_jan_hike):
+{% psec 6, "Method, Limits and Sources", "How did I work it out, and where does it fall short?", "Method and Sources" %}
+<div class="sh">Scenario prices</div>
+<p class="np">The future settles on the average SOFR over 16 Dec 2026 &ndash; 17 Mar 2027 (\(91\) days). For each outcome, I take SOFR's current position in the Fed's range (\(3.88\%\)), shift it by the December decision, and add any January hike in proportion to how much of the window comes after a late-January meeting (about \(48\) of \(91\) days):</p>
+<div class="code">def sr3z6_price(sofr_after_dec, p_jan_hike):
     avg_rate = sofr_after_dec + 0.25 * p_jan_hike * 48 / 91
     return 100 - avg_rate
 
 # e.g. hold, January hike fully priced:
 sr3z6_price(3.88, 1.0)   # -> 95.988  -> spread pays 11.3 bp</div>
 
-    <div class="sh">Why I set an entry limit instead of a model price</div>
-    <p class="np">A standard bell-curve options model (Bachelier, with an assumed 50&ndash;90 bp yearly volatility) values this spread at <strong>3.3&ndash;4.5 bp</strong>. Weighting my scenario payoffs by the market's own 90/10 odds gives about <strong>1.3 bp</strong>. They disagree because a Fed meeting doesn't produce one smooth range of outcomes: it produces two clusters, "hike" and "hold". So I don't trust either number. I set a limit of 3 bp, where the trade still works at my odds, and check a live quote before trading.</p>
+<div class="sh">Why I set an entry limit instead of a model price</div>
+<p class="np">A standard bell-curve options model (Bachelier, with an assumed \(50\text{–}90\text{ bp}\) yearly volatility) values this spread at <strong>\(3.3\text{–}4.5\text{ bp}\)</strong>. Weighting my scenario payoffs by the market's own 90/10 odds gives about <strong>\(1.3\text{ bp}\)</strong>. They disagree because a Fed meeting doesn't produce one smooth range of outcomes: it produces two clusters, "hike" and "hold". So I don't trust either number. I set a limit of \(3\text{ bp}\), where the trade still works at my odds, and check a live quote before trading.</p>
 
-    <div class="insight">
-      <div class="insight-lbl">Limits of this memo</div>
-      Prices are snapshots from 22&ndash;23 October 2026 and will move. The late-January meeting date is an assumption. Option premiums are estimates, not live quotes. This is a paper trade written for learning.
-    </div>
-
-    <div class="sh">Sources</div>
-    <ul class="np" style="padding-left:18px">
-      <li><a style="color:var(--accent)" href="https://www.fxstreet.com/news/united-states-dollar-index-falls-to-near-10150-due-to-fed-rate-pause-bets-202610220912" target="_blank">FXStreet, 22 Oct 2026</a> &mdash; CME FedWatch: 84% October hold, 90% December hike; Warsh guidance; housing data</li>
-      <li><a style="color:var(--accent)" href="https://www.cbsnews.com/news/september-cpi-report-inflation-energy-costs/" target="_blank">CBS News, 14 Oct 2026</a> &mdash; September CPI 3.7%, core 2.6%, energy drivers</li>
-      <li><a style="color:var(--accent)" href="https://finance.yahoo.com/economy/policy/article/the-fed-was-unanimous-about-raising-rates-in-september-economic-signals-have-since-changed-184839972.html" target="_blank">Yahoo Finance, 7 Oct 2026</a> &mdash; September payrolls, unemployment, core PCE, Fed officials' tone</li>
-      <li><a style="color:var(--accent)" href="https://www.roic.ai/news/traders-no-longer-fully-price-in-fed-rate-hike-before-end-2026-10-22-2026" target="_blank">ROIC News, 22 Oct 2026</a> &mdash; September minutes, ECB hike, analyst views</li>
-      <li><a style="color:var(--accent)" href="https://fred.stlouisfed.org/series/SOFR" target="_blank">FRED</a> &mdash; SOFR 3.88% (21 Oct 2026)</li>
-      <li><a style="color:var(--accent)" href="https://www.tradingview.com/symbols/CME-SR31!/contracts/" target="_blank">TradingView</a> &mdash; SR3Z6 &asymp; 95.82</li>
-      <li><a style="color:var(--accent)" href="https://www.cmegroup.com/education/files/trading-sofr-options-whitepaper.pdf" target="_blank">CME Group</a> &mdash; SOFR options expiry rule; <a style="color:var(--accent)" href="https://fedratecalc.com/fomc-meeting-schedule/" target="_blank">FedRateCalc</a> &mdash; FOMC dates</li>
-    </ul>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(5)">&larr; Risks &amp; Plan</button>
-      <a class="tn-btn primary" style="margin-left:auto" href="/projects/projects.html">All projects &rarr;</a>
-    </div>
-    </div>
-
-  </div>
+<div class="insight">
+  <div class="insight-lbl">Limits of this memo</div>
+  Prices are snapshots from 22&ndash;23 October 2026 and will move. The late-January meeting date is an assumption. Option premiums are estimates, not live quotes. This is a paper trade written for learning.
 </div>
 
+<div class="sh">Sources</div>
+<ul class="np" style="padding-left:18px">
+  <li><a style="color:var(--accent)" href="https://www.fxstreet.com/news/united-states-dollar-index-falls-to-near-10150-due-to-fed-rate-pause-bets-202610220912" target="_blank">FXStreet, 22 Oct 2026</a> &mdash; CME FedWatch: \(84\%\) October hold, \(90\%\) December hike; Warsh guidance; housing data</li>
+  <li><a style="color:var(--accent)" href="https://www.cbsnews.com/news/september-cpi-report-inflation-energy-costs/" target="_blank">CBS News, 14 Oct 2026</a> &mdash; September CPI \(3.7\%\), core \(2.6\%\), energy drivers</li>
+  <li><a style="color:var(--accent)" href="https://finance.yahoo.com/economy/policy/article/the-fed-was-unanimous-about-raising-rates-in-september-economic-signals-have-since-changed-184839972.html" target="_blank">Yahoo Finance, 7 Oct 2026</a> &mdash; September payrolls, unemployment, core PCE, Fed officials' tone</li>
+  <li><a style="color:var(--accent)" href="https://www.roic.ai/news/traders-no-longer-fully-price-in-fed-rate-hike-before-end-2026-10-22-2026" target="_blank">ROIC News, 22 Oct 2026</a> &mdash; September minutes, ECB hike, analyst views</li>
+  <li><a style="color:var(--accent)" href="https://fred.stlouisfed.org/series/SOFR" target="_blank">FRED</a> &mdash; SOFR \(3.88\%\) (21 Oct 2026)</li>
+  <li><a style="color:var(--accent)" href="https://www.tradingview.com/symbols/CME-SR31!/contracts/" target="_blank">TradingView</a> &mdash; SR3Z6 \(\approx 95.82\)</li>
+  <li><a style="color:var(--accent)" href="https://www.cmegroup.com/education/files/trading-sofr-options-whitepaper.pdf" target="_blank">CME Group</a> &mdash; SOFR options expiry rule; <a style="color:var(--accent)" href="https://fedratecalc.com/fomc-meeting-schedule/" target="_blank">FedRateCalc</a> &mdash; FOMC dates</li>
+</ul>
+{% endpsec %}
+
+{% psec 7, "Result", "What happened, and was I right?" %}
+<p class="topic-intro">The Fed decides on 9 December 2026. This section fills in the day after: the decision, the profit or loss on the \(10\) spreads, and whether my \(30\%\) was a better guess than the market's \(10\%\).</p>
+
+<div class="metric-row">
+  <div class="metric"><div class="metric-lbl">Fed decision</div><div class="metric-val">&mdash;</div><div class="metric-sub">hold or hike</div></div>
+  <div class="metric"><div class="metric-lbl">Profit or loss</div><div class="metric-val">&mdash;</div><div class="metric-sub">on \(10\) spreads</div></div>
+  <div class="metric"><div class="metric-lbl">Was 30% better?</div><div class="metric-val">&mdash;</div><div class="metric-sub">than the market's \(10\%\)</div></div>
 </div>
 
+<div class="sh">What I'd do differently</div>
+<p class="np">Written after the decision.</p>
+{% endpsec %}
 <script>
 const $=id=>document.getElementById(id);
 const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
 const charts={};
-const N=6;
-function switchTopic(n){
-  for(let i=1;i<=N;i++){const p=$('topic-'+i),s=$('sb-'+i);if(p)p.style.display=(i===n?'block':'none');if(s)s.classList.toggle('active',i===n);}
-  window.scrollTo({top:0,behavior:'smooth'});document.querySelector('.study-content').scrollTop=0;
-  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),50);
-}
 function getColors(){return{grid:isDark()?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.04)',text:isDark()?'#636366':'#aeaeb2',tooltipBg:isDark()?'#1e1e25':'#fff',tooltipText:isDark()?'#f5f5f7':'#1d1d1f',tooltipBorder:isDark()?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'};}
 function chartOpts(yFmt,xFmt){
   const c=getColors();

@@ -1,190 +1,161 @@
 ---
-layout: layouts/base.njk
-title: ICT Turtle Soup Backtest
+layout: layouts/project.njk
+title: Liquidity-Sweep Backtest
 permalink: /projects/liquidity-sweep-backtest.html
-styles: [projects/liquidity-sweep-backtest.css]
+styles: [hub.css, projects/liquidity-sweep-backtest.css, projects/project.css]
+meta: ["ICT Turtle Soup", "EURUSD daily, 2021 to 2024", "Python", "Version 1, March 2026"]
 ---
-<div class="project-page">
 
-<div class="page-wrap">
+{% psec 1, "The Strategy", "What is the Turtle Soup strategy, and why might it work?" %}
+<p class="section-sub">Turtle Soup is an ICT (Inner Circle Trader) concept that <em>fades</em> the classic Turtle Trader breakout. Where traditional Turtle Traders buy new highs and sell new lows, Turtle Soup does the opposite — it anticipates false breakouts.</p>
 
-  <!-- Hero -->
-  <div class="page-hero">
-    <a class="back-link" href="/projects/projects.html">&#8592; All projects</a>
-    <div class="project-tag">
-      <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
-      Project 1
-    </div>
-    <h1 class="page-title">ICT Turtle Soup<br>Backtest</h1>
-    <p class="page-sub">A parameter-optimised backtest of the ICT Turtle Soup strategy on EURUSD daily data — with in-sample/out-of-sample validation and overfitting analysis.</p>
-    <div class="meta-row">
-      <span class="meta-item"><strong>Market:</strong> EURUSD / EURGBP (FX)</span>
-      <span class="meta-item"><strong>Timeframe:</strong> Daily</span>
-      <span class="meta-item"><strong>Language:</strong> Python</span>
-      <span class="meta-item"><strong>Status:</strong> Complete</span>
+<div class="card-grid">
+  <div class="card">
+    <div class="card-title">The setup</div>
+    <div class="card-body">Price sweeps a recent N-day high or low, triggering breakout traders. It then reverses back inside the range — the "soup" — trapping those traders on the wrong side.</div>
+    <span class="card-tag tag-blue">Liquidity sweep</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Long signal</div>
+    <div class="card-body">Price breaks below the N-day low (sweeps buy-side liquidity), then closes back above it within the same candle. Enter long at the next open.</div>
+    <span class="card-tag tag-green">Bullish reversal</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Short signal</div>
+    <div class="card-body">Price breaks above the N-day high (sweeps sell-side liquidity), then closes back below it. Enter short at the next open.</div>
+    <span class="card-tag tag-red">Bearish reversal</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Stop & target</div>
+    <div class="card-body">Stop loss placed at ATR × multiplier from entry. Take profit at R:R × stop distance. Both parameters are optimised in the grid search.</div>
+    <span class="card-tag tag-amber">ATR-based sizing</span>
+  </div>
+</div>
+{% endpsec %}
+
+{% psec 2, "How the Model Works", "How was the backtest built and tuned?", "How It Works" %}
+<div class="alert alert-blue">
+  <div class="alert-title">Methodology</div>
+  This is not just a simple backtest — it includes a full parameter optimisation pipeline with overfitting protection. Three years of data are split into in-sample (years \(1\text{–}2\)) and out-of-sample (year \(3\)). Parameters are optimised only on in-sample data and then validated on the unseen out-of-sample period.
+</div>
+
+<table class="data-table">
+  <thead><tr><th>Component</th><th>Details</th></tr></thead>
+  <tbody>
+    <tr><td>Data</td><td>EURUSD daily OHLCV via yfinance (2021–2024)</td></tr>
+    <tr><td>Signal</td><td>N-day high/low sweep with same-candle close reversal</td></tr>
+    <tr><td>ATR</td><td>14-period Average True Range for stop sizing</td></tr>
+    <tr><td>Position sizing</td><td>Fixed \(1\%\) risk per trade on £\(10{,}000\) capital</td></tr>
+    <tr><td>Grid search</td><td>\(96\) parameter combinations across lookback, R:R, ATR mult</td></tr>
+    <tr><td>Ranking metric</td><td>Sharpe ratio on in-sample data</td></tr>
+    <tr><td>Validation</td><td>Best params re-run on out-of-sample data blind</td></tr>
+    <tr><td>Overfitting test</td><td>Sharpe decay: IS Sharpe vs OOS Sharpe comparison</td></tr>
+  </tbody>
+</table>
+
+<div class="section-title" style="font-size:16px;margin-top:28px">Parameters searched</div>
+<table class="data-table">
+  <thead><tr><th>Parameter</th><th>Values tested</th><th>What it controls</th></tr></thead>
+  <tbody>
+    <tr><td>Lookback</td><td>\(10\), \(15\), \(20\), \(25\), \(30\), \(40\) days</td><td>Window for defining the N-day high/low level</td></tr>
+    <tr><td>R:R ratio</td><td>\(1.5\), \(2.0\), \(2.5\), \(3.0\)</td><td>Take profit as a multiple of the stop loss distance</td></tr>
+    <tr><td>ATR multiplier</td><td>\(0.75\), \(1.0\), \(1.25\), \(1.5\)</td><td>Stop loss distance as a multiple of ATR</td></tr>
+  </tbody>
+</table>
+{% endpsec %}
+
+{% psec 3, "Why the Results Were Weak", "Why didn't it work on daily data?", "The Result" %}
+<p class="section-sub">A few structural issues explain underperformance on daily EURUSD — and they are all fixable.</p>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card-title">&#x26A0; Wrong timeframe</div>
+    <div class="card-body">ICT Turtle Soup is primarily an intraday concept — it is designed to be traded on the 15min or 1hr chart during London/NY sessions. On daily bars, the signal logic loses most of its edge because the "sweep and reverse" often happens within a single day, invisible at daily resolution.</div>
+    <span class="card-tag tag-red">High impact</span>
+  </div>
+  <div class="card">
+    <div class="card-title">&#x26A0; No session filter</div>
+    <div class="card-body">ICT setups are session-specific. Turtle Soup setups that form outside of London open or New York open are significantly less reliable. Daily data cannot distinguish between a London open sweep and a random mid-session move.</div>
+    <span class="card-tag tag-red">High impact</span>
+  </div>
+  <div class="card">
+    <div class="card-title">&#x26A0; No market structure filter</div>
+    <div class="card-body">Turtle Soup longs should only be taken in a bullish market structure, and shorts in a bearish one. Trading both directions without a higher timeframe bias doubles noise.</div>
+    <span class="card-tag tag-amber">Medium impact</span>
+  </div>
+  <div class="card">
+    <div class="card-title">&#x26A0; Too few signals</div>
+    <div class="card-body">On daily bars, sweep-and-reverse setups are rare. Fewer signals means higher variance in results and less statistical confidence. A good backtest needs \(100\)+ trades to draw meaningful conclusions.</div>
+    <span class="card-tag tag-amber">Medium impact</span>
+  </div>
+</div>
+{% endpsec %}
+
+{% psec 4, "Planned Improvements", "What would make the test fairer and the edge stronger?", "Improvements" %}
+<p class="section-sub">These changes would meaningfully improve the strategy's edge and make the backtest results more trustworthy.</p>
+
+<div class="improve-list">
+  <div class="improve-item">
+    <div class="improve-num">1</div>
+    <div class="improve-body">
+      <div class="improve-title">Switch to intraday data (1hr or 15min)</div>
+      <div class="improve-desc">Download hourly EURGBP data via yfinance or a broker API. Redefine the N-period high/low using hourly bars. This aligns with how the strategy is actually traded and will generate far more signals with better signal quality.</div>
     </div>
   </div>
-
-  <!-- What is Turtle Soup -->
-  <div class="section">
-    <div class="section-title">What is the Turtle Soup strategy?</div>
-    <p class="section-sub">Turtle Soup is an ICT (Inner Circle Trader) concept that <em>fades</em> the classic Turtle Trader breakout. Where traditional Turtle Traders buy new highs and sell new lows, Turtle Soup does the opposite — it anticipates false breakouts.</p>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-title">The setup</div>
-        <div class="card-body">Price sweeps a recent N-day high or low, triggering breakout traders. It then reverses back inside the range — the "soup" — trapping those traders on the wrong side.</div>
-        <span class="card-tag tag-blue">Liquidity sweep</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Long signal</div>
-        <div class="card-body">Price breaks below the N-day low (sweeps buy-side liquidity), then closes back above it within the same candle. Enter long at the next open.</div>
-        <span class="card-tag tag-green">Bullish reversal</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Short signal</div>
-        <div class="card-body">Price breaks above the N-day high (sweeps sell-side liquidity), then closes back below it. Enter short at the next open.</div>
-        <span class="card-tag tag-red">Bearish reversal</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Stop & target</div>
-        <div class="card-body">Stop loss placed at ATR × multiplier from entry. Take profit at R:R × stop distance. Both parameters are optimised in the grid search.</div>
-        <span class="card-tag tag-amber">ATR-based sizing</span>
-      </div>
+  <div class="improve-item">
+    <div class="improve-num">2</div>
+    <div class="improve-body">
+      <div class="improve-title">Add London and New York session filters</div>
+      <div class="improve-desc">Only allow entries between 07:00–10:00 GMT (London open) or 13:30–16:00 GMT (NY open). ICT setups derive their edge from institutional order flow at session opens — filtering to these windows removes a large amount of noise.</div>
     </div>
   </div>
-
-  <!-- How it was built -->
-  <div class="section">
-    <div class="section-title">How the model works</div>
-    <div class="alert alert-blue">
-      <div class="alert-title">Methodology</div>
-      This is not just a simple backtest — it includes a full parameter optimisation pipeline with overfitting protection. Three years of data are split into in-sample (years 1–2) and out-of-sample (year 3). Parameters are optimised only on in-sample data and then validated on the unseen out-of-sample period.
-    </div>
-
-    <table class="data-table">
-      <thead><tr><th>Component</th><th>Details</th></tr></thead>
-      <tbody>
-        <tr><td>Data</td><td>EURUSD daily OHLCV via yfinance (2021–2024)</td></tr>
-        <tr><td>Signal</td><td>N-day high/low sweep with same-candle close reversal</td></tr>
-        <tr><td>ATR</td><td>14-period Average True Range for stop sizing</td></tr>
-        <tr><td>Position sizing</td><td>Fixed 1% risk per trade on £10,000 capital</td></tr>
-        <tr><td>Grid search</td><td>96 parameter combinations across lookback, R:R, ATR mult</td></tr>
-        <tr><td>Ranking metric</td><td>Sharpe ratio on in-sample data</td></tr>
-        <tr><td>Validation</td><td>Best params re-run on out-of-sample data blind</td></tr>
-        <tr><td>Overfitting test</td><td>Sharpe decay: IS Sharpe vs OOS Sharpe comparison</td></tr>
-      </tbody>
-    </table>
-
-    <div class="section-title" style="font-size:16px;margin-top:28px">Parameters searched</div>
-    <table class="data-table">
-      <thead><tr><th>Parameter</th><th>Values tested</th><th>What it controls</th></tr></thead>
-      <tbody>
-        <tr><td>Lookback</td><td>10, 15, 20, 25, 30, 40 days</td><td>Window for defining the N-day high/low level</td></tr>
-        <tr><td>R:R ratio</td><td>1.5, 2.0, 2.5, 3.0</td><td>Take profit as a multiple of the stop loss distance</td></tr>
-        <tr><td>ATR multiplier</td><td>0.75, 1.0, 1.25, 1.5</td><td>Stop loss distance as a multiple of ATR</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Why results were poor -->
-  <div class="section">
-    <div class="section-title">Why the results were likely poor</div>
-    <p class="section-sub">A few structural issues explain underperformance on daily EURUSD — and they are all fixable.</p>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-title">&#x26A0; Wrong timeframe</div>
-        <div class="card-body">ICT Turtle Soup is primarily an intraday concept — it is designed to be traded on the 15min or 1hr chart during London/NY sessions. On daily bars, the signal logic loses most of its edge because the "sweep and reverse" often happens within a single day, invisible at daily resolution.</div>
-        <span class="card-tag tag-red">High impact</span>
-      </div>
-      <div class="card">
-        <div class="card-title">&#x26A0; No session filter</div>
-        <div class="card-body">ICT setups are session-specific. Turtle Soup setups that form outside of London open or New York open are significantly less reliable. Daily data cannot distinguish between a London open sweep and a random mid-session move.</div>
-        <span class="card-tag tag-red">High impact</span>
-      </div>
-      <div class="card">
-        <div class="card-title">&#x26A0; No market structure filter</div>
-        <div class="card-body">Turtle Soup longs should only be taken in a bullish market structure, and shorts in a bearish one. Trading both directions without a higher timeframe bias doubles noise.</div>
-        <span class="card-tag tag-amber">Medium impact</span>
-      </div>
-      <div class="card">
-        <div class="card-title">&#x26A0; Too few signals</div>
-        <div class="card-body">On daily bars, sweep-and-reverse setups are rare. Fewer signals means higher variance in results and less statistical confidence. A good backtest needs 100+ trades to draw meaningful conclusions.</div>
-        <span class="card-tag tag-amber">Medium impact</span>
-      </div>
+  <div class="improve-item">
+    <div class="improve-num">3</div>
+    <div class="improve-body">
+      <div class="improve-title">Add higher timeframe market structure filter</div>
+      <div class="improve-desc">Use the daily chart to determine trend direction. Only take long Turtle Soup setups when daily structure is bullish (higher highs and higher lows), and only short when bearish. This aligns trades with institutional bias and reduces counter-trend losses.</div>
     </div>
   </div>
-
-  <!-- Improvements -->
-  <div class="section">
-    <div class="section-title">Planned improvements</div>
-    <p class="section-sub">These changes would meaningfully improve the strategy's edge and make the backtest results more trustworthy.</p>
-
-    <div class="improve-list">
-      <div class="improve-item">
-        <div class="improve-num">1</div>
-        <div class="improve-body">
-          <div class="improve-title">Switch to intraday data (1hr or 15min)</div>
-          <div class="improve-desc">Download hourly EURGBP data via yfinance or a broker API. Redefine the N-period high/low using hourly bars. This aligns with how the strategy is actually traded and will generate far more signals with better signal quality.</div>
-        </div>
-      </div>
-      <div class="improve-item">
-        <div class="improve-num">2</div>
-        <div class="improve-body">
-          <div class="improve-title">Add London and New York session filters</div>
-          <div class="improve-desc">Only allow entries between 07:00–10:00 GMT (London open) or 13:30–16:00 GMT (NY open). ICT setups derive their edge from institutional order flow at session opens — filtering to these windows removes a large amount of noise.</div>
-        </div>
-      </div>
-      <div class="improve-item">
-        <div class="improve-num">3</div>
-        <div class="improve-body">
-          <div class="improve-title">Add higher timeframe market structure filter</div>
-          <div class="improve-desc">Use the daily chart to determine trend direction. Only take long Turtle Soup setups when daily structure is bullish (higher highs and higher lows), and only short when bearish. This aligns trades with institutional bias and reduces counter-trend losses.</div>
-        </div>
-      </div>
-      <div class="improve-item">
-        <div class="improve-num">4</div>
-        <div class="improve-body">
-          <div class="improve-title">Tighten the entry logic</div>
-          <div class="improve-desc">The current signal fires on any candle that sweeps and closes back inside. A stricter version requires: (1) a clean displacement candle after the sweep, (2) the close to be more than 50% back inside the range, and (3) volume above the rolling average. Each condition removes false positives.</div>
-        </div>
-      </div>
-      <div class="improve-item">
-        <div class="improve-num">5</div>
-        <div class="improve-body">
-          <div class="improve-title">Test on multiple pairs</div>
-          <div class="improve-desc">Run the same optimised parameters on GBPUSD, USDJPY, and EURUSD to test robustness. A strategy that only works on one pair is likely curve-fitted. One that works across multiple correlated pairs has a genuine edge.</div>
-        </div>
-      </div>
-      <div class="improve-item">
-        <div class="improve-num">6</div>
-        <div class="improve-body">
-          <div class="improve-title">Add walk-forward validation</div>
-          <div class="improve-desc">Replace the single train/test split with rolling walk-forward optimisation — re-optimise every 3 months on the preceding 12 months of data. This is a much stronger test of whether the strategy adapts to changing market conditions.</div>
-        </div>
-      </div>
+  <div class="improve-item">
+    <div class="improve-num">4</div>
+    <div class="improve-body">
+      <div class="improve-title">Tighten the entry logic</div>
+      <div class="improve-desc">The current signal fires on any candle that sweeps and closes back inside. A stricter version requires: (\(1\)) a clean displacement candle after the sweep, (\(2\)) the close to be more than \(50\%\) back inside the range, and (\(3\)) volume above the rolling average. Each condition removes false positives.</div>
     </div>
   </div>
-
-  <!-- Code -->
-  <div class="section">
-    <div class="section-title">The code</div>
-    <p class="section-sub" style="margin-bottom:20px">Full Python source. Runs with yfinance for real data or falls back to synthetic EURUSD if yfinance is unavailable.</p>
-
-    <div class="alert alert-green" style="margin-bottom:20px">
-      <div class="alert-title">How to run</div>
-      Install dependencies: <code style="font-family:'Courier New',monospace;font-size:12px">pip install pandas numpy matplotlib yfinance</code><br>
-      Then run: <code style="font-family:'Courier New',monospace;font-size:12px">python turtle_soup_optimisation.py</code><br>
-      Output: a PNG chart showing heatmap, equity curves, and top 10 parameter combinations.
+  <div class="improve-item">
+    <div class="improve-num">5</div>
+    <div class="improve-body">
+      <div class="improve-title">Test on multiple pairs</div>
+      <div class="improve-desc">Run the same optimised parameters on GBPUSD, USDJPY, and EURUSD to test robustness. A strategy that only works on one pair is likely curve-fitted. One that works across multiple correlated pairs has a genuine edge.</div>
     </div>
+  </div>
+  <div class="improve-item">
+    <div class="improve-num">6</div>
+    <div class="improve-body">
+      <div class="improve-title">Add walk-forward validation</div>
+      <div class="improve-desc">Replace the single train/test split with rolling walk-forward optimisation — re-optimise every \(3\) months on the preceding \(12\) months of data. This is a much stronger test of whether the strategy adapts to changing market conditions.</div>
+    </div>
+  </div>
+</div>
+{% endpsec %}
 
-    <div class="code-wrap">
-      <div class="code-header">
-        <span class="code-lang">Python &mdash; turtle_soup_optimisation.py</span>
-        <button class="code-copy" onclick="copyCode()">Copy</button>
-      </div>
-      <pre id="code-block"><span class="cm">"""
+{% psec 5, "The Code", "What does the code look like?" %}
+<p class="section-sub" style="margin-bottom:20px">Full Python source. Runs with yfinance for real data or falls back to synthetic EURUSD if yfinance is unavailable.</p>
+
+<div class="alert alert-green" style="margin-bottom:20px">
+  <div class="alert-title">How to run</div>
+  Install dependencies: <code style="font-family:'Courier New',monospace;font-size:12px">pip install pandas numpy matplotlib yfinance</code><br>
+  Then run: <code style="font-family:'Courier New',monospace;font-size:12px">python turtle_soup_optimisation.py</code><br>
+  Output: a PNG chart showing heatmap, equity curves, and top \(10\) parameter combinations.
+</div>
+
+<div class="code-wrap">
+  <div class="code-header">
+    <span class="code-lang">Python &mdash; turtle_soup_optimisation.py</span>
+    <button class="code-copy" onclick="copyCode()">Copy</button>
+  </div>
+  <pre id="code-block"><span class="cm">"""
 Turtle Soup ICT — Parameter Optimisation + Out-of-Sample Test
 ==============================================================
 1. Load EURUSD daily data (real via yfinance or synthetic)
@@ -260,49 +231,33 @@ Turtle Soup ICT — Parameter Optimisation + Out-of-Sample Test
     eq = pd.Series(equity, index=df.index)
     td = pd.DataFrame(trades) <span class="kw">if</span> trades <span class="kw">else</span> pd.DataFrame(columns=[<span class="st">'result'</span>,<span class="st">'pnl_pips'</span>])
     <span class="kw">return</span> eq, td</pre>
-    </div>
-  </div>
-
-  <!-- What I learned -->
-  <div class="section">
-    <div class="section-title">What this project taught me</div>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-title">In-sample / out-of-sample testing</div>
-        <div class="card-body">Optimising on all available data and then reporting those results is the most common mistake in backtesting. Holding back a test set is the minimum standard for any honest evaluation.</div>
-        <span class="card-tag tag-blue">Methodology</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Overfitting detection</div>
-        <div class="card-body">Sharpe decay (how much the Sharpe ratio degrades from IS to OOS) is a practical overfitting metric. Below 30% decay = low risk. Above 60% = the strategy is curve-fitted.</div>
-        <span class="card-tag tag-purple">Statistics</span>
-      </div>
-      <div class="card">
-        <div class="card-title">ATR-based position sizing</div>
-        <div class="card-body">Sizing positions by ATR rather than fixed pip amounts means the risk per trade adapts to current market volatility — a more robust approach than fixed sizing.</div>
-        <span class="card-tag tag-green">Risk management</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Timeframe alignment</div>
-        <div class="card-body">Strategy concepts designed for one timeframe often do not transfer directly to another. ICT setups are intraday by nature — forcing them onto daily data loses their core logic.</div>
-        <span class="card-tag tag-amber">Strategy design</span>
-      </div>
-    </div>
-  </div>
-
-  <hr>
-
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
-    <a href="/projects/projects.html" style="font-size:13px;color:var(--tx3)">&#8592; Back to projects</a>
-    <div style="display:flex;gap:10px">
-      <span style="font-size:13px;color:var(--tx3)">Version 1 &mdash; March 2026</span>
-    </div>
-  </div>
-
 </div>
+{% endpsec %}
 
+{% psec 6, "What This Project Taught Me", "What will I do differently next time?", "What I Learned" %}
+<div class="card-grid">
+  <div class="card">
+    <div class="card-title">In-sample / out-of-sample testing</div>
+    <div class="card-body">Optimising on all available data and then reporting those results is the most common mistake in backtesting. Holding back a test set is the minimum standard for any honest evaluation.</div>
+    <span class="card-tag tag-blue">Methodology</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Overfitting detection</div>
+    <div class="card-body">Sharpe decay (how much the Sharpe ratio degrades from IS to OOS) is a practical overfitting metric. Below \(30\%\) decay = low risk. Above \(60\%\) = the strategy is curve-fitted.</div>
+    <span class="card-tag tag-purple">Statistics</span>
+  </div>
+  <div class="card">
+    <div class="card-title">ATR-based position sizing</div>
+    <div class="card-body">Sizing positions by ATR rather than fixed pip amounts means the risk per trade adapts to current market volatility — a more robust approach than fixed sizing.</div>
+    <span class="card-tag tag-green">Risk management</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Timeframe alignment</div>
+    <div class="card-body">Strategy concepts designed for one timeframe often do not transfer directly to another. ICT setups are intraday by nature — forcing them onto daily data loses their core logic.</div>
+    <span class="card-tag tag-amber">Strategy design</span>
+  </div>
 </div>
-
+{% endpsec %}
 <script>
 // Copy button on the code block
 function copyCode(){

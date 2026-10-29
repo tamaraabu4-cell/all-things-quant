@@ -2,38 +2,157 @@
 layout: layouts/base.njk
 title: Projects
 permalink: /projects/projects.html
+styles: [hub.css, projects/projects-home.css]
 ---
-<section class="page-header">
-  <div class="container">
-    <p class="page-eyebrow">Projects</p>
-    <h1 class="page-title">Trading ideas, <span>tested with code.</span></h1>
-    <p class="page-intro">Every project follows the same four steps: a thesis, a method to test it, the tech behind it, and an honest result.</p>
-  </div>
-</section>
+{#
+  The projects page. Laid out like the knowledge hub's vault home:
+  the four steps, a filter, one shelf per topic, then Simulations.
+  Everything comes from _data/projects.json via the `projectsPage`
+  filter in eleventy.config.js. projects.js runs the filter.
+#}
+{% from "partials/hub-icons.njk" import hubIcon %}
+{% set pp = projects | projectsPage(shelves) %}
 
-<section class="project-list">
-  <div class="container">
-    {% for project in projects %}
-    <article class="project-row">
-      <div class="project-info">
-        <p class="project-tag">{{ project.tag }}</p>
-        <h2 class="project-title">{{ project.title }}</h2>
-        <p class="project-headline">{{ project.headline }}</p>
-        {% if project.context %}<p class="project-context">{{ project.context }}</p>{% endif %}
-        <div class="project-links">
-          <a class="btn btn-primary" href="{{ project.url }}">{{ project.cta }}</a>
-          {% if project.code %}<a class="link-arrow" href="{{ project.code }}">View the code ›</a>{% endif %}
-        </div>
+{# One project: used on the topic shelves and in Simulations #}
+{% macro projectCard(p) %}
+<article class="proj" data-project data-topic="{{ p.topic }}" data-markets="{{ p.marketSlugs }}">
+  {% if p.firm %}<p class="proj-firm">{{ p.firm }}</p>{% endif %}
+  <div class="proj-top">
+    <a class="proj-title" href="{{ p.url }}">{{ p.title }}</a>
+    <span class="proj-status{% if p.status == 'live' %} is-live{% endif %}"><i aria-hidden="true"></i>{% if p.status == "live" %}Live{% else %}Finished{% endif %}</span>
+  </div>
+  <p class="proj-sum">{{ p.headline }}</p>
+  {% if p.result %}<p class="proj-result"><b>Result</b><span>{{ p.result }}</span></p>{% endif %}
+  <div class="proj-foot">
+    <div class="proj-tags">
+      {% if p.kind %}<span class="proj-tag is-tone">{{ p.kind }}</span>{% endif %}
+      {% for m in p.markets %}<span class="proj-tag">{{ m }}</span>{% endfor %}
+      {% for t in p.tags %}<span class="proj-tag">{{ t }}</span>{% endfor %}
+    </div>
+    <div class="proj-links">
+      {% if p.code %}<a href="{{ p.code }}">Code ↗</a>{% endif %}
+      <a href="{{ p.url }}">{{ p.cta or "View project" }} ›</a>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+<div class="hub projects-home">
+
+  {# Welcome #}
+  <section class="hub-hello">
+    <p class="hub-eyebrow">Projects</p>
+    <h1 class="hub-title">Trading ideas, <span>tested with code.</span></h1>
+    <p class="hub-intro">Every project follows the same four steps.</p>
+  </section>
+
+  {# The four steps: the same tiles as the homepage #}
+  <section class="proj-steps" aria-label="The four steps">
+    <ol class="steps">
+      <li class="step">
+        <span class="step-number">01</span>
+        <h3 class="step-title">Thesis</h3>
+        <p class="step-text">What does the market believe, and where do I disagree?</p>
+      </li>
+      <li class="step">
+        <span class="step-number">02</span>
+        <h3 class="step-title">Method</h3>
+        <p class="step-text">The trade or model that tests the idea, and how much risk it takes.</p>
+      </li>
+      <li class="step">
+        <span class="step-number">03</span>
+        <h3 class="step-title">Tech</h3>
+        <p class="step-text">The code, the data, and how I checked the numbers.</p>
+      </li>
+      <li class="step">
+        <span class="step-number">04</span>
+        <h3 class="step-title">Result</h3>
+        <p class="step-text">What happened, good or bad, and what I'd do differently next time.</p>
+      </li>
+    </ol>
+  </section>
+
+  {# Filter: topic and market combine. Hidden until projects.js runs, so it never shows without working. #}
+  <section class="proj-filter" aria-label="Filter the projects" data-filter hidden>
+    <div class="proj-filter-head">
+      <h2>Filter the projects</h2>
+      <div class="proj-filter-status">
+        <span data-count aria-live="polite">All {{ pp.total }} projects</span>
+        <button type="button" class="proj-clear" data-clear disabled>Clear</button>
       </div>
-      {% if project.steps %}
-      <dl class="project-steps">
-        <div class="project-step"><dt>Thesis</dt><dd>{{ project.steps.thesis }}</dd></div>
-        <div class="project-step"><dt>Method</dt><dd>{{ project.steps.method }}</dd></div>
-        <div class="project-step"><dt>Tech</dt><dd>{{ project.steps.tech }}</dd></div>
-        <div class="project-step"><dt>Result</dt><dd>{{ project.steps.result }}</dd></div>
-      </dl>
-      {% endif %}
+    </div>
+    <div class="proj-filter-row">
+      <span class="proj-filter-label">Topic</span>
+      <button type="button" class="plan-step" data-topic="all" aria-pressed="true">All topics</button>
+      {% for t in pp.topics %}
+      <button type="button" class="plan-step has-tone tone-{{ t.colour }}" data-topic="{{ t.slug }}" aria-pressed="false">{{ t.name }}</button>
+      {% endfor %}
+    </div>
+    <div class="proj-filter-row">
+      <span class="proj-filter-label">Market</span>
+      <button type="button" class="plan-step" data-market="all" aria-pressed="true">All markets</button>
+      {% for m in pp.markets %}
+      <button type="button" class="plan-step" data-market="{{ m.slug }}" aria-pressed="false">{{ m.label }}</button>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Topic shelves: same topics, icons and colours as the hub. A topic shows once it has a project. #}
+  {% if pp.shelves.length %}
+  <section class="proj-shelves" aria-label="Projects by topic">
+    {% for shelf in pp.shelves %}
+    <article class="shelf proj-shelf{% if shelf.colour %} tone-{{ shelf.colour }}{% endif %}" data-shelf>
+      <div class="shelf-head">
+        <span class="shelf-icon">{{ hubIcon(shelf.icon) }}</span>
+        <div class="shelf-title">
+          <h2 class="shelf-name">{{ shelf.name }}</h2>
+          <p class="proj-blurb">{{ shelf.blurb }}</p>
+        </div>
+        <span class="proj-count">{{ shelf.projects.length }} project{% if shelf.projects.length != 1 %}s{% endif %}</span>
+      </div>
+      {% for p in shelf.projects %}{{ projectCard(p) }}{% endfor %}
     </article>
     {% endfor %}
-  </div>
-</section>
+  </section>
+  {% endif %}
+
+  {# Simulations: their own section and colour #}
+  {% if pp.simulations.length %}
+  <section class="sims tone-walnut" aria-label="Simulations" data-shelf>
+    <div class="sims-head">
+      <span class="shelf-icon">{{ hubIcon("simulations") }}</span>
+      <div class="sims-title">
+        <h2>Simulations</h2>
+        <p>Job simulations set by banks on Forage. The brief is theirs; the models and write-ups are mine.</p>
+      </div>
+      <span class="proj-count">{{ pp.simulations.length }} project{% if pp.simulations.length != 1 %}s{% endif %}</span>
+    </div>
+    <div class="sims-grid">
+      {% for p in pp.simulations %}{{ projectCard(p) }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Shown by projects.js when the filters match nothing #}
+  <section class="proj-empty" data-empty hidden>
+    <p class="proj-empty-title">No projects match both filters yet.</p>
+    <p>Try a different market, or clear the filters to see everything.</p>
+    <button type="button" class="plan-step" data-clear>Clear filters</button>
+  </section>
+
+  {# Toolkit: every tool listed in projects.json, once #}
+  {% if pp.tools.length %}
+  <section class="hub-glossary" aria-label="Toolkit">
+    <div class="hub-glossary-text">
+      <h2>Toolkit</h2>
+      <p>Every tool used across the projects.</p>
+    </div>
+    <ul class="hub-glossary-terms proj-tools">
+      {% for tool in pp.tools %}<li>{{ tool }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+</div>
+
+<script src="/assets/js/projects.js" defer></script>

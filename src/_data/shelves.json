@@ -120,6 +120,7 @@
     "colour": "forest",
     "open": true,
     "description": "How institutional traders think, decide and manage risk.",
+    "projectsBlurb": "Trade ideas built the way a desk would: a view, a structure, a size.",
     "chapters": [
       { "title": "How Institutional Traders Think", "blurb": "What a trader is actually paid to do.",
         "subtopics": ["The Trader's Job", "Edge"] },
@@ -142,6 +143,7 @@
     "colour": "indigo",
     "open": true,
     "description": "Quant Trading, Research and Development.",
+    "projectsBlurb": "Systematic ideas, tested on data with costs and out-of-sample checks.",
     "chapters": [
       { "title": "What Makes a Strategy Systematic?", "blurb": "Rules a computer can follow and test.",
         "subtopics": ["Rules and Signals", "Edge and Costs"] },

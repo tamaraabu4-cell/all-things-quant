@@ -1,257 +1,186 @@
 ---
-layout: layouts/base.njk
+layout: layouts/project.njk
 title: Pricing Coffee Derivatives
 permalink: /projects/citi-coffee-derivatives.html
-styles: [projects/study-layout.css]
+styles: [hub.css, projects/study-layout.css, projects/project.css]
 scripts: ["https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"]
+meta: ["Forage job simulation", "Python, NumPy, SciPy, pandas"]
 ---
-<div class="project-page">
 
-<div class="page-header">
-  <div class="breadcrumb">
-    <a href="/">Home</a><span>/</span>
-    <a href="/projects/projects.html">Projects</a><span>/</span>
-    <span style="color:var(--tx1)">Coffee Derivatives</span>
+{% psec 1, "Pricing Coffee Derivatives on a Commodities Desk", "What was the brief?", "Overview" %}
+<p class="topic-intro">
+  Three tasks from Citi's Markets Quant job simulation, completed in July 2026. I priced a six-month coffee option three different ways, used the same engine to design a coffee-linked structured note for a client, and set out how a desk should manage the market, credit and operational risks around it. Everything below was built in Python and checked by re-running the code.
+</p>
+<div class="proj-links">
+  <a class="proj-link" href="https://github.com/tamaraabu4-cell/heritage-edge/blob/main/src/projects/coffee_option_pricing.py" target="_blank">View code on GitHub &nearr;</a>
+</div>
+
+<div class="metric-row">
+  <div class="metric"><div class="metric-lbl">Fair value of the call</div><div class="metric-val">\(\$0.0712\)/lb</div><div class="metric-sub">\(\approx \$2{,}670\) per contract</div></div>
+  <div class="metric"><div class="metric-lbl">Monte Carlo vs formula</div><div class="metric-val">\(0.02\%\)</div><div class="metric-sub">difference, 500k paths</div></div>
+  <div class="metric"><div class="metric-lbl">Note participation</div><div class="metric-val">\(40.9\%\)</div><div class="metric-sub">\(3\%\) coupon, \(80\%\) barrier</div></div>
+  <div class="metric"><div class="metric-lbl">Tail risk removed</div><div class="metric-val">\(85\%\)</div><div class="metric-sub">by a protective put</div></div>
+</div>
+
+<div class="sh">In plain words</div>
+<p class="np">An <strong>option</strong> is like insurance. A coffee call option gives you the right, but not the obligation, to buy coffee at a fixed price later. If coffee gets expensive, the insurance pays out; if it doesn't, you've only lost the premium. The hard part is deciding what that insurance is <strong>worth today</strong>, and how much risk you carry once you've sold it to someone.</p>
+
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-icon green">1</div><div class="sum-title">Price the option</div><div class="sum-body">Fair futures price from <strong>cost of carry</strong>, option value from <strong>Black-76</strong>, then a <strong>Monte Carlo</strong> simulation to check the answer and measure tail risk.</div></div>
+  <div class="sum-card"><div class="sum-icon blue">2</div><div class="sum-title">Build a structured note</div><div class="sum-body">A product paying a coupon plus coffee upside. Solved for the participation rate that makes it worth exactly what the client pays, and showed the client's <strong>\(26.6\%\) chance of losing money</strong>.</div></div>
+  <div class="sum-card"><div class="sum-icon amber">3</div><div class="sum-title">Manage the risks</div><div class="sum-body">Hedging a weather view, onboarding a risky supplier, and fixing manual trade errors &mdash; each sized before it is mitigated.</div></div>
+  <div class="sum-card"><div class="sum-icon purple">4</div><div class="sum-title">Know the model's limits</div><div class="sum-body">A single flat volatility misprices out-of-the-money options. In production I'd price off the <strong>implied volatility surface</strong>.</div></div>
+</div>
+{% endpsec %}
+
+{% psec 2, "Three Models, One Answer", "What is the option worth?", "Pricing the Option" %}
+<p class="topic-intro">The desk needed a fair value for a six-month call on coffee struck at \(\$1.25\) per pound. Rather than trust one model, I chained three together so each one checks the next.</p>
+
+<div class="flow">
+  <div class="flow-step"><div class="fs-n">01</div><div class="fs-t">Cost of carry</div><div class="fs-b">What should coffee for delivery in \(6\) months cost? <strong>F = \(\$1.2181\)</strong></div></div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step"><div class="fs-n">02</div><div class="fs-t">Black-76</div><div class="fs-b">What is the insurance on that future worth? <strong>\(\$0.0712\)/lb</strong></div></div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step"><div class="fs-n">03</div><div class="fs-t">Monte Carlo</div><div class="fs-b">Simulate \(500{,}000\) futures and check: <strong>\(\$0.0712\) &plusmn; \(0.0004\)</strong></div></div>
+</div>
+
+<div class="sh">Step 1 &mdash; the fair futures price</div>
+<p class="lc-q">Why isn't coffee for later delivery the same price as coffee today?</p>
+<p class="np">Because holding coffee costs money. If you bought beans today to sell in six months, you'd pay interest on the money you borrowed and pay to store them. So the price for later delivery must include those costs, or someone could lock in a free profit.</p>
+<div class="f-label">Cost of carry &mdash; spot plus the cost of holding it</div>
+<div class="f-box">\[ F = S_0 \times e^{(r + u - y)T} = 1.20 \times e^{0.015} = \$1.2181 \]</div>
+<table class="vt">
+  <tr><td>\(S_0\)</td><td>Spot price today &mdash; \(\$1.20\)/lb</td></tr>
+  <tr><td>\(r\)</td><td>Interest rate &mdash; \(2\%\) a year</td></tr>
+  <tr><td>\(u\)</td><td>Storage cost &mdash; \(1\%\) a year</td></tr>
+  <tr><td>\(y\)</td><td>Convenience yield &mdash; the benefit of physically having beans (not given, set to \(0\) and stress-tested)</td></tr>
+</table>
+
+<div class="sh">Step 2 &mdash; Black-76 and the Greeks</div>
+<p class="np">Black-76 is the version of Black-Scholes used for options on <strong>futures</strong>. Drag the sliders to see how the option's value responds. The gap between the curve and the dashed line is <strong>time value</strong> &mdash; what you pay for the chance that coffee rises before expiry.</p>
+
+<div class="chart-block">
+  <div class="chart-block-title">Call Value vs Futures Price &mdash; Strike $1.25</div>
+  <div class="chart-wrap"><canvas id="chartB76"></canvas></div>
+  <div class="chart-controls">
+    <div class="chart-control-row"><span class="cc-label">Futures price</span><input type="range" id="b-f" min="1.00" max="1.50" step="0.0001" value="1.2181"><span class="cc-value" id="b-f-v">$1.2181</span></div>
+    <div class="chart-control-row"><span class="cc-label">Volatility</span><input type="range" id="b-v" min="10" max="50" step="1" value="25"><span class="cc-value" id="b-v-v">25%</span></div>
+    <div class="chart-control-row"><span class="cc-label">Months left</span><input type="range" id="b-t" min="1" max="12" step="1" value="6"><span class="cc-value" id="b-t-v">6</span></div>
   </div>
-  <div class="page-title">Pricing Coffee Derivatives</div>
-  <div class="page-sub">Citi Markets Quantitative Analyst &mdash; Virtual Job Simulation (Forage) &middot; July 2026</div>
-  <div class="lv-tabs">
-    <button class="lv-tab active"><div class="lv-pip"></div>Project</button>
+  <div class="live-out">
+    <div class="metric"><div class="metric-lbl">Call value</div><div class="metric-val" id="o-c">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Delta</div><div class="metric-val" id="o-d">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Vega / vol pt</div><div class="metric-val" id="o-v">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Theta / day</div><div class="metric-val" id="o-t">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">P(exercise)</div><div class="metric-val" id="o-p">&ndash;</div></div>
   </div>
 </div>
 
-<div class="study-shell">
-  <aside class="study-sidebar">
-    <div class="sb-label" style="margin-top:8px">Sections</div>
-    <button class="sb-item active" id="sb-1" onclick="switchTopic(1)"><div class="sb-dot"></div>Overview</button>
-    <button class="sb-item" id="sb-2" onclick="switchTopic(2)"><div class="sb-dot"></div>Pricing the Option</button>
-    <button class="sb-item" id="sb-3" onclick="switchTopic(3)"><div class="sb-dot"></div>Structured Note</button>
-    <button class="sb-item" id="sb-4" onclick="switchTopic(4)"><div class="sb-dot"></div>Risk Management</button>
-    <button class="sb-item" id="sb-5" onclick="switchTopic(5)"><div class="sb-dot"></div>Limits &amp; Next Steps</button>
-  </aside>
+<div class="insight">
+  <div class="insight-lbl">What the Greeks mean for a trader</div>
+  <strong>Delta (\(0.47\))</strong>: hedge each option with about half a futures contract. <strong>Gamma (\(1.83\))</strong>: that hedge ratio moves quickly, so it needs frequent rebalancing. <strong>Vega</strong>: one extra point of volatility adds about \(\$128\) per contract. <strong>Theta</strong>: every day that passes, the option loses a little value.
+</div>
 
-  <div class="study-content">
+<div class="sh">Step 3 &mdash; Monte Carlo as a cross-check</div>
+<p class="np">Monte Carlo prices an option by brute force: simulate thousands of possible futures prices at expiry, work out the payoff in each, and average them. On a simple option it should match the formula. If it does, you can trust the same engine on complicated products where no formula exists. That's exactly what Task \(2\) needed.</p>
 
-    <!-- ════════════ 1: OVERVIEW ════════════ -->
-    <div class="topic-pane" id="topic-1">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Project &middot; Derivatives</span>
-      <span class="badge badge-subtle">Python &middot; NumPy &middot; SciPy &middot; pandas</span>
-    </div>
-    <div class="topic-title-lg">Pricing Coffee Derivatives on a Commodities Desk</div>
-    <p class="topic-intro">
-      Three tasks from Citi's Markets Quant job simulation, completed in July 2026. I priced a six-month coffee option three different ways, used the same engine to design a coffee-linked structured note for a client, and set out how a desk should manage the market, credit and operational risks around it. Everything below was built in Python and checked by re-running the code.
-    </p>
-    <div class="proj-links">
-      <a class="proj-link" href="https://github.com/tamaraabu4-cell/heritage-edge/blob/main/src/projects/coffee_option_pricing.py" target="_blank">View code on GitHub &nearr;</a>
-    </div>
+<div class="chart-block">
+  <div class="chart-block-title">Simulated Coffee Futures Price at Expiry</div>
+  <div class="chart-wrap"><canvas id="chartMC"></canvas></div>
+  <div class="chart-controls">
+    <span class="cc-label" id="mc-out" style="min-width:0;flex:1">&ndash;</span>
+    <button class="mc-btn" onclick="runMC()">Run again &#8635;</button>
+  </div>
+</div>
+<p class="diagram-cap">This in-browser version runs \(20{,}000\) paths for speed. The Python model uses \(500{,}000\) antithetic paths and lands within \(0.02\%\) of Black-76, with \(40.7\%\) of paths finishing above the strike.</p>
 
-    <div class="metric-row">
-      <div class="metric"><div class="metric-lbl">Fair value of the call</div><div class="metric-val">$0.0712/lb</div><div class="metric-sub">&asymp; $2,670 per contract</div></div>
-      <div class="metric"><div class="metric-lbl">Monte Carlo vs formula</div><div class="metric-val">0.02%</div><div class="metric-sub">difference, 500k paths</div></div>
-      <div class="metric"><div class="metric-lbl">Note participation</div><div class="metric-val">40.9%</div><div class="metric-sub">3% coupon, 80% barrier</div></div>
-      <div class="metric"><div class="metric-lbl">Tail risk removed</div><div class="metric-val">85%</div><div class="metric-sub">by a protective put</div></div>
-    </div>
+<div class="sh">How real-world shocks reprice the option</div>
+<p class="np">A model is only as good as its inputs. I mapped real events &mdash; frost, drought, shipping disruption &mdash; onto the inputs and re-priced the option each time.</p>
+<div class="chart-block">
+  <div class="chart-block-title">Call Value Under Each Scenario ($/lb) &mdash; base case $0.0712</div>
+  <div class="chart-wrap" style="height:320px"><canvas id="chartSc"></canvas></div>
+</div>
+<div class="insight">
+  <div class="insight-lbl">The key finding</div>
+  The shocks are <strong>lopsided</strong>. A Brazilian frost lifts the call by <strong>\(+366\%\)</strong>, because it pushes up the price <em>and</em> the volatility at the same time &mdash; delta and vega add together. A bumper crop takes it down \(90\%\), but an option can't fall below zero. Long options are the natural way to express weather risk.
+</div>
+{% endpsec %}
 
-    <div class="sh">In plain words</div>
-    <p class="np">An <strong>option</strong> is like insurance. A coffee call option gives you the right, but not the obligation, to buy coffee at a fixed price later. If coffee gets expensive, the insurance pays out; if it doesn't, you've only lost the premium. The hard part is deciding what that insurance is <strong>worth today</strong>, and how much risk you carry once you've sold it to someone.</p>
+{% psec 3, "Designing a Coffee-Linked Note", "How do you build a client product around it?", "Structured Note" %}
+<p class="topic-intro">The client wanted two things that pull against each other: steady income, like a bond, and a share of any rise in coffee prices, like an option. A structured note combines both &mdash; but every feature has to be paid for by another.</p>
 
-    <div class="summary-grid">
-      <div class="sum-card"><div class="sum-icon green">1</div><div class="sum-title">Price the option</div><div class="sum-body">Fair futures price from <strong>cost of carry</strong>, option value from <strong>Black-76</strong>, then a <strong>Monte Carlo</strong> simulation to check the answer and measure tail risk.</div></div>
-      <div class="sum-card"><div class="sum-icon blue">2</div><div class="sum-title">Build a structured note</div><div class="sum-body">A product paying a coupon plus coffee upside. Solved for the participation rate that makes it worth exactly what the client pays, and showed the client's <strong>26.6% chance of losing money</strong>.</div></div>
-      <div class="sum-card"><div class="sum-icon amber">3</div><div class="sum-title">Manage the risks</div><div class="sum-body">Hedging a weather view, onboarding a risky supplier, and fixing manual trade errors &mdash; each sized before it is mitigated.</div></div>
-      <div class="sum-card"><div class="sum-icon purple">4</div><div class="sum-title">Know the model's limits</div><div class="sum-body">A single flat volatility misprices out-of-the-money options. In production I'd price off the <strong>implied volatility surface</strong>.</div></div>
-    </div>
+<div class="sh">A note is just three simpler pieces</div>
+<div class="f-box">\[ \text{Note} = \text{Zero-coupon bond} + \alpha \times \text{Call} - \text{Down-and-in put} \]</div>
+<table class="vt">
+  <tr><td>Bond</td><td>Returns the client's money at maturity &mdash; the safe part</td></tr>
+  <tr><td>Call</td><td>The client's share \((\alpha)\) of any coffee upside</td></tr>
+  <tr><td>Put</td><td>The client <em>sells</em> protection below an \(80\%\) barrier; that premium funds the coupon and upside</td></tr>
+</table>
 
-    <div class="topic-nav">
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(2)">Next: Pricing the Option &rarr;</button>
-    </div>
-    </div>
+<div class="worked">
+  <div class="worked-title">Nothing is free &mdash; the funding constraint</div>
+  <div class="worked-body">At a \(2\%\) interest rate, guaranteeing \(\$1{,}000\) back in two years costs:
+    <div class="worked-math tex">\[ \begin{aligned}
+\text{Bond} &= 1{,}000 \times e^{-0.02 \times 2} = \$960.79 \\
+\text{Left to buy upside} &= 1{,}000 - 960.79 = \$39.21 \;\rightarrow\; \text{only } 23\% \text{ participation}
+\end{aligned} \]</div>
+    To give the client a coupon <em>and</em> real upside, they have to give something up. The \(80\%\) barrier is that trade-off: it's a put the client sells, and its premium lifts participation to \(40.9\%\).</div>
+</div>
 
-    <!-- ════════════ 2: PRICING ════════════ -->
-    <div class="topic-pane" id="topic-2" style="display:none">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Task 1</span>
-      <span class="badge badge-subtle">6-month call &middot; strike $1.25/lb</span>
-    </div>
-    <div class="topic-title-lg">Three Models, One Answer</div>
-    <p class="topic-intro">The desk needed a fair value for a six-month call on coffee struck at $1.25 per pound. Rather than trust one model, I chained three together so each one checks the next.</p>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Structure</th><th>Coupon</th><th>Downside</th><th>Participation &alpha;</th><th>P(loss)</th></tr>
+  <tr><td>A. Full protection</td><td>none</td><td>Protected</td><td>\(23.0\%\)</td><td>\(0.0\%\)</td></tr>
+  <tr><td>B. Full protection, capped \(+40\%\)</td><td>none</td><td>Protected</td><td>\(32.8\%\)</td><td>\(0.0\%\)</td></tr>
+  <tr class="hl"><td>C. Recommended</td><td>\(3\%\) p.a.</td><td>\(80\%\) barrier</td><td>\(40.9\%\)</td><td>\(26.6\%\)</td></tr>
+  <tr><td>D. Aggressive coupon</td><td>\(5\%\) p.a.</td><td>\(70\%\) barrier, cap \(+50\%\)</td><td>\(4.1\%\)</td><td>\(15.8\%\)</td></tr>
+</table></div>
 
-    <div class="flow">
-      <div class="flow-step"><div class="fs-n">01</div><div class="fs-t">Cost of carry</div><div class="fs-b">What should coffee for delivery in 6 months cost? <strong>F = $1.2181</strong></div></div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step"><div class="fs-n">02</div><div class="fs-t">Black-76</div><div class="fs-b">What is the insurance on that future worth? <strong>$0.0712/lb</strong></div></div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step"><div class="fs-n">03</div><div class="fs-t">Monte Carlo</div><div class="fs-b">Simulate 500,000 futures and check: <strong>$0.0712 &plusmn; 0.0004</strong></div></div>
-    </div>
+<div class="chart-block">
+  <div class="chart-block-title">Payoff at Maturity on a $1,000 Note (Structure C)</div>
+  <div class="chart-wrap"><canvas id="chartNote"></canvas></div>
+</div>
+<p class="diagram-cap">Above \(\$1.20\) the client keeps \(40.9\%\) of the upside plus the \(\$60\) coupon. Between the barrier and \(\$1.20\) they get \(\$1{,}060\) back. Below \(\$0.96\) they lose one-for-one with coffee.</p>
 
-    <div class="sh">Step 1 &mdash; the fair futures price</div>
-    <p class="lc-q">Why isn't coffee for later delivery the same price as coffee today?</p>
-    <p class="np">Because holding coffee costs money. If you bought beans today to sell in six months, you'd pay interest on the money you borrowed and pay to store them. So the price for later delivery must include those costs, or someone could lock in a free profit.</p>
-    <div class="f-label">Cost of carry &mdash; spot plus the cost of holding it</div>
-    <div class="f-box"><span class="math">F = S<sub>0</sub> &times; e<sup>(r + u &minus; y)T</sup> = 1.20 &times; e<sup>0.015</sup> = $1.2181</span></div>
-    <table class="vt">
-      <tr><td>S&#8320;</td><td>Spot price today &mdash; $1.20/lb</td></tr>
-      <tr><td>r</td><td>Interest rate &mdash; 2% a year</td></tr>
-      <tr><td>u</td><td>Storage cost &mdash; 1% a year</td></tr>
-      <tr><td>y</td><td>Convenience yield &mdash; the benefit of physically having beans (not given, set to 0 and stress-tested)</td></tr>
-    </table>
+<div class="insight">
+  <div class="insight-lbl">The disclosure that matters</div>
+  Sold as "\(80\%\) protected", the note still has a <strong>\(26.6\%\) chance of losing the client money</strong> in my 400,000-path simulation, with a 5th-percentile payoff of \(\$618\). A single price can't show that; the full distribution can. That's why the Monte Carlo output belongs in the client documents.
+</div>
 
-    <div class="sh">Step 2 &mdash; Black-76 and the Greeks</div>
-    <p class="np">Black-76 is the version of Black-Scholes used for options on <strong>futures</strong>. Drag the sliders to see how the option's value responds. The gap between the curve and the dashed line is <strong>time value</strong> &mdash; what you pay for the chance that coffee rises before expiry.</p>
+<div class="sh">The risk Citi keeps after selling it</div>
+<p class="np">Selling the note leaves the bank short the payoff. The hardest part is <strong>gamma near the barrier</strong>: as coffee falls towards \(\$0.96\), the hedge changes sharply, forcing the desk to trade heavily in a falling, nervous market. That cost doesn't appear in the note's theoretical value, so it has to be priced in.</p>
+{% endpsec %}
 
-    <div class="chart-block">
-      <div class="chart-block-title">Call Value vs Futures Price &mdash; Strike $1.25</div>
-      <div class="chart-wrap"><canvas id="chartB76"></canvas></div>
-      <div class="chart-controls">
-        <div class="chart-control-row"><span class="cc-label">Futures price</span><input type="range" id="b-f" min="1.00" max="1.50" step="0.0001" value="1.2181"><span class="cc-value" id="b-f-v">$1.2181</span></div>
-        <div class="chart-control-row"><span class="cc-label">Volatility</span><input type="range" id="b-v" min="10" max="50" step="1" value="25"><span class="cc-value" id="b-v-v">25%</span></div>
-        <div class="chart-control-row"><span class="cc-label">Months left</span><input type="range" id="b-t" min="1" max="12" step="1" value="6"><span class="cc-value" id="b-t-v">6</span></div>
-      </div>
-      <div class="live-out">
-        <div class="metric"><div class="metric-lbl">Call value</div><div class="metric-val" id="o-c">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">Delta</div><div class="metric-val" id="o-d">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">Vega / vol pt</div><div class="metric-val" id="o-v">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">Theta / day</div><div class="metric-val" id="o-t">&ndash;</div></div>
-        <div class="metric"><div class="metric-lbl">P(exercise)</div><div class="metric-val" id="o-p">&ndash;</div></div>
-      </div>
-    </div>
+{% psec 4, "You Can't Hedge What You Haven't Measured", "What risk does the desk carry after selling it?", "Risk Management" %}
+<p class="topic-intro">Three risk scenarios, one framework: identify the exposure, size it, mitigate it, then monitor it.</p>
 
-    <div class="insight">
-      <div class="insight-lbl">What the Greeks mean for a trader</div>
-      <strong>Delta (0.47)</strong>: hedge each option with about half a futures contract. <strong>Gamma (1.83)</strong>: that hedge ratio moves quickly, so it needs frequent rebalancing. <strong>Vega</strong>: one extra point of volatility adds about $128 per contract. <strong>Theta</strong>: every day that passes, the option loses a little value.
-    </div>
+<div class="chart-block">
+  <div class="chart-block-title">Holding One Contract of Coffee (37,500 lb) &mdash; Worst-Case Losses</div>
+  <div class="chart-wrap"><canvas id="chartRisk"></canvas></div>
+</div>
+<p class="np">From the Task \(1\) simulation: buying a \(\$1.25\) put costs <strong>\(\$3{,}853\)</strong> (\(8.6\%\) of the position's value) and cuts the average loss in the worst \(1\%\) of outcomes from <strong>\(\$17{,}544\) to \(\$2{,}658\)</strong>. I reported Expected Shortfall alongside VaR because coffee has fat tails &mdash; VaR tells you where the bad zone starts, ES tells you how bad it gets.</p>
 
-    <div class="sh">Step 3 &mdash; Monte Carlo as a cross-check</div>
-    <p class="np">Monte Carlo prices an option by brute force: simulate thousands of possible futures prices at expiry, work out the payoff in each, and average them. On a simple option it should match the formula. If it does, you can trust the same engine on complicated products where no formula exists. That's exactly what Task 2 needed.</p>
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-icon green">M</div><div class="sum-title">Market risk &mdash; a weather view</div><div class="sum-body">First establish which side you're on. For a buyer, I recommended a <strong>collar or a \(60\text{–}80\%\) futures hedge</strong>, sized with the minimum-variance hedge ratio, because the weather view may already be in the price.</div></div>
+  <div class="sum-card"><div class="sum-icon blue">C</div><div class="sum-title">Credit risk &mdash; a new supplier</div><div class="sum-body">The danger is <strong>wrong-way risk</strong>: a drought makes the supplier likely to default exactly when replacing their coffee is most expensive. Collateral is the one fix that still works then.</div></div>
+  <div class="sum-card"><div class="sum-icon amber">O</div><div class="sum-title">Operational risk &mdash; manual errors</div><div class="sum-body">Diagnose the root cause, then <strong>automate</strong> execution to settlement. Checks and approvals are back-ups for a manual step that shouldn't exist.</div></div>
+  <div class="sum-card"><div class="sum-icon purple">&Sigma;</div><div class="sum-title">The common thread</div><div class="sum-body">Hedging doesn't remove basis risk; collateral doesn't remove wrong-way risk; automation moves risk into the system. Risk management is choosing <strong>which</strong> risks to keep, and at what price.</div></div>
+</div>
+{% endpsec %}
 
-    <div class="chart-block">
-      <div class="chart-block-title">Simulated Coffee Futures Price at Expiry</div>
-      <div class="chart-wrap"><canvas id="chartMC"></canvas></div>
-      <div class="chart-controls">
-        <span class="cc-label" id="mc-out" style="min-width:0;flex:1">&ndash;</span>
-        <button class="mc-btn" onclick="runMC()">Run again &#8635;</button>
-      </div>
-    </div>
-    <p class="diagram-cap">This in-browser version runs 20,000 paths for speed. The Python model uses 500,000 antithetic paths and lands within 0.02% of Black-76, with 40.7% of paths finishing above the strike.</p>
+{% psec 5, "Where the Model Breaks", "Where does it fall short, and what would I do next?", "Limits and Next Steps" %}
+<p class="topic-intro">The maths was the easy part. The real risk sits in the assumptions, and these are the ones I'd change first on a real desk.</p>
 
-    <div class="sh">How real-world shocks reprice the option</div>
-    <p class="np">A model is only as good as its inputs. I mapped real events &mdash; frost, drought, shipping disruption &mdash; onto the inputs and re-priced the option each time.</p>
-    <div class="chart-block">
-      <div class="chart-block-title">Call Value Under Each Scenario ($/lb) &mdash; base case $0.0712</div>
-      <div class="chart-wrap" style="height:320px"><canvas id="chartSc"></canvas></div>
-    </div>
-    <div class="insight">
-      <div class="insight-lbl">The key finding</div>
-      The shocks are <strong>lopsided</strong>. A Brazilian frost lifts the call by <strong>+366%</strong>, because it pushes up the price <em>and</em> the volatility at the same time &mdash; delta and vega add together. A bumper crop takes it down 90%, but an option can't fall below zero. Long options are the natural way to express weather risk.
-    </div>
+<div class="sh">1. One volatility number isn't enough</div>
+<p class="np">I used a flat \(25\%\) volatility for every strike. Real markets don't: coffee traders pay extra for out-of-the-money calls because frost risk only pushes prices one way. A flat-vol model therefore <strong>under-prices the call</strong> in Task \(1\) and the barrier put in Task \(2\) &mdash; meaning the note would be sold too cheaply. The fix is to price off the <strong>implied volatility surface</strong>.</p>
 
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(1)">&larr; Overview</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(3)">Next: Structured Note &rarr;</button>
-    </div>
-    </div>
+<div class="sh">2. Prices don't move smoothly</div>
+<p class="np">The simulation assumes prices drift and wobble smoothly. Coffee jumps: a frost can move it \(30\%\) in a week. A <strong>mean-reverting jump-diffusion</strong> model would show barrier breaches and tail losses more honestly.</p>
 
-    <!-- ════════════ 3: STRUCTURED NOTE ════════════ -->
-    <div class="topic-pane" id="topic-3" style="display:none">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Task 2</span>
-      <span class="badge badge-subtle">2-year note &middot; moderate-risk client</span>
-    </div>
-    <div class="topic-title-lg">Designing a Coffee-Linked Note</div>
-    <p class="topic-intro">The client wanted two things that pull against each other: steady income, like a bond, and a share of any rise in coffee prices, like an option. A structured note combines both &mdash; but every feature has to be paid for by another.</p>
+<div class="sh">3. The hedge has costs the price ignores</div>
+<p class="np">Gamma near the barrier, margin calls on a working futures hedge, and basis risk between physical beans and the exchange contract all cost money. None of them show up in a theoretical value, so they need explicit reserves.</p>
 
-    <div class="sh">A note is just three simpler pieces</div>
-    <div class="f-box"><span class="math">Note = Zero-coupon bond + &alpha; &times; Call &minus; Down-and-in Put</span></div>
-    <table class="vt">
-      <tr><td>Bond</td><td>Returns the client's money at maturity &mdash; the safe part</td></tr>
-      <tr><td>Call</td><td>The client's share (&alpha;) of any coffee upside</td></tr>
-      <tr><td>Put</td><td>The client <em>sells</em> protection below an 80% barrier; that premium funds the coupon and upside</td></tr>
-    </table>
-
-    <div class="worked">
-      <div class="worked-title">Nothing is free &mdash; the funding constraint</div>
-      <div class="worked-body">At a 2% interest rate, guaranteeing $1,000 back in two years costs:
-        <div class="worked-math">Bond = 1,000 &times; e^(&minus;0.02 &times; 2) = $960.79
-Left to buy upside = 1,000 &minus; 960.79 = $39.21  &rarr;  only 23% participation</div>
-        To give the client a coupon <em>and</em> real upside, they have to give something up. The 80% barrier is that trade-off: it's a put the client sells, and its premium lifts participation to 40.9%.</div>
-    </div>
-
-    <div class="dt-wrap"><table class="dt">
-      <tr><th>Structure</th><th>Coupon</th><th>Downside</th><th>Participation &alpha;</th><th>P(loss)</th></tr>
-      <tr><td>A. Full protection</td><td>none</td><td>Protected</td><td>23.0%</td><td>0.0%</td></tr>
-      <tr><td>B. Full protection, capped +40%</td><td>none</td><td>Protected</td><td>32.8%</td><td>0.0%</td></tr>
-      <tr class="hl"><td>C. Recommended</td><td>3% p.a.</td><td>80% barrier</td><td>40.9%</td><td>26.6%</td></tr>
-      <tr><td>D. Aggressive coupon</td><td>5% p.a.</td><td>70% barrier, cap +50%</td><td>4.1%</td><td>15.8%</td></tr>
-    </table></div>
-
-    <div class="chart-block">
-      <div class="chart-block-title">Payoff at Maturity on a $1,000 Note (Structure C)</div>
-      <div class="chart-wrap"><canvas id="chartNote"></canvas></div>
-    </div>
-    <p class="diagram-cap">Above $1.20 the client keeps 40.9% of the upside plus the $60 coupon. Between the barrier and $1.20 they get $1,060 back. Below $0.96 they lose one-for-one with coffee.</p>
-
-    <div class="insight">
-      <div class="insight-lbl">The disclosure that matters</div>
-      Sold as "80% protected", the note still has a <strong>26.6% chance of losing the client money</strong> in my 400,000-path simulation, with a 5th-percentile payoff of $618. A single price can't show that; the full distribution can. That's why the Monte Carlo output belongs in the client documents.
-    </div>
-
-    <div class="sh">The risk Citi keeps after selling it</div>
-    <p class="np">Selling the note leaves the bank short the payoff. The hardest part is <strong>gamma near the barrier</strong>: as coffee falls towards $0.96, the hedge changes sharply, forcing the desk to trade heavily in a falling, nervous market. That cost doesn't appear in the note's theoretical value, so it has to be priced in.</p>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(2)">&larr; Pricing the Option</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(4)">Next: Risk Management &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 4: RISK ════════════ -->
-    <div class="topic-pane" id="topic-4" style="display:none">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Task 3</span>
-      <span class="badge badge-subtle">Market &middot; credit &middot; operational</span>
-    </div>
-    <div class="topic-title-lg">You Can't Hedge What You Haven't Measured</div>
-    <p class="topic-intro">Three risk scenarios, one framework: identify the exposure, size it, mitigate it, then monitor it.</p>
-
-    <div class="chart-block">
-      <div class="chart-block-title">Holding One Contract of Coffee (37,500 lb) &mdash; Worst-Case Losses</div>
-      <div class="chart-wrap"><canvas id="chartRisk"></canvas></div>
-    </div>
-    <p class="np">From the Task 1 simulation: buying a $1.25 put costs <strong>$3,853</strong> (8.6% of the position's value) and cuts the average loss in the worst 1% of outcomes from <strong>$17,544 to $2,658</strong>. I reported Expected Shortfall alongside VaR because coffee has fat tails &mdash; VaR tells you where the bad zone starts, ES tells you how bad it gets.</p>
-
-    <div class="summary-grid">
-      <div class="sum-card"><div class="sum-icon green">M</div><div class="sum-title">Market risk &mdash; a weather view</div><div class="sum-body">First establish which side you're on. For a buyer, I recommended a <strong>collar or a 60&ndash;80% futures hedge</strong>, sized with the minimum-variance hedge ratio, because the weather view may already be in the price.</div></div>
-      <div class="sum-card"><div class="sum-icon blue">C</div><div class="sum-title">Credit risk &mdash; a new supplier</div><div class="sum-body">The danger is <strong>wrong-way risk</strong>: a drought makes the supplier likely to default exactly when replacing their coffee is most expensive. Collateral is the one fix that still works then.</div></div>
-      <div class="sum-card"><div class="sum-icon amber">O</div><div class="sum-title">Operational risk &mdash; manual errors</div><div class="sum-body">Diagnose the root cause, then <strong>automate</strong> execution to settlement. Checks and approvals are back-ups for a manual step that shouldn't exist.</div></div>
-      <div class="sum-card"><div class="sum-icon purple">&Sigma;</div><div class="sum-title">The common thread</div><div class="sum-body">Hedging doesn't remove basis risk; collateral doesn't remove wrong-way risk; automation moves risk into the system. Risk management is choosing <strong>which</strong> risks to keep, and at what price.</div></div>
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(3)">&larr; Structured Note</button>
-      <button class="tn-btn primary" style="margin-left:auto" onclick="switchTopic(5)">Next: Limits &amp; Next Steps &rarr;</button>
-    </div>
-    </div>
-
-    <!-- ════════════ 5: LIMITS ════════════ -->
-    <div class="topic-pane" id="topic-5" style="display:none">
-    <div class="topic-eyebrow">
-      <span class="badge badge-accent">Reflection</span>
-    </div>
-    <div class="topic-title-lg">Where the Model Breaks</div>
-    <p class="topic-intro">The maths was the easy part. The real risk sits in the assumptions, and these are the ones I'd change first on a real desk.</p>
-
-    <div class="sh">1. One volatility number isn't enough</div>
-    <p class="np">I used a flat 25% volatility for every strike. Real markets don't: coffee traders pay extra for out-of-the-money calls because frost risk only pushes prices one way. A flat-vol model therefore <strong>under-prices the call</strong> in Task 1 and the barrier put in Task 2 &mdash; meaning the note would be sold too cheaply. The fix is to price off the <strong>implied volatility surface</strong>.</p>
-
-    <div class="sh">2. Prices don't move smoothly</div>
-    <p class="np">The simulation assumes prices drift and wobble smoothly. Coffee jumps: a frost can move it 30% in a week. A <strong>mean-reverting jump-diffusion</strong> model would show barrier breaches and tail losses more honestly.</p>
-
-    <div class="sh">3. The hedge has costs the price ignores</div>
-    <p class="np">Gamma near the barrier, margin calls on a working futures hedge, and basis risk between physical beans and the exchange contract all cost money. None of them show up in a theoretical value, so they need explicit reserves.</p>
-
-    <div class="sh">The core code</div>
-    <div class="code">def black76(F, K, r, T, sigma):
+<div class="sh">The core code</div>
+<div class="code">def black76(F, K, r, T, sigma):
     """Call, put and Greeks for an option on a futures contract."""
     sqrtT = np.sqrt(T)
     d1 = (np.log(F / K) + 0.5 * sigma**2 * T) / (sigma * sqrtT)
@@ -264,38 +193,17 @@ Left to buy upside = 1,000 &minus; 960.79 = $39.21  &rarr;  only 23% participati
     vega  = disc * F * norm.pdf(d1) * sqrtT / 100      # per vol point
     return call, put, delta, gamma, vega</div>
 
-    <div class="qbox">
-      <div class="qbox-lbl">Skills used</div>
-      <p class="qbox-body">Pricing an option is half the job; knowing how far to trust the price is the other half.</p>
-      <span class="qtag">Black-76</span><span class="qtag">Greeks</span><span class="qtag">Monte Carlo</span><span class="qtag">Antithetic variates</span><span class="qtag">Structured products</span><span class="qtag">VaR &amp; ES</span><span class="qtag">Root finding (brentq)</span><span class="qtag">NumPy / SciPy / pandas</span>
-    </div>
-
-    <div class="topic-nav">
-      <button class="tn-btn" onclick="switchTopic(4)">&larr; Risk Management</button>
-      <a class="tn-btn primary" style="margin-left:auto" href="/projects/projects.html">All projects &rarr;</a>
-    </div>
-    </div>
-
-  </div>
+<div class="qbox">
+  <div class="qbox-lbl">Skills used</div>
+  <p class="qbox-body">Pricing an option is half the job; knowing how far to trust the price is the other half.</p>
+  <span class="qtag">Black-76</span><span class="qtag">Greeks</span><span class="qtag">Monte Carlo</span><span class="qtag">Antithetic variates</span><span class="qtag">Structured products</span><span class="qtag">VaR &amp; ES</span><span class="qtag">Root finding (brentq)</span><span class="qtag">NumPy / SciPy / pandas</span>
 </div>
-
-</div>
-
+{% endpsec %}
 <script>
 const $=id=>document.getElementById(id);
 const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
 const charts={};
 
-function switchTopic(n){
-  for(let i=1;i<=5;i++){
-    const p=$('topic-'+i),s=$('sb-'+i);
-    if(p)p.style.display=(i===n?'block':'none');
-    if(s)s.classList.toggle('active',i===n);
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
-  document.querySelector('.study-content').scrollTop=0;
-  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),50);
-}
 
 function getColors(){
   return {

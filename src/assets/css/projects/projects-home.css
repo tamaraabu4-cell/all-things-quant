@@ -1,0 +1,140 @@
+/* ==========================================================
+   Heritage Edge — Projects page (/projects/projects.html)
+   Loaded after hub.css, which already supplies the page frame (.hub),
+   the shelves, the filter buttons (.plan-step), the toolkit strip
+   (.hub-glossary) and the topic colours (tone-<colour>).
+   This file only adds what's new.
+   ========================================================== */
+
+
+/* Anything the filter hides stays hidden, even if its class sets display */
+.projects-home [hidden] { display: none !important; }
+
+/* 1. Welcome */
+.projects-home .hub-title { text-wrap: balance; }
+.projects-home .hub-title span { color: var(--accent); }
+
+/* 2. The four steps (the tiles come from site.css, as on the homepage) */
+.proj-steps { background: var(--surface); border-radius: var(--radius-lg); padding: 12px; }
+.proj-steps .steps { margin: 0; }
+
+/* 3. Filter */
+.proj-filter {
+  background: var(--hub-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.proj-filter-head { display: flex; justify-content: space-between; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
+.proj-filter-status { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--text-2); }
+.proj-clear {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.proj-clear:disabled { color: var(--text-2); opacity: 0.6; cursor: default; }
+.proj-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.proj-filter-row + .proj-filter-row { padding-top: 16px; border-top: 1px solid var(--hub-line); }
+.proj-filter-label { width: 72px; flex-shrink: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.proj-filter .plan-step.has-tone { --step: var(--tone); }
+.proj-filter .plan-step:focus-visible,
+.proj-empty .plan-step:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* 4. Topic shelves */
+.proj-shelves {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.proj-blurb { font-size: 13px; line-height: 1.45; color: var(--text-2); }
+.proj-count { margin-left: auto; align-self: flex-start; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+
+/* 5. One project */
+.proj { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--hub-line); }
+.proj-firm { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
+.proj-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.proj-title { font-size: 17px; font-weight: 700; line-height: 1.3; color: var(--text); }
+.proj-title:hover { color: var(--tone); }
+.proj-sum { font-size: 15px; line-height: 1.5; color: var(--text-3); }
+.proj-result {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  background: var(--hub-inset);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.proj-result b { flex-shrink: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
+.proj-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
+.proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.proj-tag { font-size: 11px; font-weight: 600; border-radius: 6px; padding: 3px 7px; background: var(--hub-inset); color: var(--text-3); }
+.proj-tag.is-tone { background: var(--tone-bg); color: var(--tone); }
+.proj-links { display: flex; gap: 16px; }
+.proj-links a { font-size: 14px; font-weight: 600; color: var(--tone); }
+.proj-links a:hover { color: var(--text); }
+
+/* Live = green with a halo; Finished = the topic's colour */
+.proj-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--text-2); }
+.proj-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--tone); }
+.proj-status.is-live { color: var(--accent); }
+.proj-status.is-live i { background: var(--accent); box-shadow: 0 0 0 3px var(--hub-icon-bg); }
+
+/* 6. Simulations */
+.sims {
+  background: var(--tone-bg);
+  border-radius: var(--radius-lg);
+  padding: clamp(20px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.sims-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.sims-head .shelf-icon { background: var(--hub-card); }
+.sims-title { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 4px; color: var(--tone); }
+.sims-title h2 { font-size: 28px; letter-spacing: -0.02em; }
+.sims-title p { font-size: 15px; }
+.sims .proj-count { margin-left: 0; align-self: center; font-weight: 600; color: var(--tone); }
+.sims-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.sims .proj { background: var(--hub-card); border: 0; border-radius: var(--radius); padding: 24px; gap: 12px; }
+
+/* 7. When the filters match nothing */
+.proj-empty {
+  border: 1.5px dashed var(--hub-dash);
+  border-radius: var(--radius);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.proj-empty-title { font-size: 18px; font-weight: 700; color: var(--text); }
+
+/* 8. Toolkit (the hub's glossary strip) */
+.proj-tools li { cursor: default; }
+
+/* 9. Phones */
+@media (max-width: 600px) {
+  .proj-filter { padding: 20px; }
+  .proj-filter-label { width: 100%; }
+  .proj-result { flex-direction: column; gap: 2px; }
+  .shelf-head { flex-wrap: wrap; }
+}

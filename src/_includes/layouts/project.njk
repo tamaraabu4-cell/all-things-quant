@@ -1,0 +1,115 @@
+---
+layout: layouts/base.njk
+---
+{#
+  Project page layout. Every project page uses it (layout: layouts/project.njk).
+  The page itself only supplies its sections ({% psec %} ... {% endpsec %})
+  and, if it wants, a few `meta` chips. Everything else comes from the
+  project's entry in _data/projects.json, matched by the page's URL:
+  the topic and its colour, the kicker, the four steps, and the projects
+  suggested at the end. project.js builds the contents rail.
+#}
+{% set ctx = page.url | projectContext(projects, shelves) %}
+{% set p = ctx.project if ctx else {} %}
+
+<div class="pj-page{% if ctx and ctx.topic.colour %} tone-{{ ctx.topic.colour }}{% endif %}">
+<div class="pj-shell">
+
+  {# ---------- Left rail: this project's sections, then other projects ---------- #}
+  <aside class="pj-rail" aria-label="Project contents">
+    <div class="pj-rail-head">
+      <span class="pj-rail-lbl">{{ ctx.topic.name if ctx else "Projects" }}</span>
+      <a class="pj-rail-title" href="#top">{{ title }}</a>
+    </div>
+    <ol class="pj-secs" id="pj-toc"></ol>
+
+    {% if ctx and ctx.more.length %}
+    <div class="pj-rail-more">
+      <span class="pj-rail-lbl">More projects</span>
+      <ul>
+        {% for q in ctx.more %}
+        <li><a class="pj-rail-link{% if q.colour %} tone-{{ q.colour }}{% endif %}" href="{{ q.url }}"><span class="dot" aria-hidden="true"></span>{{ q.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="pj-rail-foot">
+      <div class="pj-rail-bar"><span id="pj-bar"></span></div>
+      <span class="pj-rail-small" id="pj-where">Section 1</span>
+      <a class="pj-btn" href="/projects/projects.html">← All projects</a>
+    </div>
+  </aside>
+
+  {# ---------- The project ---------- #}
+  <div class="pj-main" id="top">
+    <div class="pj-inner">
+
+      <div class="pj-intro">
+        <nav class="pj-crumbs" aria-label="Breadcrumb">
+          <a href="/projects/projects.html">Projects</a><span aria-hidden="true">/</span>
+          {% if ctx %}<span>{{ ctx.topic.name }}</span><span aria-hidden="true">/</span>{% endif %}
+          <span aria-current="page">{{ title }}</span>
+        </nav>
+
+        <header class="pj-head">
+          {% if ctx %}<p class="pj-kicker">{{ ctx.topic.name }}{% if p.kind %} · {{ p.kind }}{% endif %}{% for m in p.markets %} · {{ m }}{% endfor %}</p>{% endif %}
+          <h1 class="pj-title">{{ title }}</h1>
+          {% if lede or p.headline %}<p class="pj-lede">{{ (lede or p.headline) | safe }}</p>{% endif %}
+          <div class="pj-meta">
+            {% if p.status == "live" %}<span class="pj-chip is-live"><i aria-hidden="true"></i>Live</span>
+            {% elif p.status %}<span class="pj-chip is-done"><i aria-hidden="true"></i>Finished</span>{% endif %}
+            {% if p.firm %}<span class="pj-chip">{{ p.firm }}</span>{% endif %}
+            {% for m in meta %}<span class="pj-chip">{{ m }}</span>{% endfor %}
+            {% if p.code %}<a class="pj-chip is-link" href="{{ p.code }}">Code ↗</a>{% endif %}
+          </div>
+        </header>
+
+        {# The four steps, for the 30-second reader #}
+        {% if p.steps %}
+        <dl class="pj-glance" aria-label="At a glance">
+          <div class="pj-step"><dt>1 · Thesis</dt><dd>{{ p.steps.thesis }}</dd></div>
+          <div class="pj-step"><dt>2 · Method</dt><dd>{{ p.steps.method }}</dd></div>
+          <div class="pj-step"><dt>3 · Tech</dt><dd>{{ p.steps.tech }}</dd></div>
+          <div class="pj-step is-result"><dt>4 · Result</dt><dd>{{ p.steps.result }}</dd></div>
+        </dl>
+        {% endif %}
+      </div>
+
+      <details class="pj-mobile-toc">
+        <summary>Contents</summary>
+        <ol id="pj-toc-mobile"></ol>
+      </details>
+
+      {{ content | safe }}
+
+      {% if ctx and ctx.more.length %}
+      <section class="pj-more" aria-label="More projects">
+        <h2>More projects</h2>
+        <div class="pj-links">
+          {% for q in ctx.more %}
+          <a class="pj-link{% if q.colour %} tone-{{ q.colour }}{% endif %}" href="{{ q.url }}"><span class="k">{{ q.why }}</span><span class="t">{{ q.title }}</span><span class="k">{{ q.where }}</span></a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <nav class="pj-next" aria-label="Next project">
+        <a class="pj-btn" href="/projects/projects.html">← All projects</a>
+        {% if ctx and ctx.next %}<a class="pj-btn dark" href="{{ ctx.next.url }}">Next: {{ ctx.next.title }} →</a>{% endif %}
+      </nav>
+
+    </div>
+  </div>
+</div>
+</div>
+
+{# Maths: every \( ... \) and \[ ... \] on the page is typeset by MathJax, as in the hub #}
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+    svg: { fontCache: "global" }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+<script src="/assets/js/project.js" defer></script>

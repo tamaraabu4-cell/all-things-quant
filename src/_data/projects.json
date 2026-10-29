@@ -1,9 +1,14 @@
 [
   {
     "title": "December FOMC trade memo",
-    "tag": "Trade memo · Rates",
-    "headline": "Bets against a 90% consensus that the Fed hikes in December.",
-    "context": "Paper trade · October 2026",
+    "topic": "trading",
+    "kind": "Trade memo",
+    "status": "live",
+    "markets": ["Rates"],
+    "tags": ["Options"],
+    "tools": ["Chart.js"],
+    "headline": "Bets against a 90% consensus that the Fed hikes in December, with a bull call spread on SOFR futures options.",
+    "result": "Paper trade open. The post-mortem goes up after the 9 December decision.",
     "url": "/projects/sofr-fomc-trade-memo.html",
     "cta": "Read the memo",
     "code": "",
@@ -15,25 +20,15 @@
     }
   },
   {
-    "title": "Pricing coffee derivatives",
-    "tag": "Pricing model · Commodities",
-    "headline": "Prices one coffee option three ways, then designs a structured note around it.",
-    "context": "Citi Markets Quant job simulation (Forage) · July 2026",
-    "url": "/projects/citi-coffee-derivatives.html",
-    "cta": "View project",
-    "code": "https://github.com/tamaraabu4-cell/heritage-edge/blob/main/src/projects/coffee_option_pricing.py",
-    "steps": {
-      "thesis": "A six-month coffee call needs a fair price, and the desk needs to know its risk after selling it.",
-      "method": "Cost of carry, then Black-76, then a 500,000-path Monte Carlo; a coffee-linked note; a desk risk review.",
-      "tech": "Python: NumPy, SciPy and pandas.",
-      "result": "Black-76 and Monte Carlo agree to within 0.02%. The note is solved at 40.9% participation."
-    }
-  },
-  {
     "title": "Liquidity-sweep backtest",
-    "tag": "Backtest · FX",
-    "headline": "Tests whether false breakouts of recent highs and lows reverse often enough to trade.",
-    "context": "EURUSD daily data, 2021–2024",
+    "topic": "quant",
+    "kind": "Backtest",
+    "status": "finished",
+    "markets": ["FX"],
+    "tags": [],
+    "tools": ["Python", "pandas"],
+    "headline": "Tests whether false breakouts of recent highs and lows reverse often enough to trade, on EURUSD daily data from 2021 to 2024.",
+    "result": "Weak on daily data. The write-up explains why and sets out a better test.",
     "url": "/projects/liquidity-sweep-backtest.html",
     "cta": "View project",
     "code": "",
@@ -42,6 +37,27 @@
       "method": "A 96-combination grid search, tuned on two years of data and then tested blind on a third.",
       "tech": "Python and pandas, ATR-based position sizing, and a Sharpe decay test for overfitting.",
       "result": "Weak on daily data. The write-up explains why and sets out a better test."
+    }
+  },
+  {
+    "title": "Pricing coffee derivatives",
+    "topic": "simulations",
+    "firm": "Citi · Markets Quant Analyst · July 2026",
+    "kind": "Pricing model",
+    "status": "finished",
+    "markets": ["Commodities"],
+    "tags": ["Options"],
+    "tools": ["Python", "NumPy", "SciPy", "pandas"],
+    "headline": "Prices one coffee option three ways, then designs a structured note around it and reviews the desk's risk.",
+    "result": "Black-76 and Monte Carlo agree to within 0.02%. The note is solved at 40.9% participation.",
+    "url": "/projects/citi-coffee-derivatives.html",
+    "cta": "View project",
+    "code": "https://github.com/tamaraabu4-cell/heritage-edge/blob/main/src/projects/coffee_option_pricing.py",
+    "steps": {
+      "thesis": "A six-month coffee call needs a fair price, and the desk needs to know its risk after selling it.",
+      "method": "Cost of carry, then Black-76, then a 500,000-path Monte Carlo; a coffee-linked note; a desk risk review.",
+      "tech": "Python: NumPy, SciPy and pandas.",
+      "result": "Black-76 and Monte Carlo agree to within 0.02%. The note is solved at 40.9% participation."
     }
   }
 ]

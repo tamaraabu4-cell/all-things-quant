@@ -1,8 +1,9 @@
 /* ==========================================================
-   Study-layout project pages (sidebar + sections)
-   Used by: citi-coffee-derivatives, sofr-fomc-trade-memo
-   Everything sits inside .project-page, so none of these rules
-   can reach the site's nav or footer.
+   Project content styles: boxes, tables, charts and sliders
+   Used inside the sections of: sofr-fomc-trade-memo, citi-coffee-derivatives
+   The page frame (rail, header, sections) comes from project.css.
+   Everything sits inside .project-page (each section's body), so none
+   of these rules can reach the rest of the site.
    ========================================================== */
 
 .project-page {
@@ -15,7 +16,7 @@
   --br: var(--border);
   --br2: color-mix(in srgb, var(--text) 18%, transparent);
 
-  /* Highlight colours: light mode */
+  /* Highlight colours: light mode (--accent is switched to the topic's colour by project.css) */
   --green: #059669;  --green-bg: #ecfdf5;  --green-dk: #065f46;
   --amber: #d97706;  --amber-bg: #fffbeb;
   --blue: #2563eb;   --blue-bg: #eff6ff;   --blue-dk: #1e40af;
@@ -23,8 +24,6 @@
   --red: #dc2626;    --red-bg: #fff1f2;
   --accent: var(--green); --accent-bg: var(--green-bg); --accent-dk: var(--green-dk);
 
-  /* Sizes: the site's nav is 56px tall plus a 1px border */
-  --nav-h: 57px;
   --r: 10px;
   --r-lg: 16px;
 
@@ -40,56 +39,18 @@
     --red: #f87171;    --red-bg: #1c0505;
   }
 
-  /* Basics (only inside this page) */
+  /* Basics (only inside the sections) */
   *, *::before, *::after { margin: 0; padding: 0; }
   a { color: inherit; text-decoration: none; }
   button { font-family: var(--font); cursor: pointer; border: none; background: none; }
 
   /* Maths formulas */
   .math { font-family: 'Times New Roman', Georgia, serif; font-size: 1.05em; letter-spacing: .01em; }
-  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 4px; }
-  .num { border-bottom: 1.5px solid currentColor; padding: 0 4px 2px; text-align: center; }
-  .den { padding: 2px 4px 0; text-align: center; }
   .f-box { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; background: var(--bg2); border-radius: 10px; padding: 18px 22px; margin-bottom: 12px; }
   .f-label { font-size: 11px; color: var(--tx3); text-align: center; margin-bottom: 5px; font-style: italic; }
 
-  /* Page header (small version: the site's big .page-header is for section pages) */
-  .page-header { padding: 28px 32px 0; border-bottom: .5px solid var(--br); }
-  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--tx3); margin-bottom: 10px; }
-  .breadcrumb a:hover { color: var(--tx1); }
-  .page-title { font-size: 22px; font-weight: 600; letter-spacing: -.02em; line-height: 1.3; margin-bottom: 4px; }
-  .page-sub { font-size: 13px; color: var(--tx2); margin-bottom: 18px; }
-  .lv-tabs { display: flex; gap: 0; }
-  .lv-tab { padding: 10px 16px; font-size: 13px; cursor: pointer; color: var(--tx3); border-bottom: 2px solid transparent; margin-bottom: -.5px; background: none; border-top: none; border-left: none; border-right: none; transition: color .15s; font-family: var(--font); display: flex; align-items: center; gap: 6px; }
-  .lv-tab.active { color: var(--tx1); font-weight: 500; border-bottom-color: var(--tx1); }
-  .lv-tab.locked { opacity: .35; cursor: default; }
-  .lv-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .lv-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--bg2); color: var(--tx3); }
-
-  /* Sidebar + content. The whole page scrolls; the sidebar sticks under the nav. */
-  .study-shell { display: flex; min-height: calc(100vh - var(--nav-h)); }
-  .study-sidebar { width: 200px; flex-shrink: 0; border-right: .5px solid var(--br); padding: 20px 0; position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); overflow-y: auto; background: var(--bg); }
-  .sb-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--tx3); padding: 8px 18px 5px; }
-  .sb-item { display: flex; align-items: center; gap: 9px; padding: 7px 18px; font-size: 13px; color: var(--tx2); cursor: pointer; border-left: 2px solid transparent; background: none; width: 100%; text-align: left; transition: color .12s, background .12s; line-height: 1.4; font-family: var(--font); }
-  .sb-item:hover { color: var(--tx1); background: var(--bg2); }
-  .sb-item.active { color: var(--tx1); font-weight: 500; border-left-color: var(--accent); background: var(--bg2); }
-  .sb-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--br2); flex-shrink: 0; }
-  .sb-item.active .sb-dot { background: var(--accent); }
-  .sb-item.done .sb-dot { background: var(--accent); opacity: .4; }
-  .study-content { flex: 1; min-width: 0; padding: 32px 56px 80px; }
-
-  /* Section top */
-  .progress-pips { display: flex; gap: 6px; margin-bottom: 22px; }
-  .pip { width: 8px; height: 8px; border-radius: 50%; cursor: pointer; transition: transform .15s; padding: 0; border: none; }
-  .pip:hover { transform: scale(1.4); }
-  .topic-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .badge { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 980px; font-weight: 500; }
-  .badge-accent { background: var(--accent-bg); color: var(--accent); }
-  .badge-subtle { background: var(--bg2); color: var(--tx2); }
-  .topic-title-lg { font-size: 30px; font-weight: 600; letter-spacing: -.035em; margin-bottom: 14px; line-height: 1.1; }
-  .topic-intro { font-size: 16px; color: var(--tx2); line-height: 1.7; margin-bottom: 36px; font-weight: 300; }
-
   /* Text */
+  .topic-intro { font-size: 16px; color: var(--tx2); line-height: 1.7; margin-bottom: 36px; font-weight: 300; }
   .sh { font-size: 22px; font-weight: 600; color: var(--accent); margin: 44px 0 18px; letter-spacing: -.02em; line-height: 1.2; }
   .lc-q { font-size: 14px; font-weight: 600; color: var(--tx1); margin: 0 0 14px 0; line-height: 1.55; }
   .lc-q::before { content: "Q: "; color: var(--accent); font-weight: 600; }
@@ -113,16 +74,12 @@
   .chart-control-row { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px; }
   .cc-label { font-size: 11px; color: var(--tx3); min-width: 90px; font-weight: 500; }
   .cc-value { font-size: 12px; font-weight: 600; color: var(--tx1); min-width: 60px; text-align: right; font-variant-numeric: tabular-nums; }
+  .diagram-cap { font-size: 11px; color: var(--tx3); text-align: center; margin-top: 12px; font-style: italic; line-height: 1.55; }
 
   /* Sliders */
   input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px; background: var(--bg3); outline: none; cursor: pointer; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); cursor: pointer; }
   input[type=range]::-moz-range-thumb { width: 17px; height: 17px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
-
-  /* Diagrams */
-  .diagram-wrap { background: var(--bg2); border-radius: var(--r-lg); padding: 26px 24px 20px; margin: 16px 0 20px; overflow-x: auto; }
-  .diagram-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
-  .diagram-cap { font-size: 11px; color: var(--tx3); text-align: center; margin-top: 12px; font-style: italic; line-height: 1.55; }
 
   /* Insight box */
   .insight { background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 0 var(--r) var(--r) 0; padding: 14px 18px; margin: 14px 0 20px; font-size: 13.5px; line-height: 1.7; color: var(--tx2); break-inside: avoid; }
@@ -134,7 +91,6 @@
   .worked-title { font-size: 12px; font-weight: 600; color: var(--tx1); margin-bottom: 12px; padding-bottom: 9px; border-bottom: .5px solid var(--br); }
   .worked-body { font-size: 13.5px; color: var(--tx2); line-height: 1.75; }
   .worked-math { font-family: var(--mono); background: var(--bg); border-radius: 8px; padding: 11px 16px; margin: 10px 0; font-size: 13px; overflow-x: auto; white-space: pre-wrap; line-height: 1.6; }
-  .worked-conclusion { font-size: 12px; color: var(--tx3); margin-top: 10px; font-style: italic; }
 
   /* Summary cards */
   .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0 8px; }
@@ -149,48 +105,12 @@
   .sum-body { font-size: 13px; color: var(--tx2); line-height: 1.65; }
   .sum-body strong { color: var(--tx1); font-weight: 600; }
 
-  /* Quiz */
-  .quiz-block { background: var(--bg2); border-radius: var(--r-lg); padding: 24px 26px; margin: 16px 0 20px; break-inside: avoid; }
-  .quiz-q { margin-bottom: 22px; padding-bottom: 22px; border-bottom: .5px solid var(--br); }
-  .quiz-q:last-of-type { border-bottom: none; padding-bottom: 8px; margin-bottom: 8px; }
-  .qq-text { font-size: 13.5px; font-weight: 500; margin-bottom: 12px; line-height: 1.55; color: var(--tx1); }
-  .qq-num { display: inline-flex; align-items: center; justify-content: center; width: 23px; height: 23px; border-radius: 50%; background: var(--accent-bg); color: var(--accent); font-size: 11px; font-weight: 600; margin-right: 10px; flex-shrink: 0; }
-  .qq-options { display: flex; flex-direction: column; gap: 7px; padding-left: 33px; }
-  .qq-opt { display: flex; align-items: center; gap: 11px; padding: 11px 16px; border-radius: var(--r); border: .5px solid var(--br); background: var(--bg); cursor: pointer; font-size: 13px; color: var(--tx2); transition: border-color .15s, background .15s; }
-  .qq-opt:hover { border-color: var(--br2); background: var(--bg3); }
-  .qq-opt.selected { border-color: var(--accent); background: var(--accent-bg); color: var(--tx1); }
-  .qq-opt.correct { border-color: var(--green); background: var(--green-bg); color: var(--green-dk); }
-  .qq-opt.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); opacity: .8; }
-  .qq-radio { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--br2); flex-shrink: 0; position: relative; }
-  .qq-opt.selected .qq-radio { border-color: var(--accent); }
-  .qq-opt.selected .qq-radio::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .qq-opt.correct .qq-radio { border-color: var(--green); }
-  .qq-opt.correct .qq-radio::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-  .qq-feedback { font-size: 12.5px; margin-top: 10px; padding: 10px 14px 10px 33px; border-radius: 8px; line-height: 1.65; display: none; }
-  .qq-feedback.show { display: block; }
-  .qq-feedback.right { background: var(--green-bg); color: var(--green-dk); }
-  .qq-feedback.wrong-fb { background: var(--red-bg); color: var(--red); }
-  .quiz-submit { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; font-size: 13px; font-weight: 500; border-radius: 980px; background: var(--tx1); color: var(--bg); border: none; cursor: pointer; margin-top: 8px; font-family: var(--font); transition: opacity .15s; }
-  .quiz-submit:hover { opacity: .85; }
-  .quiz-submit:disabled { opacity: .4; cursor: default; }
-  .quiz-score { font-size: 14px; font-weight: 600; margin-top: 18px; padding: 14px 20px; border-radius: var(--r); text-align: center; }
-  .quiz-score.perfect { background: var(--green-bg); color: var(--green-dk); }
-  .quiz-score.good { background: var(--blue-bg); color: var(--blue-dk); }
-  .quiz-score.poor { background: var(--amber-bg); color: var(--amber); }
-
   /* "Skills used" box */
   .qbox { background: var(--purple-bg); border-radius: var(--r-lg); padding: 20px 22px; margin-top: 32px; break-inside: avoid; }
   .qbox-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--purple); margin-bottom: 10px; }
   .qbox-body { font-size: 13px; color: var(--tx2); line-height: 1.7; margin-bottom: 14px; }
   .qbox-body strong { color: var(--tx1); font-weight: 600; }
   .qtag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 980px; background: var(--purple-bg); color: var(--purple); border: .5px solid rgba(124, 58, 237, .25); margin: 2px; }
-
-  /* Previous / next buttons */
-  .topic-nav { display: flex; gap: 10px; margin-top: 36px; padding-top: 26px; border-top: .5px solid var(--br); }
-  .tn-btn { padding: 10px 22px; font-size: 13px; font-weight: 500; border-radius: 980px; border: .5px solid var(--br2); background: var(--bg); color: var(--tx1); cursor: pointer; transition: background .15s; font-family: var(--font); }
-  .tn-btn:hover { background: var(--bg2); }
-  .tn-btn.primary { background: var(--tx1); color: var(--bg); border-color: var(--tx1); }
-  .tn-btn.primary:hover { opacity: .85; }
 
   /* Numbers, data tables, code */
   .metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 6px 0 26px; }
@@ -225,13 +145,8 @@
   .proj-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 12.5px; font-weight: 500; border-radius: 980px; border: .5px solid var(--br2); color: var(--tx1); }
   .proj-link:hover { background: var(--bg2); }
 
-  /* Tablets and phones: the site's nav becomes two rows at 860px,
-     so the sidebar hides at the same width */
+  /* Tablets and phones */
   @media (max-width: 860px) {
-    .study-sidebar { display: none; }
-    .study-content { padding: 24px 22px 60px; }
-    .page-header { padding: 22px 18px 0; }
-    .topic-title-lg { font-size: 26px; }
     .chart-wrap { height: 240px; }
     .summary-grid { grid-template-columns: 1fr; }
     .metric-row { grid-template-columns: 1fr 1fr; }

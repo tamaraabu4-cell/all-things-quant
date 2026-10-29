@@ -1,0 +1,147 @@
+/* ==========================================================
+   Heritage Edge — project pages (layouts/project.njk)
+   The note-page layout, rebuilt for a public reader: contents rail on
+   the left, the project on the right, coloured by its topic.
+   Loaded after hub.css (topic colours and surfaces) and the page's own
+   content styles (study-layout.css or liquidity-sweep-backtest.css).
+   ========================================================== */
+
+/* Fallback colour if a project has no topic (zero specificity, so tone classes win) */
+:where(.pj-page) { --tone: var(--accent); --tone-bg: var(--hub-icon-bg); --on-tone: var(--on-accent); }
+
+/* 1. Frame */
+.pj-shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
+.pj-main { min-width: 0; padding: 32px 20px 96px; }
+.pj-inner { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 64px; }
+
+/* 2. Left rail */
+.pj-rail {
+  position: sticky;
+  top: 57px;
+  height: calc(100vh - 57px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 24px 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--bg);
+}
+.pj-rail-head { padding: 0 20px; display: flex; flex-direction: column; gap: 4px; }
+.pj-rail-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); }
+.pj-rail-head .pj-rail-lbl { color: var(--tone); }
+.pj-rail-title { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--text); }
+.pj-rail-title:hover { color: var(--tone); }
+
+/* Sections: passed = filled dot, current = ring + highlighted row, ahead = grey ring */
+.pj-secs { list-style: none; margin: 0; padding: 0; }
+.pj-secs a { position: relative; display: flex; align-items: center; gap: 10px; margin: 0 10px; padding: 7px 10px 7px 34px; font-size: 13px; color: var(--text-2); border-radius: 10px; transition: background 0.2s, color 0.2s; }
+.pj-secs a:hover { color: var(--text); }
+.pj-secs a::before { content: ""; position: absolute; left: 15px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; box-sizing: border-box; border: 2px solid var(--hub-dash); background: var(--bg); transition: all 0.2s; }
+.pj-secs .n { font-family: var(--mono); font-size: 11px; width: 18px; flex-shrink: 0; }
+.pj-secs .here { display: none; margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
+.pj-secs li.passed a { color: var(--tone); }
+.pj-secs li.passed a::before { background: var(--tone); border-color: var(--tone); }
+.pj-secs li.on a { color: var(--tone); font-weight: 600; background: var(--tone-bg); }
+.pj-secs li.on a::before { width: 16px; height: 16px; margin-top: -8px; left: 13px; border: 3px solid var(--tone); background: var(--bg); box-shadow: 0 0 0 4px var(--tone-bg); }
+.pj-secs li.on .here { display: inline; }
+
+/* Other projects, each with a dot in its topic's colour */
+.pj-rail-more { margin: 0 20px; padding-top: 18px; border-top: 1px solid var(--hub-line); display: flex; flex-direction: column; gap: 6px; }
+.pj-rail-more ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pj-rail-link { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; color: var(--text-2); }
+.pj-rail-link:hover { color: var(--text); }
+.pj-rail-link .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--tone); }
+
+.pj-rail-foot { margin-top: auto; padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
+.pj-rail-bar { height: 5px; border-radius: 3px; background: var(--hub-track); }
+.pj-rail-bar span { display: block; height: 5px; width: 0; border-radius: 3px; background: var(--tone); transition: width 0.3s; }
+.pj-rail-small { font-size: 13px; color: var(--text-2); }
+
+/* 3. Buttons */
+.pj-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 0 20px; border-radius: 980px; font: 600 15px var(--font); border: 1px solid var(--border); background: var(--hub-card); color: var(--text); }
+.pj-btn:hover { border-color: var(--tone); color: var(--text); }
+.pj-btn.dark { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pj-btn.dark:hover { color: var(--bg); opacity: 0.9; }
+
+/* 4. Header */
+.pj-intro { display: flex; flex-direction: column; gap: 32px; }
+.pj-crumbs { display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--text-2); }
+.pj-crumbs a { color: var(--text-2); }
+.pj-crumbs a:hover { color: var(--tone); }
+.pj-crumbs [aria-current] { color: var(--text); font-weight: 600; }
+.pj-head { display: flex; flex-direction: column; gap: 14px; }
+.pj-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
+.pj-title { font-size: clamp(36px, 6vw, 54px); line-height: 1.04; font-weight: 700; letter-spacing: -0.03em; text-wrap: balance; }
+.pj-lede { font-size: 19px; line-height: 1.55; color: var(--text-2); max-width: 62ch; }
+.pj-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pj-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; border-radius: 980px; padding: 5px 12px; background: var(--hub-inset); color: var(--text-3); }
+.pj-chip i { width: 8px; height: 8px; border-radius: 50%; }
+.pj-chip.is-live { background: var(--hub-icon-bg); color: var(--accent); font-weight: 600; }
+.pj-chip.is-live i { background: var(--accent); }
+.pj-chip.is-done { background: var(--tone-bg); color: var(--tone); font-weight: 600; }
+.pj-chip.is-done i { background: var(--tone); }
+a.pj-chip.is-link { color: var(--tone); font-weight: 600; }
+a.pj-chip.is-link:hover { background: var(--tone-bg); }
+
+/* The four steps */
+.pj-glance {
+  margin: 0;
+  padding: 8px;
+  background: var(--hub-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+.pj-step { min-width: 0; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.pj-step dt { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tone); }
+.pj-step dd { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+
+/* Phones: rail hidden, a Contents drop-down instead */
+.pj-mobile-toc { display: none; border: 1px solid var(--border); border-radius: 14px; background: var(--hub-card); }
+.pj-mobile-toc summary { padding: 12px 16px; font-weight: 600; font-size: 15px; cursor: pointer; }
+.pj-mobile-toc ol { margin: 0; padding: 0 16px 14px 36px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.pj-mobile-toc a { color: var(--text); }
+
+/* 5. Sections */
+.psec { display: flex; flex-direction: column; gap: 24px; scroll-margin-top: 80px; }
+.psec-head { display: flex; flex-direction: column; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.psec-num { font-family: var(--mono); font-size: 13px; color: var(--tone); }
+.psec-head h2 { font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+.psec-q { font-size: 16px; color: var(--text-2); }
+.psec-body { min-width: 0; }
+/* The content's own highlight colour follows the topic (headings, badges) */
+.pj-page .psec-body.project-page { --accent: var(--tone); --accent-bg: var(--tone-bg); --accent-dk: var(--tone); }
+/* Maths (MathJax): in the topic's colour, like the hub's notes */
+.pj-page mjx-container { color: var(--tone); }
+.pj-page button mjx-container { color: inherit; }
+.pj-page mjx-container[display="true"] { margin: 0 !important; overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+.pj-page .worked-math.tex { white-space: normal; }
+
+/* 6. More projects and the way out */
+.pj-more { display: flex; flex-direction: column; gap: 14px; }
+.pj-more h2 { font-size: 20px; letter-spacing: -0.01em; }
+.pj-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.pj-link { min-width: 0; border: 1px solid var(--border); background: var(--hub-card); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; color: var(--text); }
+.pj-link:hover { border-color: var(--tone); color: var(--text); }
+.pj-link .k { font-size: 12px; color: var(--text-2); }
+.pj-link .t { font-weight: 600; }
+.pj-next { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+/* 7. Smaller screens */
+@media (max-width: 900px) {
+  .pj-shell { grid-template-columns: minmax(0, 1fr); }
+  .pj-rail { display: none; }
+  .pj-mobile-toc { display: block; }
+}
+@media (max-width: 600px) {
+  .pj-main { padding: 24px 16px 96px; }
+  .pj-inner { gap: 48px; }
+  .psec-head h2 { font-size: 25px; }
+  .pj-lede { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pj-rail-bar span, .pj-secs a, .pj-secs a::before { transition: none; }
+}

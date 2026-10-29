@@ -13,7 +13,7 @@
 //                               and the devices allowed to use Face ID / Touch ID
 // ==========================================================
 
-const HUB_PATHS = ["/hub", "/study-guide"];  // everything under these is locked
+const HUB_PATHS = ["/hub"];                  // everything under this is locked
 const HUB_HOME = "/hub/";                    // where you land after unlocking
 const UNLOCK_PAGE = "/unlock/";             // the passcode page
 const UNLOCK_API = "/api/unlock";           // where the passcode form is sent
