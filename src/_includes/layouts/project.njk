@@ -12,11 +12,11 @@ layout: layouts/base.njk
 {% set ctx = page.url | projectContext(projects, shelves) %}
 {% set p = ctx.project if ctx else {} %}
 
-<div class="pj-page{% if ctx and ctx.topic.colour %} tone-{{ ctx.topic.colour }}{% endif %}">
+<div class="pj-page{% if ctx and ctx.topic.colour %} tone-{{ ctx.topic.colour }}{% endif %}"{% if ctx %} data-pagefind-meta="topic:{{ ctx.topic.name }}"{% endif %}>
 <div class="pj-shell">
 
   {# ---------- Left rail: this project's sections, then other projects ---------- #}
-  <aside class="pj-rail" aria-label="Project contents">
+  <aside class="pj-rail" aria-label="Project contents" data-pagefind-ignore>
     <div class="pj-rail-head">
       <span class="pj-rail-lbl">{{ ctx.topic.name if ctx else "Projects" }}</span>
       <a class="pj-rail-title" href="#top">{{ title }}</a>
@@ -84,7 +84,7 @@ layout: layouts/base.njk
       {{ content | safe }}
 
       {% if ctx and ctx.more.length %}
-      <section class="pj-more" aria-label="More projects">
+      <section class="pj-more" aria-label="More projects" data-pagefind-ignore>
         <h2>More projects</h2>
         <div class="pj-links">
           {% for q in ctx.more %}
@@ -94,7 +94,7 @@ layout: layouts/base.njk
       </section>
       {% endif %}
 
-      <nav class="pj-next" aria-label="Next project">
+      <nav class="pj-next" aria-label="Next project" data-pagefind-ignore>
         <a class="pj-btn" href="/projects/projects.html">← All projects</a>
         {% if ctx and ctx.next %}<a class="pj-btn dark" href="{{ ctx.next.url }}">Next: {{ ctx.next.title }} →</a>{% endif %}
       </nav>

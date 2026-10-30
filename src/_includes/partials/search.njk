@@ -1,0 +1,80 @@
+{#
+  Site search (the pop-up under the nav's Search box).
+  Opened by the Search button, or by pressing "/" anywhere.
+  Results come from Pagefind: the public index at /pagefind/, plus the
+  Knowledge Hub's own index at /hub/_pagefind/, which only loads once the
+  hub is unlocked. Everything here is driven by /assets/js/search.js.
+#}
+<div class="search-pop" id="site-search" role="dialog" aria-modal="true" aria-label="Search Heritage Edge" hidden>
+  <div class="search-scrim" data-search-close></div>
+
+  <div class="search-box">
+    {# The search field, sitting where the nav's Search box is #}
+    <div class="search-field-row">
+      <label class="search-field">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <span class="visually-hidden">Search</span>
+        <input type="search" id="search-input" placeholder="Search projects, notes and posts" autocomplete="off" spellcheck="false" aria-controls="search-results" aria-autocomplete="list">
+        <kbd>esc</kbd>
+      </label>
+      <button type="button" class="search-cancel" data-search-close>Cancel</button>
+    </div>
+
+    {# The results card #}
+    <div class="search-panel">
+      <div class="search-tabs" role="tablist" aria-label="Filter results" hidden>
+        <button type="button" role="tab" data-tab="all" aria-selected="true">All <span class="n"></span></button>
+        <button type="button" role="tab" data-tab="projects" aria-selected="false">Projects <span class="n"></span></button>
+        <button type="button" role="tab" data-tab="notes" aria-selected="false">Notes <span class="n"></span></button>
+        <button type="button" role="tab" data-tab="blog" aria-selected="false">Blog <span class="n"></span></button>
+        <button type="button" role="tab" data-tab="about" aria-selected="false">About <span class="n"></span></button>
+      </div>
+
+      <div class="search-body" id="search-results" aria-live="polite">
+        {# Shown before anything is typed #}
+        <div class="search-empty" data-view="empty">
+          <p class="search-label">Try</p>
+          <div class="search-chips">
+            <button type="button" class="search-chip" data-q="storage">storage</button>
+            <button type="button" class="search-chip" data-q="Black-76">Black-76</button>
+            <button type="button" class="search-chip" data-q="FICO">FICO</button>
+            <button type="button" class="search-chip" data-q="SOFR">SOFR</button>
+            <button type="button" class="search-chip" data-q="EURUSD">EURUSD</button>
+          </div>
+          <p class="search-label">Go to</p>
+          <div class="search-goto">
+            <a href="/projects/projects.html">Projects ›</a>
+            <a href="/hub/">Knowledge Hub ›</a>
+            <a href="/blog/blog.html">Blog ›</a>
+            <a href="/about/">About ›</a>
+          </div>
+        </div>
+
+        {# Filled in by search.js #}
+        <div data-view="results" hidden>
+          <p class="search-count"></p>
+          <div class="search-groups"></div>
+        </div>
+
+        <div class="search-none" data-view="none" hidden>
+          <p class="search-none-title"></p>
+          <p>Try a shorter word, or <a href="/projects/projects.html">browse all projects ›</a></p>
+        </div>
+
+        <div class="search-locked" data-view="locked" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+          <span>Knowledge Hub notes are searched once the hub is unlocked.</span>
+          <a href="/unlock/?next=/hub/">Unlock ›</a>
+        </div>
+
+        <p class="search-error" data-view="error" hidden>Search isn't available on this preview. It works on the live site, or after <code>npm run preview</code>.</p>
+      </div>
+
+      <div class="search-foot" aria-hidden="true">
+        <span><kbd>↑</kbd> <kbd>↓</kbd> move</span>
+        <span><kbd>↵</kbd> open</span>
+        <span><kbd>esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
+</div>

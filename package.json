@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "eleventy --serve",
-    "build": "eleventy"
+    "build": "eleventy && npm run index",
+    "index": "pagefind --site _site --glob \"{index.html,about/**/*.html,blog/**/*.html,projects/**/*.html}\" && pagefind --site _site --glob \"hub/**/*.html\" --output-path _site/hub/_pagefind",
+    "preview": "npm run build && pagefind --site _site --glob \"hub/**/*.html\" --output-path _site/hub/_pagefind --serve"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/tamaraabu4-cell/heritage-edge#readme",
   "dependencies": {
-    "@11ty/eleventy": "^3.1.7"
+    "@11ty/eleventy": "^3.1.7",
+    "pagefind": "^1.3.0"
   }
 }

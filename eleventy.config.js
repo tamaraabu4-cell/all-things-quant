@@ -224,7 +224,7 @@ export default function (eleventyConfig) {
     return `<section class="psec" id="s${num}" data-psec data-title="${short || title}">
   <div class="psec-head">
     <span class="psec-num">${n}</span>
-    <h2>${title}</h2>${question ? `<p class="psec-q">${question}</p>` : ""}
+    <h2 id="s${num}-title">${title}</h2>${question ? `<p class="psec-q">${question}</p>` : ""}
   </div>
   <div class="project-page psec-body">
 ${content}
@@ -241,7 +241,7 @@ ${content}
     return `<section class="sec" id="s${num}" data-sec data-title="${short || title}">
   <div class="sec-head">
     <div class="sec-top"><span class="sec-num">${n}</span><button class="add-note" type="button" data-note-for="s${num}" aria-label="Add a note to this section"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Note</button></div>
-    <h2>${title}</h2>${question ? `<p class="sec-q">${question}</p>` : ""}
+    <h2 id="s${num}-title">${title}</h2>${question ? `<p class="sec-q">${question}</p>` : ""}
   </div>
 ${content}
 </section>`;
