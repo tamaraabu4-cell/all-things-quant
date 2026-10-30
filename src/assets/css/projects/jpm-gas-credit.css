@@ -1,0 +1,46 @@
+/* ==========================================================
+   J.P. Morgan gas storage and credit risk project:
+   the month pickers and the grid of every storage trade.
+   ========================================================== */
+.project-page {
+
+  /* Month pickers above the storage chart */
+  .store-picks { flex-wrap: wrap; gap: 10px 24px; }
+  .store-picks .chart-control-row { flex: 1 1 220px; }
+  .pick {
+    flex: 1;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--br);
+    border-radius: var(--r);
+    background: var(--bg);
+    color: var(--tx1);
+    font: 500 14px var(--font);
+  }
+  .pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Grid of every buy month × sell month */
+  .store-grid { overflow-x: auto; }
+  .store-grid table { border-collapse: separate; border-spacing: 3px; margin: 0 auto; font-size: 11px; }
+  .store-grid th { font-weight: 500; color: var(--tx2); padding: 2px 4px; white-space: nowrap; }
+  .store-grid thead th { writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; height: 52px; }
+  .store-grid tbody th { text-align: right; }
+  .store-grid td { padding: 0; }
+  .store-grid td.na { background: transparent; }
+  .store-grid button {
+    width: 44px;
+    height: 32px;
+    border: 0;
+    border-radius: 6px;
+    font: 500 11px var(--mono);
+    color: var(--tx1);
+    cursor: pointer;
+  }
+  .store-grid button.pos { background: color-mix(in srgb, var(--green) calc(var(--a) * 100%), transparent); }
+  .store-grid button.neg { background: color-mix(in srgb, var(--red) calc(var(--a) * 100%), transparent); }
+  .store-grid button.is-best { outline: 2px solid var(--tx1); outline-offset: 1px; font-weight: 700; }
+  .store-grid button.is-on { box-shadow: inset 0 0 0 2px var(--tx1); }
+  .store-grid button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .store-grid .grid-note { margin-top: 6px; text-align: center; font-size: 12px; color: var(--tx2); }
+  .store-grid .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}

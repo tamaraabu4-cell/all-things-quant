@@ -62,5 +62,27 @@
       "tech": "Python: NumPy, SciPy and pandas.",
       "result": "Black-76 and Monte Carlo agree to within 0.02%. The note is solved at 40.9% participation."
     }
+  },
+  {
+    "title": "Gas storage and credit risk",
+    "date": "2026-07",
+    "topic": "simulations",
+    "firm": "J.P. Morgan · Quantitative Research · July 2026",
+    "kind": "Pricing model",
+    "status": "finished",
+    "markets": ["Commodities", "Credit"],
+    "tags": ["Natural gas", "Credit risk"],
+    "tools": ["Python", "NumPy", "pandas", "scikit-learn"],
+    "headline": "Builds a natural gas price curve, prices a storage contract and finds its best months, then predicts loan defaults and turns FICO scores into ratings.",
+    "result": "The best storage trade is worth $732k, but only 11 of 78 month pairs make money. The curve beats simple forecasts by two-thirds.",
+    "url": "/projects/jpm-gas-storage-credit-risk.html",
+    "cta": "View project",
+    "code": "/projects/jpm_task2_storage_contract.py",
+    "steps": {
+      "thesis": "A gas trader needs to know what a storage contract is worth; a lender needs to know who will default and what it will cost.",
+      "method": "A trend-plus-seasons price curve tested on 12 hidden months, a storage pricer with a best-months search, a logistic default model, and FICO ratings found by dynamic programming.",
+      "tech": "Python: NumPy, pandas and scikit-learn.",
+      "result": "The curve misses by $0.16 on unseen months, against $0.57 for a simple forecast. Best storage trade: $732k. Expected loss lands within 0.6% of actual losses."
+    }
   }
 ]

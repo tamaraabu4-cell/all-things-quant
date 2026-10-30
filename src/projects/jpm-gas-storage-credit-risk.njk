@@ -1,0 +1,228 @@
+---
+layout: layouts/project.njk
+title: Gas Storage and Credit Risk
+permalink: /projects/jpm-gas-storage-credit-risk.html
+styles: [hub.css, projects/study-layout.css, projects/project.css, projects/jpm-gas-credit.css]
+scripts: ["https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"]
+meta: ["Forage job simulation", "Python, NumPy, pandas, scikit-learn"]
+---
+
+{% psec 1, "From a Gas Curve to a Credit Rating", "What was the brief?", "Overview" %}
+<p class="topic-intro">
+  Four tasks from J.P. Morgan's Quantitative Research job simulation. The first two sit on a commodities desk: build a natural gas price curve, then price a storage contract with it. The last two sit with the credit risk team: predict which borrowers will default, then turn FICO scores into a rating scale. I rebuilt the curve and the default model from scratch, extended the other two, and tested every model on data it hadn't seen.
+</p>
+<div class="proj-links">
+  <a class="proj-link" href="/projects/jpm_task1_price_curve.py">Task 1 code &nearr;</a>
+  <a class="proj-link" href="/projects/jpm_task2_storage_contract.py">Task 2 code &nearr;</a>
+  <a class="proj-link" href="/projects/jpm_task3_default_model.py">Task 3 code &nearr;</a>
+  <a class="proj-link" href="/projects/jpm_task4_fico_buckets.py">Task 4 code &nearr;</a>
+</div>
+
+<div class="metric-row">
+  <div class="metric"><div class="metric-lbl">Forecast miss, unseen year</div><div class="metric-val">\(\$0.16\)</div><div class="metric-sub">vs \(\$0.57\) for "same as last year"</div></div>
+  <div class="metric"><div class="metric-lbl">Best storage trade</div><div class="metric-val">\(\$732\text{k}\)</div><div class="metric-sub">buy September, sell January</div></div>
+  <div class="metric"><div class="metric-lbl">Month pairs that pay</div><div class="metric-val">\(11\) of \(78\)</div><div class="metric-sub">rent kills the rest</div></div>
+  <div class="metric"><div class="metric-lbl">Default rate by rating</div><div class="metric-val">\(2\%\to66\%\)</div><div class="metric-sub">best to worst of 10 ratings</div></div>
+</div>
+
+<div class="sh">In plain words</div>
+<p class="np">Natural gas is cheap in summer and dear in winter, because that's when people heat their homes. If you rent a storage tank, you can <strong>buy gas in summer, keep it, and sell it in winter</strong>. Whether that makes money depends on two things: how big the price gap is, and how much the tank costs to rent while you wait. The second half of the project asks a lender's question instead: <strong>who won't pay us back, and how much will that cost?</strong></p>
+
+<div class="summary-grid">
+  <div class="sum-card"><div class="sum-icon green">1</div><div class="sum-title">A price for any date</div><div class="sum-body">A trend plus a yearly wave, fitted in one regression and tested on <strong>12 months it never saw</strong>.</div></div>
+  <div class="sum-card"><div class="sum-icon blue">2</div><div class="sum-title">Price the storage</div><div class="sum-body">A pricer that respects the tank's limits, plus a search over every month pair to find the <strong>best trade</strong>.</div></div>
+  <div class="sum-card"><div class="sum-icon amber">3</div><div class="sum-title">Predict defaults</div><div class="sum-body">A model I can explain line by line, its <strong>expected loss</strong>, and why a perfect score made me suspicious.</div></div>
+  <div class="sum-card"><div class="sum-icon purple">4</div><div class="sum-title">Turn scores into ratings</div><div class="sum-body">Ten ratings found by <strong>dynamic programming</strong>, with checks that the scale makes sense.</div></div>
+</div>
+{% endpsec %}
+
+{% psec 2, "A Price for Any Date", "What will gas cost on a day nobody has quoted?", "Task 1 · Price curve" %}
+<p class="topic-intro">The desk had one price per month, at month-end, from October 2020 to September 2024. A client asking about storage needs a price for any day, including up to a year ahead. So I needed a curve, not a list.</p>
+
+<div class="sh">What the data does</div>
+<p class="np">Two things at once. Prices <strong>creep upwards</strong> over time, and on top of that they <strong>swing every year</strong>: up into winter, down into summer. So the curve is a straight line plus a wave that repeats each year.</p>
+<div class="f-label">Trend plus a yearly wave, fitted in one regression</div>
+<div class="f-box">\[ P(t) = a + b\,t + c\sin(\omega t) + d\cos(\omega t), \qquad \omega = \frac{2\pi}{365.25} \]</div>
+<table class="vt">
+  <tr><td>\(a + b\,t\)</td><td>The trend: where prices sit, and how fast they're rising</td></tr>
+  <tr><td>\(c\sin + d\cos\)</td><td>The yearly wave. Using both a sine and a cosine lets one regression find how <em>big</em> the swing is and <em>when</em> in the year it peaks</td></tr>
+  <tr><td>\(t\)</td><td>Days since 31 October 2020</td></tr>
+</table>
+<p class="np">All four numbers are found together by least squares. The example answer fitted the trend first and the wave second; doing both at once avoids one stealing from the other.</p>
+
+<div class="chart-block">
+  <div class="chart-block-title">Natural Gas: Fitted Curve and One-Year Forecast ($/MMBtu)</div>
+  <div class="chart-wrap" style="height:340px"><canvas id="chartCurve"></canvas></div>
+</div>
+<p class="diagram-cap" id="curve-cap">The shaded band covers 95% of the curve's past misses. Prices rise by about \(\$0.55\) a year, peak in February and bottom out in August, swinging about \(\$0.69\) either side of the trend.</p>
+
+<div class="sh">Testing it before trusting it</div>
+<p class="np">A curve can fit the past and still forecast badly. So I hid the last 12 months, fitted the curve on the first 36, and checked its forecasts against what actually happened. I compared it with two simple rules a busy trader might use.</p>
+<div class="chart-block">
+  <div class="chart-block-title">Out-of-Sample Test: October 2023 to September 2024</div>
+  <div class="chart-wrap"><canvas id="chartBacktest"></canvas></div>
+</div>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Forecast</th><th>Average miss per month</th></tr>
+  <tr class="hl"><td>This curve, fitted on 36 months</td><td>\(\$0.16\)</td></tr>
+  <tr><td>Last known price, held flat</td><td>\(\$0.55\)</td></tr>
+  <tr><td>Same month last year</td><td>\(\$0.57\)</td></tr>
+</table></div>
+<div class="insight">
+  <div class="insight-lbl">What it means</div>
+  On a year it had never seen, the curve missed by <strong>about a third as much</strong> as either simple rule. "Same month last year" gets the seasons right but misses the upward trend; "last price, held flat" gets the level right but misses the seasons. The curve needs both.
+</div>
+{% endpsec %}
+
+{% psec 3, "What Is the Storage Worth?", "Which trade should the client do, and which should they avoid?", "Task 2 · Storage contract" %}
+<p class="topic-intro">A client wants to rent a gas storage facility: buy gas on some dates, store it, and sell it on later dates. The desk needs to quote what that contract is worth. Using the Task 1 curve for prices, I built a pricer, then turned it around to find the best trade the storage allows.</p>
+
+<div class="sh">Every cash flow, in order</div>
+<p class="np">The contract is worth the gas sold, minus the gas bought, minus every cost of running the trade. The pricer walks through the dates in order and tracks how full the tank is, because it can't buy gas it has no room for or sell gas it doesn't hold.</p>
+<div class="f-box">\[ \text{Value} = \underbrace{V \cdot P_{\text{sell}}}_{\text{gas sold}} - \underbrace{V \cdot P_{\text{buy}}}_{\text{gas bought}} - \underbrace{2 \cdot V \cdot \$0.01}_{\text{pumping in and out}} - \underbrace{2 \cdot \$50\text{k}}_{\text{transport}} - \underbrace{\$100\text{k} \cdot m}_{\text{rent}} \]</div>
+<table class="vt">
+  <tr><td>\(V\)</td><td>Volume: \(1\) million MMBtu, a full tank</td></tr>
+  <tr><td>\(P\)</td><td>Gas price on each date, from the Task 1 curve (or the desk's own prices, if it has them)</td></tr>
+  <tr><td>\(m\)</td><td>Months the tank is rented, counted from the first purchase to the last sale</td></tr>
+</table>
+
+<div class="sh">Pick the months</div>
+<p class="np">Choose when to fill the tank and when to empty it. The bars show where the money comes from and where it goes.</p>
+<div class="chart-block">
+  <div class="chart-block-title">One Full Tank: Where the Value Comes From</div>
+  <div class="chart-controls store-picks">
+    <label class="chart-control-row"><span class="cc-label">Buy and inject</span><select id="s-in" class="pick"></select></label>
+    <label class="chart-control-row"><span class="cc-label">Withdraw and sell</span><select id="s-out" class="pick"></select></label>
+  </div>
+  <div class="chart-wrap" style="height:300px"><canvas id="chartStorage"></canvas></div>
+  <div class="live-out">
+    <div class="metric"><div class="metric-lbl">Buy price</div><div class="metric-val" id="o-buy">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Sell price</div><div class="metric-val" id="o-sell">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Months rented</div><div class="metric-val" id="o-months">&ndash;</div></div>
+    <div class="metric"><div class="metric-lbl">Contract value</div><div class="metric-val" id="o-value">&ndash;</div></div>
+  </div>
+</div>
+
+<div class="sh">Every possible trade at once</div>
+<p class="np">A pricer answers "what is <em>this</em> trade worth?". A trader also wants to know "what is the <em>best</em> trade this storage allows?". So the code tries every pair of month-ends from September 2024 to September 2025. Click any square to load it into the chart above.</p>
+<div class="store-grid" id="storeGrid" aria-label="Contract value for every pair of buy and sell months"></div>
+<p class="diagram-cap">Rows: the month you buy. Columns: the month you sell. Green makes money, red loses it; the outlined square is the best trade.</p>
+
+<div class="insight">
+  <div class="insight-lbl">The key finding</div>
+  The best trade is to <strong>buy at the end of September 2024 and sell at the end of January 2025</strong>, worth about <strong>\(\$732\text{k}\)</strong>. But only <strong>\(11\) of the \(78\)</strong> possible pairs make money. Rent costs \(\$100\text{k}\) a month, which on a full tank is \(\$0.10\) per MMBtu, so every extra month in storage has to earn at least \(10\) cents of price rise. Held from June 2024 to June 2025, the same tank <strong>loses about \(\$806\text{k}\)</strong>: the price gap is real, but a year of rent eats all of it.
+</div>
+{% endpsec %}
+
+{% psec 4, "Who Will Default?", "What is a borrower's chance of not paying, and what will it cost?", "Task 3 · Default model" %}
+<p class="topic-intro">The retail banking team has 10,000 personal loans, \(18.5\%\) of which defaulted. They wanted a model that takes a borrower's details and returns their chance of default, then turns that into the loss the bank should expect, assuming it recovers \(10\%\) of the money when someone defaults.</p>
+
+<div class="sh">Expected loss in one line</div>
+<div class="f-box">\[ \text{Expected loss} = \text{PD} \times \text{LGD} \times \text{EAD} \]</div>
+<table class="vt">
+  <tr><td>PD</td><td>Probability of default: the model's output</td></tr>
+  <tr><td>LGD</td><td>Loss given default: what's lost if they don't pay, \(1 - 10\% = 90\%\)</td></tr>
+  <tr><td>EAD</td><td>Exposure at default: the loan amount still outstanding</td></tr>
+</table>
+<div class="worked">
+  <div class="worked-title">A borrower on the edge</div>
+  <div class="worked-body">Three credit lines open, debt of \(19\%\) of income, four years in work, FICO \(620\), and \(\$5{,}000\) borrowed. The model gives a \(26.2\%\) chance of default:
+    <div class="worked-math tex">\[ 0.262 \times 0.90 \times \$5{,}000 = \$1{,}179 \text{ expected loss} \]</div>
+  </div>
+</div>
+
+<div class="sh">The model, and what drives it</div>
+<p class="np">I used a <strong>logistic regression</strong>: not the most powerful model, but one where every number can be read and explained to a credit committee. It uses five inputs: credit lines open, total debt and loan size relative to income, years employed and FICO score. I trained it on \(70\%\) of borrowers and tested it on the \(30\%\) it had never seen.</p>
+<div class="chart-block">
+  <div class="chart-block-title">What Pushes Default Risk Up or Down (standardised coefficients)</div>
+  <div class="chart-wrap" style="height:260px"><canvas id="chartCoef"></canvas></div>
+</div>
+<p class="diagram-cap">Each bar is the effect of a typical-sized change in that input. More credit lines and more debt relative to income push risk up; more years in work and a higher FICO score pull it down.</p>
+
+<div class="sh">Too good to be true</div>
+<p class="np">On the \(3{,}000\) unseen borrowers the model scored an AUC of <strong>\(1.000\)</strong>, meaning it separated defaulters from everyone else perfectly. Real credit models usually land somewhere between \(0.7\) and \(0.85\). A perfect score is a reason to investigate, not to celebrate, so I looked at the raw data.</p>
+<div class="chart-block">
+  <div class="chart-block-title">Share of Borrowers Who Defaulted, by Debt-to-Income</div>
+  <div class="chart-wrap"><canvas id="chartDTI"></canvas></div>
+</div>
+<div class="insight">
+  <div class="insight-lbl">What I found</div>
+  This practice dataset is <strong>synthetic</strong>. Nobody with debt under about \(13\%\) of their income defaults, and almost everyone over \(27\%\) does; four or more credit lines works the same way. Real borrowers are never this tidy. FICO alone, which behaves much more like real data, scores an AUC of \(0.714\). So the <strong>method</strong> carries over to a real loan book, but the near-perfect accuracy would not.
+</div>
+
+<div class="sh">Does expected loss add up?</div>
+<p class="np">As a final check, I added up the expected loss on every test loan and compared it with the loss that actually happened.</p>
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Test book, 3,000 loans</th><th>Loss</th></tr>
+  <tr><td>Expected by the model</td><td>\(\$2{,}229{,}884\)</td></tr>
+  <tr><td>Actually lost (90% of defaulted loans)</td><td>\(\$2{,}216{,}669\)</td></tr>
+  <tr class="hl"><td>Difference</td><td>\(0.6\%\)</td></tr>
+</table></div>
+{% endpsec %}
+
+{% psec 5, "From Scores to Ratings", "Where should the lines between ratings go?", "Task 4 · FICO ratings" %}
+<p class="topic-intro">Some of the bank's models need a rating, not a raw score. FICO runs from \(300\) to \(850\), so the task was to split it into \(10\) ratings in the way that best separates good borrowers from bad ones.</p>
+
+<div class="sh">Finding the best lines</div>
+<p class="np">Each rating is treated as its own pool with its own default rate. The best split is the one that makes the observed defaults <strong>most likely</strong>: each pool should be as uniform as possible inside, and as different as possible from its neighbours.</p>
+<div class="f-box">\[ \max_{b_1, \dots, b_9} \; \sum_{i=1}^{10} \Big[ k_i \ln p_i + (n_i - k_i) \ln (1 - p_i) \Big], \qquad p_i = \frac{k_i}{n_i} \]</div>
+<table class="vt">
+  <tr><td>\(n_i\)</td><td>Borrowers in rating \(i\)</td></tr>
+  <tr><td>\(k_i\)</td><td>How many of them defaulted</td></tr>
+  <tr><td>\(b_1, \dots, b_9\)</td><td>The nine boundary scores</td></tr>
+</table>
+<p class="np">Trying every possible set of nine boundaries would take forever. <strong>Dynamic programming</strong> gets the exact best answer quickly, because the score of a split is just the sum of the scores of its pieces: the best way to rate the top \(500\) scores doesn't depend on how you rate the rest.</p>
+
+<div class="chart-block">
+  <div class="chart-block-title">Default Rate by Rating (1 = best credit)</div>
+  <div class="chart-wrap"><canvas id="chartRatings"></canvas></div>
+</div>
+
+<div class="insight">
+  <div class="insight-lbl">The trap I had to fix</div>
+  Left alone, the maths gave the <strong>\(8\)</strong> borrowers on a FICO score of exactly <strong>\(753\)</strong> a rating of their own, because \(3\) of them happened to default: a \(37.5\%\) default rate in the middle of the safest scores. That's chance, not a pattern, and it made rating 2 riskier than rating 3. I required every rating to hold at least \(2\%\) of the book (\(200\) borrowers), and added a check that stops the code if risk doesn't fall at every step up the scale.
+</div>
+
+<div class="dt-wrap"><table class="dt">
+  <tr><th>Way of splitting</th><th>How well it fits the defaults (log-likelihood, higher is better)</th></tr>
+  <tr class="hl"><td>Dynamic programming on defaults (mine)</td><td>\(-4{,}220.9\)</td></tr>
+  <tr><td>Dynamic programming on the scores alone</td><td>\(-4{,}240.0\)</td></tr>
+  <tr><td>Ten equal-sized groups</td><td>\(-4{,}267.9\)</td></tr>
+</table></div>
+<p class="np">And the ratings lose nothing: they rank borrowers as well as the raw score does, with an AUC of \(0.732\) against \(0.731\) on the full book.</p>
+{% endpsec %}
+
+{% psec 6, "What I'd Change on a Real Desk", "Where do the models fall short?", "Limits and Next Steps" %}
+<p class="topic-intro">Each model answers the brief. These are the changes I'd make before anyone traded or lent money on them.</p>
+
+<div class="sh">1. Use the market's own forward prices</div>
+<p class="np">The curve is fitted to history. A real desk would price storage off the <strong>futures curve</strong>, the prices the market is actually trading for each future month, and discount the cash flows, since money in January is worth slightly less than money today.</p>
+
+<div class="sh">2. Storage is worth more than one trade</div>
+<p class="np">My search values one fill and one empty, which is the storage's <strong>intrinsic value</strong>. Real storage also has <strong>extrinsic value</strong>: the right to change plans if prices move, buying more if summer is unusually cheap, or selling early in a cold snap. Valuing that flexibility needs a simulation of how prices might move.</p>
+
+<div class="sh">3. Test credit models on real, later data</div>
+<p class="np">The default model should be tested on loans from a <em>later</em> period than it was trained on, because real borrower behaviour shifts with the economy. The rating boundaries need the same check on next year's book.</p>
+
+<div class="sh">The core code</div>
+<div class="code">def best_months(terms=TERMS):
+    """Try every (inject, withdraw) pair of month-ends over the coming year."""
+    months = pd.date_range(LAST, periods=13, freq='ME')   # Sep 2024 .. Sep 2025
+    prices = [price_on(m) for m in months]
+    best = None
+    for i, buy in enumerate(months):
+        for j, sell in enumerate(months):
+            if j <= i:
+                continue
+            v = price_contract([buy], [sell], [prices[i]], [prices[j]], **terms)
+            if best is None or v > best[2]:
+                best = (buy, sell, v)
+    return best</div>
+
+<div class="qbox">
+  <div class="qbox-lbl">Skills used</div>
+  <p class="qbox-body">Building a model is half the job; testing whether to trust it is the other half.</p>
+  <span class="qtag">Least squares</span><span class="qtag">Out-of-sample testing</span><span class="qtag">Commodity storage</span><span class="qtag">Calendar spreads</span><span class="qtag">Logistic regression</span><span class="qtag">Expected loss</span><span class="qtag">Dynamic programming</span><span class="qtag">NumPy / pandas / scikit-learn</span>
+</div>
+{% endpsec %}
+<script src="/assets/js/projects/jpm-gas-credit.js" defer></script>
