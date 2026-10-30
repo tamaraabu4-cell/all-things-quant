@@ -980,3 +980,140 @@ h1, h2, h3, p { margin: 0; }
 @media (max-width: 480px) {
   .hub-devices-label { display: none; }   /* icon only on phones */
 }
+
+/* 18. Homepage motion: live chart hero, colophon, steps and hub that animate once */
+
+/* Colours for the hero chart and the colophon rules */
+:root {
+  --candle-up: #047857;
+  --candle-down: #7a2e3a;
+  --colophon-rule: #c9c3b3;
+}
+[data-theme="dark"] {
+  --candle-up: #10b981;
+  --candle-down: #e07a8a;
+  --colophon-rule: rgba(255, 255, 255, 0.18);
+}
+
+/* Hero: the chart sits behind the words */
+.hero { position: relative; isolation: isolate; overflow: hidden; }
+.hero-chart {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;               /* how faint the chart is */
+  pointer-events: none;
+}
+.hero-mark {
+  display: block;
+  width: 64px;
+  height: auto;
+  margin: 0 auto 22px;
+  animation: he-rise 1.2s ease both;
+}
+.hero-mark .h { fill: var(--text); }
+.hero-mark .e { fill: var(--accent); }
+
+/* "est. 2026 · London — Lagos" between two hairlines */
+.colophon {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.colophon::before,
+.colophon::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--colophon-rule);
+}
+.hero-colophon { max-width: 540px; margin: 56px auto 0; }
+.hero-colophon span { animation: he-rise 1.2s ease 0.6s both; }
+.hero-colophon::before { transform-origin: right; animation: he-grow 1.2s ease 0.8s both; }
+.hero-colophon::after  { transform-origin: left;  animation: he-grow 1.2s ease 0.8s both; }
+
+@keyframes he-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes he-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Four steps: a line runs 01 → 04, then the cards rise in turn */
+.steps-track { position: relative; height: 14px; margin-top: 44px; }
+.steps-track + .steps { margin-top: 18px; }
+.steps-track-line,
+.steps-track-fill {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  top: 6px;
+  height: 2px;
+  background: var(--border);
+}
+.steps-track-fill { background: var(--accent); transform-origin: left; }
+.steps-track-nodes {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.steps-track-nodes span {
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+}
+/* The line only makes sense when the four cards sit in one row */
+@media (max-width: 919px) { .steps-track { display: none; } .steps-track + .steps { margin-top: 44px; } }
+
+/* Knowledge hub: icons draw themselves, then the dividers grow */
+.track-icon svg * { stroke-dasharray: 80; }
+
+/* Starting positions, only when JavaScript can reveal them (no JavaScript = everything simply shows) */
+.js-motion .steps-track-fill { transform: scaleX(0); transition: transform 2.2s cubic-bezier(.4, 0, .2, 1); }
+.js-motion .steps-track-nodes span { background: var(--surface); border-color: var(--colophon-rule); transition: background 0.3s ease, border-color 0.3s ease; }
+.js-motion .steps[data-reveal] .step { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.js-motion .track-icon svg * { stroke-dashoffset: 80; transition: stroke-dashoffset 1.4s cubic-bezier(.3, .6, .2, 1); }
+.js-motion .track-rule { transform: scaleX(0); transition: transform 1s ease; }
+
+/* Revealed */
+.js-motion .steps-track.is-visible .steps-track-fill { transform: scaleX(1); }
+.js-motion .steps-track.is-visible .steps-track-nodes span { background: var(--accent); border-color: var(--accent); }
+.js-motion .steps.is-visible .step { opacity: 1; transform: none; }
+.js-motion .tracks.is-visible .track-icon svg * { stroke-dashoffset: 0; }
+.js-motion .tracks.is-visible .track-rule { transform: scaleX(1); }
+
+/* One after another */
+.steps-track-nodes span:nth-child(2), .steps .step:nth-child(2) { transition-delay: 0.6s; }
+.steps-track-nodes span:nth-child(3), .steps .step:nth-child(3) { transition-delay: 1.2s; }
+.steps-track-nodes span:nth-child(4), .steps .step:nth-child(4) { transition-delay: 1.8s; }
+.tracks .track:nth-child(2) .track-icon svg * { transition-delay: 0.2s; }
+.tracks .track:nth-child(3) .track-icon svg * { transition-delay: 0.4s; }
+.tracks .track:nth-child(4) .track-icon svg * { transition-delay: 0.6s; }
+.tracks .track:nth-child(5) .track-icon svg * { transition-delay: 0.8s; }
+.tracks .track .track-rule { transition-delay: 1s; }
+
+/* Reduce motion: no movement, everything in its final place */
+@media (prefers-reduced-motion: reduce) {
+  .hero-mark, .hero-colophon span, .hero-colophon::before, .hero-colophon::after { animation: none; }
+  .js-motion .steps-track-fill, .js-motion .track-rule { transform: none; transition: none; }
+  .js-motion .steps-track-nodes span { background: var(--accent); border-color: var(--accent); transition: none; }
+  .js-motion .steps[data-reveal] .step { opacity: 1; transform: none; transition: none; }
+  .js-motion .track-icon svg * { stroke-dashoffset: 0; transition: none; }
+}
+
+/* Footer: the colophon in the bottom line */
+.footer-colophon {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

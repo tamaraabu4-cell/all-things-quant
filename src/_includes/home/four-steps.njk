@@ -2,7 +2,13 @@
   <div class="container">
     <h2 class="section-title">Every project. <span>The same four steps.</span></h2>
     <p class="section-intro">How each piece of work on Heritage Edge is built, from first idea to final result.</p>
-    <ol class="steps">
+    {# A line that runs 01 → 04 when this section scrolls into view (home.js adds "is-visible") #}
+    <div class="steps-track" data-reveal aria-hidden="true">
+      <span class="steps-track-line"></span>
+      <span class="steps-track-fill"></span>
+      <span class="steps-track-nodes"><span></span><span></span><span></span><span></span></span>
+    </div>
+    <ol class="steps" data-reveal>
       <li class="step">
         <span class="step-number">01</span>
         <h3 class="step-title">Thesis</h3>

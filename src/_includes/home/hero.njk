@@ -1,4 +1,11 @@
 <section class="hero">
+  {# The faint live candlestick chart behind everything (drawn by /assets/js/home.js) #}
+  <canvas class="hero-chart" data-hero-chart aria-hidden="true"></canvas>
+
+  <svg class="hero-mark" viewBox="10.5 12 43.5 37" aria-hidden="true">
+    <g class="h"><rect x="13" y="13" width="5" height="25"/><rect x="27" y="13" width="5" height="25"/><rect x="13" y="23" width="19" height="5"/><rect x="10.5" y="12" width="10" height="3.5"/><rect x="24.5" y="12" width="10" height="3.5"/><rect x="10.5" y="35.5" width="10" height="3.5"/><rect x="24.5" y="35.5" width="10" height="3.5"/></g>
+    <g class="e"><rect x="38" y="13" width="5" height="25"/><rect x="35.5" y="12" width="7.5" height="3.5"/><rect x="35.5" y="35.5" width="7.5" height="3.5"/><rect x="38" y="12" width="16" height="4.5"/><rect x="50" y="12" width="4" height="9"/><rect x="38" y="23" width="12" height="4.5"/><rect x="38" y="34.5" width="16" height="4.5"/><rect x="50" y="30" width="4" height="9"/><polygon points="10.5,44 10.5,49 54,46.5"/></g>
+  </svg>
   <p class="hero-eyebrow">{{ site.name }}</p>
   <h1 class="hero-title">{{ site.tagline }}</h1>
   <p class="hero-intro">Trade memos, pricing models and backtests across rates, FX and commodities, plus the notes behind every one of them.</p>
@@ -6,4 +13,5 @@
     <a class="btn btn-primary" href="/projects/projects.html">See the projects</a>
     <a class="link-arrow" href="/hub/">Explore the hub ›</a>
   </div>
+  <p class="colophon hero-colophon"><span>est. 2026 · London — Lagos</span></p>
 </section>
