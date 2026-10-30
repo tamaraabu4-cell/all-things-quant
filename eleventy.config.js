@@ -182,73 +182,17 @@ export default function (eleventyConfig) {
     };
   });
 
-  // ==========================================================
-  // Projects page
-  //
-  // Each project in _data/projects.json says which topic it belongs to
-  // (a topic's slug from shelves.json, or "simulations") and which
-  // markets it trades. A topic only shows once it has a project, and
-  // the market filter only lists markets that a project uses.
-  // ==========================================================
-  const marketOrder = ["Rates", "FX", "Gold", "Commodities", "Equities", "Credit", "Crypto", "Property", "Naira"];
-  const marketRank = (m) => (marketOrder.indexOf(m) === -1 ? 99 : marketOrder.indexOf(m));
-
-  eleventyConfig.addFilter("projectsPage", (projects = [], shelves = []) => {
-    const all = projects.map((p) => ({
-      ...p,
-      markets: p.markets || [],
-      tags: p.tags || [],
-      marketSlugs: (p.markets || []).map(slugify).join(" "),
-    }));
-
-    // Warn about a topic that doesn't exist, so a project never silently disappears
-    const known = shelves.map((s) => s.slug).concat(["simulations"]);
-    all.forEach((p) => {
-      if (known.indexOf(p.topic) === -1) console.warn(`[projects] "${p.title}" has topic "${p.topic}", which isn't in shelves.json.`);
-    });
-
-    // One shelf per hub topic that has a project, in the hub's order
-    const topicShelves = shelves
-      .map((s) => ({
-        slug: s.slug,
-        name: s.name,
-        icon: s.icon,
-        colour: s.colour || "",
-        blurb: s.projectsBlurb || s.description || "",
-        projects: all.filter((p) => p.topic === s.slug),
-      }))
-      .filter((s) => s.projects.length);
-
-    const simulations = all.filter((p) => p.topic === "simulations");
-
-    const topics = topicShelves.map((s) => ({ slug: s.slug, name: s.name, colour: s.colour }));
-    if (simulations.length) topics.push({ slug: "simulations", name: "Simulations", colour: "walnut" });
-
-    const markets = [];
-    all.forEach((p) => p.markets.forEach((m) => { if (markets.indexOf(m) === -1) markets.push(m); }));
-    markets.sort((a, b) => marketRank(a) - marketRank(b) || a.localeCompare(b));
-
-    const tools = [];
-    all.forEach((p) => (p.tools || []).forEach((t) => { if (tools.indexOf(t) === -1) tools.push(t); }));
-
-    return {
-      shelves: topicShelves,
-      simulations,
-      topics,
-      markets: markets.map((m) => ({ label: m, slug: slugify(m) })),
-      tools,
-      total: all.length,
-    };
-  });
 
   // Everything a project page needs (layouts/project.njk): its entry in
   // projects.json (found by the page's URL), its topic and colour, up to
   // three projects to suggest (same topic first, then same market), and the next one.
   eleventyConfig.addFilter("projectContext", (url, projects = [], shelves = []) => {
     const topicOf = (p) => {
-      if (p.topic === "simulations") return { name: "Simulations", colour: "walnut" };
+      if (p.topic === "simulations") return { name: "Simulations", colour: "walnut", url: "/projects/simulations/" };
       const shelf = shelves.find((s) => s.slug === p.topic);
-      return shelf ? { name: shelf.name, colour: shelf.colour || "" } : { name: "Projects", colour: "" };
+      return shelf
+        ? { name: shelf.name, colour: shelf.colour || "", url: "/projects/" + shelf.slug + "/" }
+        : { name: "Projects", colour: "", url: "/projects/projects.html" };
     };
     const i = projects.findIndex((p) => p.url === url);
     if (i === -1) {

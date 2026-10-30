@@ -1,0 +1,106 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: projectTopics.pages
+  size: 1
+  alias: topic
+permalink: "/projects/{{ topic.slug }}/"
+eleventyComputed:
+  title: "{{ topic.name }} Projects"
+styles: [hub.css, projects/projects-home.css]
+---
+{#
+  One page per project topic, at /projects/<topic>/, built from
+  _data/projectTopics.js. Laid out like the hub's topic homes: a big
+  header, then the topic's projects grouped by type (backtests, trade
+  memos, ...), newest first. projects.js runs the market filter.
+#}
+{% from "partials/hub-icons.njk" import hubIcon %}
+
+<div class="hub projects-home topic-home{% if topic.colour %} tone-{{ topic.colour }}{% endif %}">
+
+  <nav class="topic-crumbs" aria-label="Breadcrumb">
+    <a href="/projects/projects.html">Projects</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ topic.name }}</span>
+  </nav>
+
+  {# Header: big icon beside the name, as on the hub's topic homes #}
+  <section class="topic-hello">
+    <span class="topic-icon">{{ hubIcon(topic.icon, 48) }}</span>
+    <div class="topic-hello-text">
+      <h1 class="hub-title">{{ topic.name }}</h1>
+      <p class="hub-intro">{{ topic.blurb }}</p>
+      <div class="th-chips">
+        <span class="th-chip is-tone">{{ topic.count }} project{% if topic.count != 1 %}s{% endif %}</span>
+        {% if topic.markets.length %}<span class="th-chip">{% for m in topic.markets %}{{ m.label }}{% if not loop.last %} · {% endif %}{% endfor %}</span>{% endif %}
+        {% if topic.tools.length %}<span class="th-chip">{{ topic.tools | join(" · ") }}</span>{% endif %}
+        {% if topic.latestWhen %}<span class="th-chip">Latest: {{ topic.latestWhen }}</span>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# Market filter, only when the topic covers more than one market #}
+  {% if topic.markets.length > 1 %}
+  <section class="proj-filter th-filter" aria-label="Filter by market" data-filter hidden>
+    <div class="proj-filter-row">
+      <span class="proj-filter-label">Market</span>
+      <button type="button" class="plan-step" data-market="all" aria-pressed="true">All</button>
+      {% for m in topic.markets %}
+      <button type="button" class="plan-step" data-market="{{ m.slug }}" aria-pressed="false">{{ m.label }}</button>
+      {% endfor %}
+      <span class="th-filter-status">
+        <span data-count aria-live="polite">All {{ topic.count }} projects</span>
+        <button type="button" class="proj-clear" data-clear disabled>Clear</button>
+      </span>
+    </div>
+  </section>
+  {% endif %}
+
+  {# Groups by type of project, like the hub's chapters #}
+  {% for group in topic.groups %}
+  <section class="th-group" data-shelf aria-label="{{ group.name }}">
+    <div class="th-group-head">
+      <span class="th-group-count">{{ group.count }} project{% if group.count != 1 %}s{% endif %}</span>
+      <h2>{{ group.name }}</h2>
+      {% if group.blurb %}<p>{{ group.blurb }}</p>{% endif %}
+    </div>
+    {% for p in group.items %}
+    <article class="th-row" data-project data-topic="{{ p.topic }}" data-markets="{{ p.marketSlugs }}">
+      <div class="th-main">
+        {% if p.firm %}<p class="proj-firm">{{ p.firm }}</p>{% endif %}
+        <a class="proj-title" href="{{ p.url }}">{{ p.title }}</a>
+        <p class="proj-sum">{{ p.headline }}</p>
+        {% if p.result %}<p class="proj-result"><b>Result</b><span>{{ p.result }}</span></p>{% endif %}
+      </div>
+      <div class="th-side">
+        <span class="proj-status{% if p.status == 'live' %} is-live{% endif %}"><i aria-hidden="true"></i>{% if p.status == "live" %}Live{% else %}Finished{% endif %}</span>
+        {% if p.when %}<span class="th-when">{{ p.when }}</span>{% endif %}
+        <div class="proj-tags">
+          {% for m in p.markets %}<span class="proj-tag">{{ m }}</span>{% endfor %}
+          {% for t in p.tags %}<span class="proj-tag">{{ t }}</span>{% endfor %}
+        </div>
+        <div class="proj-links">
+          {% if p.code %}<a href="{{ p.code }}">Code ↗</a>{% endif %}
+          <a href="{{ p.url }}">{{ p.cta or "View project" }} ›</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  {# Shown by projects.js when the filter matches nothing #}
+  <section class="proj-empty" data-empty hidden>
+    <p class="proj-empty-title">No {{ topic.name }} projects in that market yet.</p>
+    <button type="button" class="plan-step" data-clear>Show all</button>
+  </section>
+
+  <nav class="th-next" aria-label="More projects">
+    <a class="th-btn" href="/projects/projects.html">← All projects</a>
+    {% if topic.next %}<a class="th-btn dark" href="{{ topic.next.url }}">Next topic: {{ topic.next.name }} →</a>{% endif %}
+  </nav>
+
+</div>
+
+{% if topic.markets.length > 1 %}<script src="/assets/js/projects.js" defer></script>{% endif %}

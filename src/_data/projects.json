@@ -1,6 +1,7 @@
 [
   {
     "title": "December FOMC trade memo",
+    "date": "2026-10",
     "topic": "trading",
     "kind": "Trade memo",
     "status": "live",
@@ -21,6 +22,7 @@
   },
   {
     "title": "Liquidity-sweep backtest",
+    "date": "2026-03",
     "topic": "quant",
     "kind": "Backtest",
     "status": "finished",
@@ -41,6 +43,7 @@
   },
   {
     "title": "Pricing coffee derivatives",
+    "date": "2026-07",
     "topic": "simulations",
     "firm": "Citi · Markets Quant Analyst · July 2026",
     "kind": "Pricing model",

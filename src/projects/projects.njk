@@ -7,15 +7,17 @@ styles: [hub.css, projects/projects-home.css]
 {#
   The projects page. Laid out like the knowledge hub's vault home:
   the four steps, a filter, one shelf per topic, then Simulations.
-  Everything comes from _data/projects.json via the `projectsPage`
-  filter in eleventy.config.js. projects.js runs the filter.
+  Each shelf shows only its newest project, with a link to the topic's
+  own page (src/projects/topic.njk). When the filter is used, every
+  matching project shows. Everything comes from _data/projectTopics.js,
+  which reads projects.json. projects.js runs the filter.
 #}
 {% from "partials/hub-icons.njk" import hubIcon %}
-{% set pp = projects | projectsPage(shelves) %}
+{% set pp = projectTopics %}
 
-{# One project: used on the topic shelves and in Simulations #}
-{% macro projectCard(p) %}
-<article class="proj" data-project data-topic="{{ p.topic }}" data-markets="{{ p.marketSlugs }}">
+{# One project. Only the newest in each topic shows until the filter is used. #}
+{% macro projectCard(p, newest) %}
+<article class="proj" data-project data-topic="{{ p.topic }}" data-markets="{{ p.marketSlugs }}"{% if newest %} data-latest{% else %} hidden{% endif %}>
   {% if p.firm %}<p class="proj-firm">{{ p.firm }}</p>{% endif %}
   <div class="proj-top">
     <a class="proj-title" href="{{ p.url }}">{{ p.title }}</a>
@@ -35,6 +37,11 @@ styles: [hub.css, projects/projects-home.css]
     </div>
   </div>
 </article>
+{% endmacro %}
+
+{# The link at the foot of a shelf, to the topic's own page #}
+{% macro openTopic(t) %}
+<a class="proj-open" href="{{ t.url }}">{% if t.count > 1 %}See all {{ t.count }} {{ t.name }} projects{% else %}Open {{ t.name }}{% endif %} ›</a>
 {% endmacro %}
 
 <div class="hub projects-home">
@@ -72,8 +79,9 @@ styles: [hub.css, projects/projects-home.css]
     </ol>
   </section>
 
-  {# Filter: topic and market combine. Hidden until projects.js runs, so it never shows without working. #}
-  <section class="proj-filter" aria-label="Filter the projects" data-filter hidden>
+  {# Filter: topic and market combine. Hidden until projects.js runs, so it never shows without working.
+     data-latest-only: with no filter chosen, each shelf shows just its newest project. #}
+  <section class="proj-filter" aria-label="Filter the projects" data-filter data-latest-only hidden>
     <div class="proj-filter-head">
       <h2>Filter the projects</h2>
       <div class="proj-filter-status">
@@ -105,31 +113,34 @@ styles: [hub.css, projects/projects-home.css]
       <div class="shelf-head">
         <span class="shelf-icon">{{ hubIcon(shelf.icon) }}</span>
         <div class="shelf-title">
-          <h2 class="shelf-name">{{ shelf.name }}</h2>
+          <h2 class="shelf-name"><a href="{{ shelf.url }}">{{ shelf.name }}</a></h2>
           <p class="proj-blurb">{{ shelf.blurb }}</p>
         </div>
-        <span class="proj-count">{{ shelf.projects.length }} project{% if shelf.projects.length != 1 %}s{% endif %}</span>
+        <span class="proj-count">{{ shelf.count }} project{% if shelf.count != 1 %}s{% endif %}</span>
       </div>
-      {% for p in shelf.projects %}{{ projectCard(p) }}{% endfor %}
+      {% for p in shelf.projects %}{{ projectCard(p, loop.first) }}{% endfor %}
+      {{ openTopic(shelf) }}
     </article>
     {% endfor %}
   </section>
   {% endif %}
 
   {# Simulations: their own section and colour #}
-  {% if pp.simulations.length %}
+  {% set sims = pp.simulations %}
+  {% if sims %}
   <section class="sims tone-walnut" aria-label="Simulations" data-shelf>
     <div class="sims-head">
       <span class="shelf-icon">{{ hubIcon("simulations") }}</span>
       <div class="sims-title">
-        <h2>Simulations</h2>
-        <p>Job simulations set by banks on Forage. The brief is theirs; the models and write-ups are mine.</p>
+        <h2><a href="{{ sims.url }}">Simulations</a></h2>
+        <p>{{ sims.blurb }}</p>
       </div>
-      <span class="proj-count">{{ pp.simulations.length }} project{% if pp.simulations.length != 1 %}s{% endif %}</span>
+      <span class="proj-count">{{ sims.count }} project{% if sims.count != 1 %}s{% endif %}</span>
     </div>
     <div class="sims-grid">
-      {% for p in pp.simulations %}{{ projectCard(p) }}{% endfor %}
+      {% for p in sims.projects %}{{ projectCard(p, loop.first) }}{% endfor %}
     </div>
+    {{ openTopic(sims) }}
   </section>
   {% endif %}
 

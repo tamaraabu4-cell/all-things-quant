@@ -1,15 +1,19 @@
 // ==========================================================
-// Heritage Edge: the projects page filter
+// Heritage Edge: the projects page filter (also used on topic pages)
 //
 // Topic and market combine: Quant + FX shows only Quant projects
 // that trade FX. Shelves with nothing left in them are hidden,
 // and a message offers to clear the filters if nothing matches.
+//
+// On the projects page (data-latest-only), each shelf shows just its
+// newest project until a filter is chosen; then every match shows.
 // ==========================================================
 (function () {
   const filter = document.querySelector("[data-filter]");
   if (!filter) return;
   filter.hidden = false; // only show the filter once it can work
 
+  const latestOnly = filter.hasAttribute("data-latest-only");
   const projects = Array.from(document.querySelectorAll("[data-project]"));
   const shelves = Array.from(document.querySelectorAll("[data-shelf]"));
   const count = filter.querySelector("[data-count]");
@@ -25,13 +29,16 @@
   }
 
   function apply() {
-    let shown = 0;
+    const filtering = chosen.topic !== "all" || chosen.market !== "all";
+    let matches = 0;
     projects.forEach((project) => {
       const markets = (project.dataset.markets || "").split(" ");
       const topicFits = chosen.topic === "all" || project.dataset.topic === chosen.topic;
       const marketFits = chosen.market === "all" || markets.indexOf(chosen.market) !== -1;
-      project.hidden = !(topicFits && marketFits);
-      if (!project.hidden) shown += 1;
+      const fits = topicFits && marketFits;
+      if (fits) matches += 1;
+      // With no filter, the projects page shows only each topic's newest project
+      project.hidden = !fits || (latestOnly && !filtering && !project.hasAttribute("data-latest"));
     });
 
     shelves.forEach((shelf) => {
@@ -40,9 +47,9 @@
 
     press("data-topic", chosen.topic);
     press("data-market", chosen.market);
-    count.textContent = shown === total ? "All " + total + " projects" : "Showing " + shown + " of " + total;
-    clearTop.disabled = chosen.topic === "all" && chosen.market === "all";
-    if (empty) empty.hidden = shown !== 0;
+    count.textContent = filtering ? "Showing " + matches + " of " + total : "All " + total + " projects";
+    clearTop.disabled = !filtering;
+    if (empty) empty.hidden = matches !== 0;
   }
 
   filter.addEventListener("click", (event) => {

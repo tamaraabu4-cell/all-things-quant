@@ -48,7 +48,7 @@ layout: layouts/base.njk
       <div class="pj-intro">
         <nav class="pj-crumbs" aria-label="Breadcrumb">
           <a href="/projects/projects.html">Projects</a><span aria-hidden="true">/</span>
-          {% if ctx %}<span>{{ ctx.topic.name }}</span><span aria-hidden="true">/</span>{% endif %}
+          {% if ctx %}<a href="{{ ctx.topic.url }}">{{ ctx.topic.name }}</a><span aria-hidden="true">/</span>{% endif %}
           <span aria-current="page">{{ title }}</span>
         </nav>
 

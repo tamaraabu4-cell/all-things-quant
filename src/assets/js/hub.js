@@ -219,7 +219,7 @@
         return;
       }
 
-      const recent = mine.filter((n) => get(n).opened).sort((a, b) => get(b).opened - get(a).opened).slice(0, 3);
+      const recent = mine.filter((n) => get(n).opened).sort((a, b) => get(b).opened - get(a).opened).slice(0, 1);
       if (!recent.length) {
         const first = inLearningOrder(mine)[0];
         const li = el("li", "shelf-start hub-note");
